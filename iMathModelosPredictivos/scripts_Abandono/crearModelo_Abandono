@@ -1,0 +1,71 @@
+#!/usr/bin/env python
+
+"""
+    Execution:
+        createModel_GoDownCustomer dataFile classifierType modelName
+        
+    Command line arguments:
+        dataFile (sys.argv[1]): String that indicates the complete path of the file where the data to create the model resides.
+        classifierType (sys.argv[2]): String that indicate the classifier to use for creating the model
+        modelName (sys.argv[3]): String that indicates the name of the file where the model is going to be saved.
+"""
+
+import sys
+import os
+
+from iMathModelosPredictivos.core.modelDownCustomer import ModelDownCustomer
+from iMathModelosPredictivos.common.constants import CONS
+from iMathModelosPredictivos.common.util.masMovilError import MasMovilError
+from iMathModelosPredictivos.scripts_Abandono.help import showExtendedHelp
+from iMathModelosPredictivos.scripts_Abandono.help import showShortHelp
+
+
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.svm import SVC
+from sklearn.ensemble import RandomForestClassifier
+
+CONS = CONS()
+
+try:
+    if len(sys.argv) == 2:
+        if sys.argv[1] == '--help':
+            print ""
+            showExtendedHelp('createModel')
+            print ""
+            quit()
+                      
+    # Check the number of parameters
+    if len(sys.argv) != 4:
+        raise MasMovilError("Numero incorrecto de parametros")
+    
+    dataFile = sys.argv[1]
+    classifierType = sys.argv[2]
+    modelName = sys.argv[3]
+    
+    # Check if the data file exists
+    if os.path.isfile(dataFile) is False:
+        raise MasMovilError("El fichero " + dataFile + " no existe");
+    
+    # Check if the classifier exists
+    if classifierType == 'DecisionTreeClassifier':
+        classifier = DecisionTreeClassifier
+    elif classifierType == "SVC":
+        classifier = SVC
+    elif classifierType == "RandomForestClassifier":
+        classifier = RandomForestClassifier
+    else:
+        raise MasMovilError("El clasificador " + classifierType + " no es valido")
+        
+    print ""
+    model = ModelDownCustomer(dataFile, classifier);
+    model.saveModel(CONS.MODEL_FILE_LOCATION + modelName + '.txt');
+    print "[iMathResearch] Para testear el modelo, ejecutar:  testearModelo_Impagos " + dataFile + " " +  modelName  + " <fichero salida>"
+    print "[iMathResearch] Para usar la prediccion del modelo, ejecutar: predecirModelo_Impagos <fichero entrada> " + modelName + " <fichero salida>"
+    print ""
+    
+except MasMovilError as e:
+    print ""
+    print "[iMathResearch] Error: " , e.value
+    if e.value == "Numero incorrecto de parametros":
+        showShortHelp('createModel')
+    print ""    

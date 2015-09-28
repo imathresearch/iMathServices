@@ -1,0 +1,61 @@
+#!/usr/bin/env python
+
+'''
+Created on 12/06/2015
+
+@author: andrea
+'''
+
+"""
+    Execution:
+        crearModelo_UpCrossSelling dataFile modelName
+        
+    Command line arguments:
+        dataFile (sys.argv[1]): String that indicates the complete path of the file where the data to create the model resides.
+        modelName (sys.argv[2]): String that indicates the name of the file where the model is going to be saved.
+"""
+
+import sys
+import os
+
+from iMathModelosPredictivos.core.modelUpCrossSelling import ModelUpCrossSelling
+from iMathModelosPredictivos.common.constants import CONS
+from iMathModelosPredictivos.common.util.masMovilError import MasMovilError
+from iMathModelosPredictivos.scripts_UpCrossSelling.help import showExtendedHelp
+from iMathModelosPredictivos.scripts_UpCrossSelling.help import showShortHelp
+
+CONS = CONS()
+
+try:
+    if len(sys.argv) == 2:
+        if sys.argv[1] == '--help':
+            print ""
+            showExtendedHelp('createModel')
+            print ""
+            quit()
+                      
+    # Check the number of parameters
+    if len(sys.argv) != 3:
+        raise MasMovilError("Numero incorrecto de parametros")
+    
+    dataFile = sys.argv[1]
+    modelName = sys.argv[2]
+    
+    # Check if the data file exists
+    if os.path.isfile(dataFile) is False:
+        raise MasMovilError("El fichero " + dataFile + " no existe");
+    
+        
+    print ""
+    model = ModelUpCrossSelling(dataFile, classifierType='Amazon');
+    model.saveModel(CONS.MODEL_FILE_LOCATION + modelName + '.txt');
+    print "[iMathResearch] Para testear el modelo, ejecutar:  testearModelo_UpCrossSelling " + dataFile + " " +  modelName  + " <fichero salida>"
+    print "[iMathResearch] Para usar el modelo recomendador, ejecutar: recomendarModelo_UpCrossSelling <fichero entrada> " + modelName + " <fichero salida>"
+    print ""
+    
+except MasMovilError as e:
+    print ""
+    print "[iMathResearch] Error: " , e.value
+    if e.value == "Numero incorrecto de parametros":
+        showShortHelp('createModel')
+    print ""    
