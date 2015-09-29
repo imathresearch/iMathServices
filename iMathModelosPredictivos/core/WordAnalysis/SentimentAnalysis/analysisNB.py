@@ -10,7 +10,7 @@ Authors:
 """
 from textblob import Blobber
 from textblob.sentiments import NaiveBayesAnalyzer
-from SentimentAnalysis.core.kernel.analysis_gen import SentimentAnalysis
+from iMathModelosPredictivos.core.WordAnalysis.SentimentAnalysis.analysis_gen import SentimentAnalysis
 
 
 class NbAnalyzer (SentimentAnalysis):

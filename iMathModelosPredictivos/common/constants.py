@@ -54,6 +54,8 @@ class CONS(object):
         return os.path.join(path, 'data', 'metadataGoCustomer.txt') 
 
     '''
+        TWITTER
+    
         It will be necessary to create a new twitter user to recover data.
         Necessary Data: Consumer_key, Consumer_secrt, Access_Toke,, Access_Token_Secret
     '''
