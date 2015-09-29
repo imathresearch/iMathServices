@@ -53,4 +53,36 @@ class CONS(object):
         path = os.path.dirname(module.__file__)
         return os.path.join(path, 'data', 'metadataGoCustomer.txt') 
 
+    '''
+        It will be necessary to create a new twitter user to recover data.
+        Necessary Data: Consumer_key, Consumer_secrt, Access_Toke,, Access_Token_Secret
+    '''
+
+    @constant
+    def CONSUMER_KEY():
+        return 'NIPqiUBMkGgEPsZTUGvWzIAGv'
+    
+    @constant
+    def CONSUMER_SECRET():
+        return '6Qb6eX8c6lOg7Vuh1ageW92ucddylC7unytJ3crJTBYgdVARcW'
+    
+    @constant
+    def ACCESS_TOKEN():
+        return '519460742-P9llilYNcuy1VUtuASOnHOFhJStJyuiD75M18mEZ'
+    
+    @constant
+    def ACCESS_TOKEN_SECRET():
+        return '8jGzEMsrkuT5nvuxnmp8Zcpt9WM6Xdxm3F3OCpUafLMw8'
+    
+    @constant
+    def TWITTER_DB():
+        return "test_db"
+    
+    @constant
+    def TOKEN_LAST_TWEET():
+        return 'LAST_ELEMENT'
+    
+    @constant
+    def STOPWORDS_FILE():
+        return '../data/stopwords.txt'
     

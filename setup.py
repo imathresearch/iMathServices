@@ -10,13 +10,16 @@ install_requires = [
     'numpy>=1.9.1',
     'ujson>=1.33',
     'pandas>=0.15.12',
+    'tweepy>=3.4.0',
+    'TextBlob>=0.9.1',
+    'pymongo>=3.0.3'
 ]
 
 
 setup(
     name="iMathModelosPredictivos",
     description="API TO RUN PREDICTIVE MODELS",
-    version=4.0,
+    version=5.0,
     author="iMathResearch",
     author_email="info@imathresearch.com",
     url="www.imathresearch.com",
