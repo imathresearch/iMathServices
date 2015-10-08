@@ -1,0 +1,3 @@
+NumberOfElements=3
+PriorityLevel=1,2,3,4,5
+MaximumDifference=5
