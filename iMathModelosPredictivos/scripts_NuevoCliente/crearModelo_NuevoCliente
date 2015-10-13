@@ -15,7 +15,7 @@ import os
 
 from iMathModelosPredictivos.core.modelNewCustomer import ModelNewCustomer
 from iMathModelosPredictivos.common.constants import CONS
-from iMathModelosPredictivos.common.util.masMovilError import MasMovilError
+from iMathModelosPredictivos.common.util.iMathServicesError import iMathServicesError
 from iMathModelosPredictivos.scripts_NuevoCliente.help import showExtendedHelp
 from iMathModelosPredictivos.scripts_NuevoCliente.help import showShortHelp
 
@@ -36,7 +36,7 @@ try:
                       
     # Check the number of parameters
     if len(sys.argv) != 4:
-        raise MasMovilError("Numero incorrecto de parametros")
+        raise iMathServicesError("Numero incorrecto de parametros")
     
     dataFile = sys.argv[1]
     classifierType = sys.argv[2]
@@ -44,7 +44,7 @@ try:
     
     # Check if the data file exists
     if os.path.isfile(dataFile) is False:
-        raise MasMovilError("El fichero " + dataFile + " no existe");
+        raise iMathServicesError("El fichero " + dataFile + " no existe");
     
     # Check if the classifier exists
     if classifierType == 'DecisionTreeClassifier':
@@ -54,7 +54,7 @@ try:
     elif classifierType == "RandomForestClassifier":
         classifier = RandomForestClassifier
     else:
-        raise MasMovilError("El clasificador " + classifierType + " no es valido")
+        raise iMathServicesError("El clasificador " + classifierType + " no es valido")
         
     print ""
     model = ModelNewCustomer(dataFile, classifier);
@@ -63,7 +63,7 @@ try:
     print "[iMathResearch] Para usar la prediccion del modelo, ejecutar: predecirModelo_NuevoCliente <fichero entrada> " + modelName + " <fichero salida>"
     print ""
     
-except MasMovilError as e:
+except iMathServicesError as e:
     print ""
     print "[iMathResearch] Error: " , e.value
     if e.value == "Numero incorrecto de parametros":

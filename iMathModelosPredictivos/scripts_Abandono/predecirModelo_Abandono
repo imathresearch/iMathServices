@@ -15,7 +15,7 @@ import os
 
 from iMathModelosPredictivos.core.modelDownCustomer import ModelDownCustomer
 from iMathModelosPredictivos.common.constants import CONS
-from iMathModelosPredictivos.common.util.masMovilError import MasMovilError
+from iMathModelosPredictivos.common.util.iMathServicesError import iMathServicesError
 from iMathModelosPredictivos.scripts_Abandono.help import showExtendedHelp
 from iMathModelosPredictivos.scripts_Abandono.help import showShortHelp
 
@@ -33,7 +33,7 @@ try:
     
     # Check the number of parameters
     if len(sys.argv) != 4:
-        raise MasMovilError("Numero incorrecto de parametros")
+        raise iMathServicesError("Numero incorrecto de parametros")
     
     dataFile = sys.argv[1]
     modelName = sys.argv[2]
@@ -41,19 +41,19 @@ try:
     
     # Check if the data file exists
     if os.path.isfile(dataFile) is False:
-        raise MasMovilError("El fichero " + dataFile + " no existe");
+        raise iMathServicesError("El fichero " + dataFile + " no existe");
     
     # Check if the file that contains the model exists
     model_path = os.path.join(CONS.MODEL_FILE_LOCATION + modelName + ".txt")
     if os.path.isfile(model_path) is False:
-        raise MasMovilError("El modelo " +   modelName  + " no ha sido previamente creado");
+        raise iMathServicesError("El modelo " +   modelName  + " no ha sido previamente creado");
     
     print ""
     model = ModelDownCustomer(model_path);
     model.predictModel(dataFile, predictionOutputFile);
     print ""
     
-except MasMovilError as e:
+except iMathServicesError as e:
     print ""
     print "[iMathResearch] Error: " , e.value
     if e.value == "Numero incorrecto de parametros":

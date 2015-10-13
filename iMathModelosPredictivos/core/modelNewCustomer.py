@@ -54,7 +54,7 @@ from iMathModelosPredictivos.common.util.miningUtil import categoricalOutliers
 from iMathModelosPredictivos.common.util.miningUtil import svmOutliers
 from iMathModelosPredictivos.common.util.miningUtil import PCAFeatureReduction
 from iMathModelosPredictivos.common.util.miningUtil import featureSelection
-from iMathModelosPredictivos.common.util.masMovilError import MasMovilError
+from iMathModelosPredictivos.common.util.iMathServicesError import MasMovilError
 from iMathModelosPredictivos.common.util.miningUtil import generateRandomValue
 from iMathModelosPredictivos.common.constants import CONS
 

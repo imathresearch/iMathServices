@@ -1,7 +1,7 @@
 from model import Model
 from iMathModelosPredictivos.common.util.ioOperations import IOOperations
 from iMathModelosPredictivos.common.constants import CONS
-from iMathModelosPredictivos.common.util.masMovilError import MasMovilError
+from iMathModelosPredictivos.common.util.iMathServicesError import MasMovilError
 
 
 from scipy import spatial
