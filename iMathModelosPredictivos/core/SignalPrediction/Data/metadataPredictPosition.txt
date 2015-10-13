@@ -1,0 +1,8 @@
+<variable train format>
+Salon,Dormitorio,Bano,Cocina,Etiqueta
+<variable test format>
+Salon,Dormitorio,Bano,Cocina,Etiqueta
+<variable predict format>
+Salon,Dormitorio,Bano,Cocina
+<numerical>
+Salon,Dormitorio,Bano,Cocina,Etiqueta
