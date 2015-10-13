@@ -1,0 +1,30 @@
+It will be necessary to create a file for each service for each sector.
+
+Now:
+
+Telecommunications:
+
+Working
+
+Transport:
+
+It is the file created, but it will be necessary to modify with the transport variables.
+
+Dynamic Constant:
+
+Now: Directly, each algorithm is accessing to telecommunication sector's constant.
+Future: It is necessary to access to each sectors constant in each model. The necessary function
+to modify is the following one:
+
+def _readMetaDataFile(self):
+
+	This function has static access to the telecommunication's contant and it will be necessary to 
+	access to the correct sector's constant adding avariable to this function.
+	
+		Example: def _readMetaDataFile(self,sector):
+		
+			if sector=='Telecommunication':
+			else:
+				if sector=='Transport':
+				else:
+					if sector=='Banking':

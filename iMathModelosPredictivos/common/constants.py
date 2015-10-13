@@ -53,6 +53,57 @@ class CONS(object):
         path = os.path.dirname(module.__file__)
         return os.path.join(path, 'data', 'metadataGoCustomer.txt') 
 
+    @constant
+    def MODEL_FILE_METADATA_TRANSPORT():
+        path = os.path.dirname(module.__file__)
+        return os.path.join(path, 'data/Transport', 'metadataUserModelTransport.txt') 
+    
+    @constant
+    def MODEL_UPCROSS_LIST_BONOS_TRANSPORT():
+        path = os.path.dirname(module.__file__)
+        return os.path.join(path, 'data/Transport', 'list_codbonos.csv')
+    
+    @constant
+    def MODEL_FILE_METADATA_NEWCUSTOMER_TRANSPORT():
+        path = os.path.dirname(module.__file__)
+        return os.path.join(path, 'data/Transport', 'metadataNewCustomerModel.txt') 
+
+    @constant
+    def MODEL_FILE_METADATA_DOWNCUSTOMER_TRANSPORT():
+        path = os.path.dirname(module.__file__)
+        return os.path.join(path, 'data/Transport', 'metadataDownCustomer.txt') 
+
+    @constant
+    def MODEL_FILE_METADATA_GOCUSTOMER_TRANSPORT():
+        path = os.path.dirname(module.__file__)
+        return os.path.join(path, 'data/Transport', 'metadataGoCustomer.txt') 
+
+    @constant
+    def MODEL_FILE_METADATA_BANKING():
+        path = os.path.dirname(module.__file__)
+        return os.path.join(path, 'data/Banking', 'metadataUserModelTransport.txt') 
+    
+    @constant
+    def MODEL_UPCROSS_LIST_BONOS_BANKING():
+        path = os.path.dirname(module.__file__)
+        return os.path.join(path, 'data/Banking', 'list_codbonos.csv')
+    
+    @constant
+    def MODEL_FILE_METADATA_NEWCUSTOMER_BANKING():
+        path = os.path.dirname(module.__file__)
+        return os.path.join(path, 'data/Banking', 'metadataNewCustomerModel.txt') 
+
+    @constant
+    def MODEL_FILE_METADATA_DOWNCUSTOMER_BANKING():
+        path = os.path.dirname(module.__file__)
+        return os.path.join(path, 'data/Banking', 'metadataDownCustomer.txt') 
+
+    @constant
+    def MODEL_FILE_METADATA_GOCUSTOMER_BANKING():
+        path = os.path.dirname(module.__file__)
+        return os.path.join(path, 'data/Banking', 'metadataGoCustomer.txt') 
+
+
     '''
         TWITTER
     
