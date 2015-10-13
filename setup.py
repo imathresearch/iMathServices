@@ -19,7 +19,7 @@ install_requires = [
 setup(
     name="iMathModelosPredictivos",
     description="API TO RUN PREDICTIVE MODELS",
-    version=5.0,
+    version=6.0,
     author="iMathResearch",
     author_email="info@imathresearch.com",
     url="www.imathresearch.com",
@@ -28,7 +28,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=install_requires,
-    scripts=['iMathModelosPredictivos/scripts_Impagos/crearModelo_Impagos', 'iMathModelosPredictivos/scripts_Impagos/predecirModelo_Impagos', 'iMathModelosPredictivos/scripts_Impagos/testearModelo_Impagos', 'iMathModelosPredictivos/scripts_UpCrossSelling/crearModelo_UpCrossSelling', 'iMathModelosPredictivos/scripts_UpCrossSelling/testearModelo_UpCrossSelling', 'iMathModelosPredictivos/scripts_UpCrossSelling/recomendarModelo_UpCrossSelling', 'iMathModelosPredictivos/scripts_NuevoCliente/crearModelo_NuevoCliente', 'iMathModelosPredictivos/scripts_NuevoCliente/testearModelo_NuevoCliente', 'iMathModelosPredictivos/scripts_NuevoCliente/predecirModelo_NuevoCliente', 'iMathModelosPredictivos/scripts_Baja/crearModelo_Baja', 'iMathModelosPredictivos/scripts_Baja/testearModelo_Baja', 'iMathModelosPredictivos/scripts_Baja/predecirModelo_Baja', 'iMathModelosPredictivos/scripts_Abandono/crearModelo_Abandono', 'iMathModelosPredictivos/scripts_Abandono/testearModelo_Abandono', 'iMathModelosPredictivos/scripts_Abandono/predecirModelo_Abandono', 'iMathModelosPredictivos/scripts_AnalisisTextos/PredecirTexto_Twitter', 'iMathModelosPredictivos/scripts_BestCandidateSelection/MatchingAlgorithAndBestUserSelectionMainProgram'],
+    scripts=['iMathModelosPredictivos/scripts_Impagos/crearModelo_Impagos', 'iMathModelosPredictivos/scripts_Impagos/predecirModelo_Impagos', 'iMathModelosPredictivos/scripts_Impagos/testearModelo_Impagos', 'iMathModelosPredictivos/scripts_UpCrossSelling/crearModelo_UpCrossSelling', 'iMathModelosPredictivos/scripts_UpCrossSelling/testearModelo_UpCrossSelling', 'iMathModelosPredictivos/scripts_UpCrossSelling/recomendarModelo_UpCrossSelling', 'iMathModelosPredictivos/scripts_NuevoCliente/crearModelo_NuevoCliente', 'iMathModelosPredictivos/scripts_NuevoCliente/testearModelo_NuevoCliente', 'iMathModelosPredictivos/scripts_NuevoCliente/predecirModelo_NuevoCliente', 'iMathModelosPredictivos/scripts_Baja/crearModelo_Baja', 'iMathModelosPredictivos/scripts_Baja/testearModelo_Baja', 'iMathModelosPredictivos/scripts_Baja/predecirModelo_Baja', 'iMathModelosPredictivos/scripts_Abandono/crearModelo_Abandono', 'iMathModelosPredictivos/scripts_Abandono/testearModelo_Abandono', 'iMathModelosPredictivos/scripts_Abandono/predecirModelo_Abandono', 'iMathModelosPredictivos/scripts_AnalisisTextos/PredecirTexto_Twitter', 'iMathModelosPredictivos/scripts_BestCandidateSelection/MatchingAlgorithAndBestUserSelectionMainProgram', 'iMathModelosPredictivos/scripts_PrediccionFunction/crearModelo_Prediccion', 'iMathModelosPredictivos/scripts_PrediccionFuncion/testearModelo_Prediccion', 'iMathModelosPredictivos/scripts_PrediccionFuncion/predecirModelo_Prediccion'],
 )
 
 home = expanduser("~")
