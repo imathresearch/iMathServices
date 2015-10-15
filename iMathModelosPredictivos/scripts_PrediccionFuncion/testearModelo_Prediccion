@@ -18,9 +18,9 @@ try:
     modelName = sys.argv[2]
     predictionOutputFile = sys.argv[3]'''
 
-    dataFile = '/home/izubizarreta/Documentos/Documentos/Comercial/Sensovida/Prediccion/TodosRegisters155Test11Octubre.csv'
+    dataFile = '/home/izubizarreta/Documentos/Documentos/Comercial/Sensovida/DatosEduardo/DatosEduardoTest.csv'
     modelName = 'ModeloPrediccion'
-    predictionOutputFile = '/home/izubizarreta/Documentos/Documentos/Comercial/Sensovida/Prediccion/Registers155Todos11OctubreOutput.csv'
+    predictionOutputFile = '/home/izubizarreta/Documentos/Documentos/Comercial/Sensovida/DatosEduardo/DatosEduardoTestOutput.csv'
        
     # Check if the data file exists
     if os.path.isfile(dataFile) is False:

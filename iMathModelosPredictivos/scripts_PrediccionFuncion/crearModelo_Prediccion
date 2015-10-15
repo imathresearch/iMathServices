@@ -9,6 +9,7 @@ from iMathModelosPredictivos.core.SignalPrediction.Data.constants import CONS
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
+from iMathModelosPredictivos.core.SignalPrediction.Classes.FilterData import FilterData
 
 CONS = CONS()
 
@@ -22,7 +23,7 @@ try:
     classifierType = sys.argv[2]
     modelName = sys.argv[3]'''
 
-    dataFile = '/home/izubizarreta/Documentos/Documentos/Comercial/Sensovida/Prediccion/Registers155Training.csv'
+    dataFile = '/home/izubizarreta/Documentos/Documentos/Comercial/Sensovida/DatosEduardo/DatosEduardoTraining.csv'
     classifierType = 'RandomForestClassifier'
     modelName = 'ModeloPrediccion'
     

@@ -13,7 +13,7 @@ from sklearn.metrics import confusion_matrix
 #import matplotlib.pyplot as plt
 import pickle
 import operator
-from iMathModelosPredictivos.core.SignalPrediction.util.CSVDatosRoberto import CSVClass
+from iMathModelosPredictivos.core.SignalPrediction.util.CSV import CSVClass
 
 from iMathModelosPredictivos.common.util.miningUtil import KFold
 from iMathModelosPredictivos.common.util.miningUtil import KFoldProb
