@@ -226,7 +226,7 @@ class ModelGoCustomer(Model):
             #self.loadModel(CONS.MODEL_FILE_LOCATION);
             self._preprocessTestData();
             prediction = self._predict()
-            prediction[prediction < 1 ] = 0
+            #prediction[prediction < 1 ] = 0
            
             predictionProb = self._predictProb()
             # Compute confusion matrix
@@ -254,7 +254,7 @@ class ModelGoCustomer(Model):
             #self.loadModel(CONS.MODEL_FILE_LOCATION);
             self._preprocessTestData();
             prediction = self._predict()
-            prediction[prediction < 1 ] = 0
+            #prediction[prediction < 1 ] = 0
            
             self.YData = self.YData.astype(int)
             predictionProb = self._predictProb()

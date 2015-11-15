@@ -226,7 +226,7 @@ class ModelDownEmployee(Model):
             #self.loadModel(CONS.MODEL_FILE_LOCATION);
             self._preprocessTestData();
             prediction = self._predict()
-            prediction[prediction < 1 ] = 0
+            #prediction[prediction < 1 ] = 0
            
             predictionProb = self._predictProb()
             # Compute confusion matrix
@@ -254,12 +254,12 @@ class ModelDownEmployee(Model):
             #self.loadModel(CONS.MODEL_FILE_LOCATION);
             self._preprocessTestData();
             prediction = self._predict()
-            prediction[prediction < 1 ] = 0
+            #prediction[prediction < 1 ] = 0
            
-            self.YData = self.YData.astype(int)
+            #self.YData = self.YData.astype(int)
             predictionProb = self._predictProb()
             # Compute confusion matrix
-            cm = confusion_matrix(self.YData, prediction.astype(int))
+            cm = confusion_matrix(self.YData, prediction)
             self.__generateTestFileGoDownCustomer(outputFile, self.YData, prediction, predictionProb, cm)
             print "[iMathResearch] Resultado del testing del modelo guardado en " + outputFile
 
@@ -767,7 +767,7 @@ class ModelDownEmployee(Model):
             sample.append("----")
             sample.append(predictionProb[indexSample])
             sample.append("----")
-            if ID[indexSample] == int(prediction[indexSample]):
+            if ID[indexSample] == prediction[indexSample]:
                 hit = hit + 1
                 sample.append("Si")
             else:

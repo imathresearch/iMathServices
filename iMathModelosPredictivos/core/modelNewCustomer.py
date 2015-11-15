@@ -358,7 +358,7 @@ class ModelNewCustomer(Model):
             
             #CODE FOR SIMPLE MODEL
             prediction = self._predict()
-            prediction[prediction < 1 ] = 0
+            #prediction[prediction < 1 ] = 0
             predictionProb = self._predictProb()
             
             self.__generatePredictionFile(outputFile, ID, prediction, predictionProb)
@@ -418,7 +418,7 @@ class ModelNewCustomer(Model):
             #CODE FOR SIMPLE MODEL
             
             prediction = self._predict()
-            prediction[prediction < 1 ] = 0 
+            #prediction[prediction < 1 ] = 0 
             self.YData = map(int,self.YData)
             predictionProb = self._predictProb()
             # Compute confusion matrix
