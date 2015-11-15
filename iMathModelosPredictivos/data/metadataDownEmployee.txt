@@ -1,0 +1,11 @@
+<variable train format>
+
+<variable test format>
+
+<variable predict format>
+
+<numerical>
+
+<categorical>
+
+<1Hot>
