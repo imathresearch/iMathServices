@@ -1,0 +1,42 @@
+#!/usr/bin/env python
+
+import sys
+import os
+
+from iMathModelosPredictivos.core.modelPredictPosition import ModelPredictUserPosition
+from iMathModelosPredictivos.core.SignalPrediction.Data.constants import CONS
+
+CONS = CONS()
+
+try:
+    
+    # Check the number of parameters
+    '''    if len(sys.argv) != 4:
+        print "Numero incorrecto de parametros"
+    
+    dataFile = sys.argv[1]
+    modelName = sys.argv[2]
+    predictionOutputFile = sys.argv[3]'''
+
+    dataFile = '/home/izubizarreta/Documentos/Documentos/Comercial/Sensovida/Prediccion/TodosRegisters155Training.csv'
+    modelName = 'ModeloPrediccion'
+    predictionOutputFile = '/home/izubizarreta/Documentos/Documentos/Comercial/Sensovida/Prediccion/Registers155PredictionOutput.csv'
+    
+    # Check if the data file exists
+    if os.path.isfile(dataFile) is False:
+        print "El fichero " + dataFile + " no existe"
+    
+    # Check if the file that contains the model exists
+    model_path = os.path.join(CONS.MODEL_FILE_LOCATION + modelName + ".txt")
+    if os.path.isfile(model_path) is False:
+        print "El modelo " +   modelName  + " no ha sido previamente creado"
+    
+    print ""
+    model = ModelPredictUserPosition(model_path);
+    model.predictModel(dataFile, predictionOutputFile);
+    print ""
+    
+except:
+    print ""
+    print "Error en la ejecucion de la prediccion"    
+    print ""

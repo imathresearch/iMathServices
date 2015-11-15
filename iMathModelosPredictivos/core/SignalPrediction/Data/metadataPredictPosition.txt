@@ -1,0 +1,8 @@
+<variable train format>
+salon,dormitorio,bano,cocina,etiqueta
+<variable test format>
+salon,dormitorio,bano,cocina,etiqueta
+<variable predict format>
+salon,dormitorio,bano,cocina
+<numerical>
+salon,dormitorio,bano,cocina,etiqueta

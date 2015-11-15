@@ -1,7 +1,7 @@
 from model import Model
 from iMathModelosPredictivos.common.util.ioOperations import IOOperations
 from iMathModelosPredictivos.common.constants import CONS
-from iMathModelosPredictivos.common.util.masMovilError import MasMovilError
+from iMathModelosPredictivos.common.util.iMathServicesError import iMathServicesError
 
 
 from scipy import spatial
@@ -138,7 +138,7 @@ class ModelUpCrossSelling(Model):
         for sub in self.list_sub_bonds:
             line = sub.split('\t')
             if len(line) < 2:
-                raise MasMovilError("[iMathResearch] Cada fila en el fichero de entrada debe contener al menos dos columnas: ID_SUBSCRIPCION    CODIGO_BONO")
+                raise iMathServicesError("[iMathResearch] Cada fila en el fichero de entrada debe contener al menos dos columnas: ID_SUBSCRIPCION    CODIGO_BONO")
             
             id_sub = line[0]     # Id de la subscripcion
             # dic_sub_recommended is a dictionary firstly indexed by the subscription id

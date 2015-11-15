@@ -1,0 +1,9 @@
+1.- Añadir un porcentaje adicional si está más o menos cerca de los años requeridos para el puesto.
+		Si tiene menos:
+			0.X
+		Si tiene más:
+			1.X
+			
+2.- Mejorar los valores a visualizar en la pantalla. Podríamos volcar a un fichero externo
+para enseñar más fácil al cliente final. Lo ideal sería realizar una aplicación los resultados en
+pantalla y así, tenemos más sorprendido al cliente.

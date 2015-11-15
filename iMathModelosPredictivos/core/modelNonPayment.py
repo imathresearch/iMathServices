@@ -26,7 +26,7 @@ from iMathModelosPredictivos.common.util.miningUtil import categoricalOutliers
 from iMathModelosPredictivos.common.util.miningUtil import svmOutliers
 from iMathModelosPredictivos.common.util.miningUtil import PCAFeatureReduction
 from iMathModelosPredictivos.common.util.miningUtil import featureSelection
-from iMathModelosPredictivos.common.util.masMovilError import MasMovilError
+from iMathModelosPredictivos.common.util.iMathServicesError import iMathServicesError
 from iMathModelosPredictivos.common.constants import CONS
 
 CONS=CONS()
@@ -82,7 +82,7 @@ class ModelNonPayment(Model):
         io.closeFile(fileDesc);
         try:        
             self.__checkTrainDataFormat();
-        except MasMovilError as e:
+        except iMathServicesError as e:
             print "Data Error: " , e.value
             return;
         else:        
@@ -104,7 +104,7 @@ class ModelNonPayment(Model):
                 self._fit(n_estimators=10) # for random forest
                 self.name = "RandomForest"
             else:
-                raise MasMovilError("Clasificador no valido");
+                raise iMathServicesError("Clasificador no valido");
               
             quality = self.accuracyPercentage();
             print "[iMathResearch] Modelo basado en " + self.name + " creado. Calidad igual a %.3f" % quality
@@ -146,7 +146,7 @@ class ModelNonPayment(Model):
         [self.headerPredict, self.XData] = io.readTestDataModelFile(fileDesc);
         try:        
             self.__checkPredictDataFormat();
-        except MasMovilError as e:
+        except iMathServicesError as e:
             print "Data Error: " , e.value
             return;
         else:
@@ -174,7 +174,7 @@ class ModelNonPayment(Model):
         [self.headerTest, self.XData] = io.readTestDataModelFile(fileDesc);
         try:        
             self.__checkTestDataFormat();
-        except MasMovilError as e:
+        except iMathServicesError as e:
             print "Data Error: " , e.value
             return;
         else:
@@ -246,9 +246,9 @@ class ModelNonPayment(Model):
         if len(self.headerTrainFormat) == len(self.headerTrain):
             for index in range(len(self.headerTrainFormat)):
                 if self.headerTrainFormat[index] != self.headerTrain[index]:
-                    raise MasMovilError("Formato incorrecto en los datos de entrada");            
+                    raise iMathServicesError("Formato incorrecto en los datos de entrada");            
         else:
-            raise MasMovilError("Formato incorrecto en los datos de entrada"); 
+            raise iMathServicesError("Formato incorrecto en los datos de entrada"); 
     
     def __checkTestDataFormat(self):
         """Check that the input data format (respect to variables orders) matches the format established in the configuration file
@@ -258,9 +258,9 @@ class ModelNonPayment(Model):
         if len(self.headerTestFormat) == len(self.headerTest):
             for index in range(len(self.headerTestFormat)):
                 if self.headerTestFormat[index] != self.headerTest[index]:                
-                    raise MasMovilError("Formato incorrecto en los datos de entrada");          
+                    raise iMathServicesError("Formato incorrecto en los datos de entrada");          
         else:
-            raise MasMovilError("Formato incorrecto en los datos de entrada");
+            raise iMathServicesError("Formato incorrecto en los datos de entrada");
     
     def __checkPredictDataFormat(self):
         """Check that the input data format (respect to variables orders) matches the format established in the configuration file
@@ -270,9 +270,9 @@ class ModelNonPayment(Model):
         if len(self.headerPredictFormat) == len(self.headerPredict):
             for index in range(len(self.headerPredictFormat)):
                 if self.headerPredictFormat[index] != self.headerPredict[index]:                
-                    raise MasMovilError("Formato incorrecto en los datos de entrada");          
+                    raise iMathServicesError("Formato incorrecto en los datos de entrada");          
         else:
-            raise MasMovilError("Formato incorrecto en los datos de entrada");
+            raise iMathServicesError("Formato incorrecto en los datos de entrada");
     
     def __preprocessTrainData(self):
         """Structure and transform the data to be applied to a prediction model.
