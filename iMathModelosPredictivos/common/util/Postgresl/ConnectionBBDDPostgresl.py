@@ -4,10 +4,9 @@ Created on 1 de oct. de 2015
 @author: izubizarreta
 '''
 
-from ReadConfigurationData import ConfigurationData
+from iMathModelosPredictivos.common.util.ReadConfigurationData import ConfigurationData
 import psycopg2
 import numpy as np
-from time import gmtime, strftime 
 
 class ConnectionBBDD(object):
     '''
@@ -32,6 +31,20 @@ class ConnectionBBDD(object):
         
         connectstring = "host=" + self.host + " " +  "user=" + self.user + " " +  "password=" + self.password + "dbname=" + self.database        
         self.db = psycopg2.connect(connectstring)
+        
+    def getResultsList(self, query, headers):
+        
+        cursor = self.db.cursor()
+        cursor.execute(query)
+        results = cursor.fetchall()
+        AllData = []
+        AllData.append(headers)
+        for result in results:
+            Data = []
+            for element in result:
+                Data.append(element)
+            AllData.append(Data)
+        return AllData
         
     def getResults(self, query, headers):
         
@@ -64,7 +77,7 @@ class ConnectionBBDD(object):
         
         self.db.commit()
         
-    def setDataModelData(self, table, data):
+    def setDataModelResults(self, table, data):
         
         cursor = self.db.cursor()
         
