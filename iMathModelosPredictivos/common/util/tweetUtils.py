@@ -20,20 +20,20 @@ class TweetUtils(object):
       
     def processTweet(self, tweet):
             
-        #Convert to lower case
+        # Convert to lower case
         tweet = tweet.lower()
         
-        #Convert www.* or https?://* to URL
-        tweet = re.sub('((www\.[^\s]+)|(https?://[^\s]+))','URL',tweet)
-        #Convert @username to AT_USER
-        tweet = re.sub('@[^\s]+','USER',tweet)
-        #Remove retweets
+        # Convert www.* or https?://* to URL
+        tweet = re.sub('((www\.[^\s]+)|(https?://[^\s]+))', 'URL', tweet)
+        # Convert @username to AT_USER
+        tweet = re.sub('@[^\s]+', 'USER', tweet)
+        # Remove retweets
         tweet = re.sub(r'\brt\b', ' ', tweet)
-        #Remove additional white spaces
+        # Remove additional white spaces
         tweet = re.sub('[\s]+', ' ', tweet)
-        #Replace #word with word
+        # Replace #word with word
         tweet = re.sub(r'#([^\s]+)', r'\1', tweet)
-        #trim
+        # trim
         tweet = tweet.strip('\'"')
             
         for p in list(punctuation):        
@@ -42,23 +42,23 @@ class TweetUtils(object):
         tweet = tweet.split()
         processed_tweet = ''
         for word in tweet:
-            #check if the word stats with an alphabet
+            # check if the word stats with an alphabet
             val = re.search(r"^[a-zA-Z][a-zA-Z0-9]*$", word)
             if(word in self.stopwords or val is None):
-                #ignore if it is a stop word
+                # ignore if it is a stop word
                 continue
             else:
                 w = self.__replaceTwoOrMore(word)
                 processed_tweet = processed_tweet + w + ' '
     
-        #Remove additional white spaces
+        # Remove additional white spaces
         processed_tweet = re.sub('[\s]+', ' ', processed_tweet)
     
         return processed_tweet
 
 
     def __getStopWordList(self, stopWordListFileName):
-        #read the stopwords file and build a list
+        # read the stopwords file and build a list
         stopWords = []
         stopWords.append('USER')
         stopWords.append('URL')
@@ -77,7 +77,7 @@ class TweetUtils(object):
 
 
     def __replaceTwoOrMore(self, word):
-        #look for 2 or more repetitions of character and replace with the character itself
+        # look for 2 or more repetitions of character and replace with the character itself
         pattern = re.compile(r"(.)\1{1,}", re.DOTALL)
         return pattern.sub(r"\1\1", word)
 

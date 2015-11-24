@@ -23,13 +23,13 @@ class IOOperations:
 			if rownum > 0:
 				inputRow = row[0:-1]
 				outputRow = row[-1]				
-				inputRow = [np.nan if x=='' else x for x in inputRow]
+				inputRow = [np.nan if x == '' else x for x in inputRow]
 				inputs = inputs + [inputRow]	    
-				output = output + [map(int,outputRow)]
+				output = output + [map(int, outputRow)]
 			else:
 				header = row;
 		
-			rownum+=1
+			rownum += 1
 		
 		X = np.vstack(inputs)
 		Y = np.vstack(output)
@@ -38,18 +38,18 @@ class IOOperations:
 	
 	def readTrainDataModelFileFloat(self, fileDesc):
 		
-		data = np.genfromtxt(fileDesc, dtype="|S50", delimiter=',',invalid_raise=False)		
-		header = data[0,:]		
-		X = data[1:,:-1]		
-		Y = data[1:,-1:]
+		data = np.genfromtxt(fileDesc, dtype="|S50", delimiter=',', invalid_raise=False)		
+		header = data[0, :]		
+		X = data[1:, :-1]		
+		Y = data[1:, -1:]
 		return [header, X, Y]	
 	
 	def readTrainDataModelFileAbandonoTerminacion(self, fileDesc):
 
 		data = np.genfromtxt(fileDesc, dtype="|S50", delimiter=',', invalid_raise=False)		
-		header = data[0,:]		
-		X = data[1:,:-1]		
-		Y = data[1:,-1:]
+		header = data[0, :]		
+		X = data[1:, :-1]		
+		Y = data[1:, -1:]
 		return [header, X, Y]
 	
 	def readTestDataModelFile(self, fileDesc):
@@ -59,12 +59,12 @@ class IOOperations:
 		for row in reader:
 			if rownum > 0:
 				inputRow = row
-				inputRow = [np.nan if x=='' else x for x in inputRow]
+				inputRow = [np.nan if x == '' else x for x in inputRow]
 				inputs = inputs + [inputRow]
 			else:
 				header = row;
 		
-			rownum+=1
+			rownum += 1
 		
 		X = np.vstack(inputs)
 				
@@ -73,16 +73,16 @@ class IOOperations:
 	def readTestDataModelFileFloat(self, fileDesc):
 		
 		data = np.genfromtxt(fileDesc, dtype="|S50", delimiter=',', invalid_raise=False)		
-		header = data[0,:]		
-		X = data[1:,:-1]		
-		Y = data[1:,-1:]
+		header = data[0, :]		
+		X = data[1:, :-1]		
+		Y = data[1:, -1:]
 		return [header, X, Y]
 	
 	def readPredictDataModelFileFloat(self, fileDesc):
 		
 		data = np.genfromtxt(fileDesc, dtype="|S50", delimiter=',', invalid_raise=False)		
-		header = data[0,:]		
-		X = data[1:,:]		
+		header = data[0, :]		
+		X = data[1:, :]		
 		return [header, X]
 			
 	def closeFile(self, fileDesc):

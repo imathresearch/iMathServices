@@ -36,7 +36,7 @@ from sklearn.ensemble import RandomForestClassifier
 import csv
 import numpy as np
 from sklearn.metrics import confusion_matrix
-#import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import pickle
 import operator
 
@@ -56,7 +56,7 @@ from iMathModelosPredictivos.common.util.iMathServicesError import iMathServices
 from iMathModelosPredictivos.common.util.miningUtil import generateRandomValue
 from iMathModelosPredictivos.common.constants import CONS
 
-CONS=CONS()
+CONS = CONS()
 
 
 
@@ -67,7 +67,7 @@ class ModelGoCustomer(Model):
     '''
      
     def __init__(self, dataFile, classifierType=None):
-        super(ModelGoCustomer,self).__init__(dataFile, classifierType)
+        super(ModelGoCustomer, self).__init__(dataFile, classifierType)
 
     def loadModel(self, dataFile):
         """Abstract method to be implemented in one of the subclasses
@@ -81,7 +81,7 @@ class ModelGoCustomer(Model):
         # MODELS 
         self.model = self.toSave['model']
         # For binary models
-        #self.binary_models = self.toSave['model'];
+        # self.binary_models = self.toSave['model'];
         
         self.name = self.toSave['name'];
         self.index = self.toSave['index']
@@ -90,10 +90,10 @@ class ModelGoCustomer(Model):
         self.imputatorNumerical = self.toSave['imputatorNumerical'];
         self.imputatorCategorical = self.toSave['imputatorCategorical'];
         self.scaler = self.toSave['scaler'];
-        #self.binaryEncoder = self.toSave['binaryEncoder'];
+        # self.binaryEncoder = self.toSave['binaryEncoder'];
         self.feature_selector = self.toSave['featureSelector'] 
-        #self.svmOutliers = self.toSave['svmOutliers']; 
-        #self.PCAReduction = self.toSave['PCAReduction'];
+        # self.svmOutliers = self.toSave['svmOutliers']; 
+        # self.PCAReduction = self.toSave['PCAReduction'];
         self.columnMetaData = self.toSave['columnMetaData'];
         io.closeFile(fileDesc);
         print "[iMathResearch] Modelo basado en " + self.name + " cargado"
@@ -106,7 +106,7 @@ class ModelGoCustomer(Model):
               We will probably offer several classifier to create the same model
         """ 
         self._generateMetaData();
-        #Open and read data
+        # Open and read data
         io = IOOperations(); 
         fileDesc = io.openFile(dataFile, 'r+');
         [self.headerTrain, self.XData, self.YData] = io.readTrainDataModelFileFloat(fileDesc);
@@ -117,14 +117,14 @@ class ModelGoCustomer(Model):
             print "Data Error: " , e.value
             return;
         else:        
-            #Preprocess data: clean and structure data and transform categorical data
+            # Preprocess data: clean and structure data and transform categorical data
             self.__preprocessTrainData();
             
-            #Create the model
+            # Create the model
             self.classiferClass = classifierType
             if self.classiferClass == DecisionTreeClassifier:
                 print "[iMathResearch] Creando modelo basado en Decision Trees"
-                self._fit(); #for DT
+                self._fit();  # for DT
                 self.name = "DecisionTree"
             elif self.classiferClass == SVC:
                 print "[iMathResearch] Creando modelo basado en SVC"
@@ -132,7 +132,7 @@ class ModelGoCustomer(Model):
                 self.name = "SVC"
             elif self.classiferClass == RandomForestClassifier:
                 print "[iMathResearch] Creando modelo basado en Random Forest"
-                self._fit(n_estimators=10) # for random forest
+                self._fit(n_estimators=10)  # for random forest
                 self.name = "RandomForest"
             else:
                 raise iMathServicesError("Clasificador no valido");
@@ -148,19 +148,19 @@ class ModelGoCustomer(Model):
               We will probably offer several classifier to create the same model
         """ 
         self._generateMetaData();
-        #Open and read data
+        # Open and read data
         
         io = IOOperations(); 
         fileDesc = io.openFile(dataFile, 'r+');
         [self.headerTrain, self.XData, self.YData] = io.readTrainDataModelFileAbandonoTerminacion(fileDesc);
         io.closeFile(fileDesc);
         
-        #CODE FOR SIMPLE MODELS
-        #Create the model
+        # CODE FOR SIMPLE MODELS
+        # Create the model
         self.classiferClass = classifierType
         if self.classiferClass == DecisionTreeClassifier:
             print "[iMathResearch] Creando modelo basado en Decision Trees"
-            self._fit(); #for DT
+            self._fit();  # for DT
             self.name = "DecisionTree"
         elif self.classiferClass == SVC:
             print "[iMathResearch] Creando modelo basado en SVC"
@@ -168,13 +168,13 @@ class ModelGoCustomer(Model):
             self.name = "SVC"
         elif self.classiferClass == RandomForestClassifier:
             print "[iMathResearch] Creando modelo basado en Random Forest"
-            self._fit(n_estimators=10) # for random forest
+            self._fit(n_estimators=10)  # for random forest
             self.name = "RandomForest"
         else:
             raise iMathServicesError("Clasificador no valido");
               
-        #quality = self.accuracyPercentage();
-        #print "[iMathResearch] Modelo basado en " + self.name + " creado. Calidad igual a %.3f" % quality            
+        # quality = self.accuracyPercentage();
+        # print "[iMathResearch] Modelo basado en " + self.name + " creado. Calidad igual a %.3f" % quality            
             
     def saveModel(self, pathFile):        
         """Abstract method to be implemented in one of the subclasses
@@ -182,9 +182,9 @@ class ModelGoCustomer(Model):
           pathFile (string): String that indicates the complete path of the file where the created model is going to be saved.          
         """
         self.toSave = {};
-        #Models
+        # Models
         self.toSave['model'] = self.model
-        #self.toSave['model'] = self.binary_models
+        # self.toSave['model'] = self.binary_models
         
         self.toSave['name'] = self.name;
         self.toSave['headerTestFormat'] = self.headerTestFormat
@@ -194,9 +194,9 @@ class ModelGoCustomer(Model):
         self.toSave['imputatorCategorical'] = self.imputatorCategorical
         self.toSave['scaler'] = self.scaler;
         
-        #self.toSave['binaryEncoder'] = self.binaryEncoder;
-        #self.toSave['svmOutliers'] = self.svmOutliers;
-        #self.toSave['PCAReduction'] = self.PCAReduction;
+        # self.toSave['binaryEncoder'] = self.binaryEncoder;
+        # self.toSave['svmOutliers'] = self.svmOutliers;
+        # self.toSave['PCAReduction'] = self.PCAReduction;
         self.toSave['featureSelector'] = self.feature_selector
         self.toSave['columnMetaData'] = self.columnMetaData
         io = IOOperations(); 
@@ -211,7 +211,7 @@ class ModelGoCustomer(Model):
           dataFile (string): The file where the data to be classified resides.
           outputFile (string): String that indicates the complete path of the file where the prediction is going to be saved. 
         """
-        #Open and read data
+        # Open and read data
         io = IOOperations(); 
         fileDesc = io.openFile(dataFile, 'r+');
         [self.headerPredict, self.XData] = io.readPredictDataModelFileFloat(fileDesc);
@@ -221,12 +221,12 @@ class ModelGoCustomer(Model):
             print "Data Error: " , e.value
             return;
         else:
-            ID = self.XData[:,0]
+            ID = self.XData[:, 0]
             self.XData = np.delete(self.XData, 0, axis=1)
-            #self.loadModel(CONS.MODEL_FILE_LOCATION);
+            # self.loadModel(CONS.MODEL_FILE_LOCATION);
             self._preprocessTestData();
             prediction = self._predict()
-            #prediction[prediction < 1 ] = 0
+            # prediction[prediction < 1 ] = 0
            
             predictionProb = self._predictProb()
             # Compute confusion matrix
@@ -239,7 +239,7 @@ class ModelGoCustomer(Model):
           dataFile (string): The file where the data to be classified resides.
           outputFile (string): String that indicates the complete path of the file where the prediction is going to be saved. 
         """
-        #Open and read data
+        # Open and read data
         io = IOOperations(); 
         fileDesc = io.openFile(dataFile, 'r+');
         [self.headerTest, self.XData, self.YData] = io.readTestDataModelFileFloat(fileDesc);
@@ -251,10 +251,10 @@ class ModelGoCustomer(Model):
         else:
             '''self.YData = self.XData[:,-1]
             self.XData = np.delete(self.XData, -1, axis=1)'''
-            #self.loadModel(CONS.MODEL_FILE_LOCATION);
+            # self.loadModel(CONS.MODEL_FILE_LOCATION);
             self._preprocessTestData();
             prediction = self._predict()
-            #prediction[prediction < 1 ] = 0
+            # prediction[prediction < 1 ] = 0
            
             self.YData = self.YData.astype(int)
             predictionProb = self._predictProb()
@@ -263,7 +263,7 @@ class ModelGoCustomer(Model):
             self.__generateTestFileGoDownCustomer(outputFile, self.YData, prediction, predictionProb, cm)
             print "[iMathResearch] Resultado del testing del modelo guardado en " + outputFile
 
-            #Plot confusion matrix
+            # Plot confusion matrix
             '''            
             plt.matshow(cm)
             plt.title('Confusion matrix')
@@ -280,15 +280,15 @@ class ModelGoCustomer(Model):
           dataFile (string): The file where the data to be classified resides.
           outputFile (string): String that indicates the complete path of the file where the prediction is going to be saved. 
         """
-                #Open and read data
+                # Open and read data
         io = IOOperations(); 
         fileDesc = io.openFile(dataFile, 'r+');
         [self.headerTrain, self.XData, self.YData] = io.readTrainDataModelFileAbandonoTerminacion(fileDesc);
         io.closeFile(fileDesc)
 
-        ID = self.XData[:,0]            
+        ID = self.XData[:, 0]            
             
-        #CODE FOR SIMPLE MODEL
+        # CODE FOR SIMPLE MODEL
         prediction = self._predict()
         prediction[prediction < 1 ] = 0
         predictionProb = self._predictProb()
@@ -302,17 +302,17 @@ class ModelGoCustomer(Model):
           dataFile (string): The file where the data to be classified resides.
           outputFile (string): String that indicates the complete path of the file where the prediction is going to be saved. 
         """
-        #Open and read data
+        # Open and read data
         io = IOOperations(); 
         fileDesc = io.openFile(dataFile, 'r+');
         [self.headerTrain, self.XData, self.YData] = io.readTrainDataModelFileAbandonoTerminacion(fileDesc);
         io.closeFile(fileDesc)
             
-        #CODE FOR SIMPLE MODEL
+        # CODE FOR SIMPLE MODEL
            
         prediction = self._predict()
         prediction[prediction < 1 ] = 0 
-        #self.YData = map(int,self.YData)
+        # self.YData = map(int,self.YData)
         predictionProb = self._predictProb()
         # Compute confusion matrix
         cm = confusion_matrix(self.YData, prediction)
@@ -329,7 +329,7 @@ class ModelGoCustomer(Model):
         """
         numerical = self.XData[:, self.index['numerical']]         
         categorical = self.XData[:, self.index['categorical']]
-        return [numerical,categorical]
+        return [numerical, categorical]
         
     def __joinDataVariables(self, numerical, categorical):        
         """Join two set of variables (numerical and categorical) in one complete set
@@ -345,13 +345,13 @@ class ModelGoCustomer(Model):
         for variable in self.columnMetaData:
             if variable['type'] == 'NUM':               
                 completeData = completeData + [numerical[:, columnNumerical]]
-                columnNumerical = columnNumerical +1;                
+                columnNumerical = columnNumerical + 1;                
             else:                            
                 varIndex = self.index['categorical'][categoricalIndex]
                 binarySize = len(self.columnMetaData[varIndex]['values'])               
-                completeData = completeData + [categorical[:,range(columnCategorical, columnCategorical + binarySize)]]
+                completeData = completeData + [categorical[:, range(columnCategorical, columnCategorical + binarySize)]]
                 columnCategorical = columnCategorical + binarySize;
-                categoricalIndex = categoricalIndex +1;
+                categoricalIndex = categoricalIndex + 1;
 
         self.XData = np.column_stack((list for list in completeData))       
     
@@ -410,7 +410,7 @@ class ModelGoCustomer(Model):
         [numericalData, self.imputatorNumerical] = numericalImputation(numericalData, strategy='mean')
         # 2. OUTLIERS 
         # The code below should be used to detect and eliminate numericalOutliers
-        #[numericalData, categoricalData] = self._numericalOutlier(numericalData, categoricalData)
+        # [numericalData, categoricalData] = self._numericalOutlier(numericalData, categoricalData)
         # 3. NORMALIZATION    
         [numericalData, self.scaler] = maxminScaler(numericalData);
                
@@ -419,7 +419,7 @@ class ModelGoCustomer(Model):
         [categoricalData, self.imputatorCategorical] = categoricalImputation(categoricalData)
         # 2. OUTLIERS
         # The code below should be used to detect and elimanate categoricalOutliers
-        #[categoricalData, numericalData] = self._categoricalOutlier(categoricalData, numericalData)
+        # [categoricalData, numericalData] = self._categoricalOutlier(categoricalData, numericalData)
         # 3. BINARIZATION    
         binarizerData = []
         for column in range(categoricalData.shape[1]):
@@ -438,12 +438,12 @@ class ModelGoCustomer(Model):
         [self.XData, self.feature_selector] = featureSelection(self.XData, self.YData)
    
         # OUTLIERS FOR BOTH KIND OF VARIABLES 
-        #[outliers, self.svmOutliers] = svmOutliers(self.XData, 0.2)        
-        #self.XData = np.delete(self.XData, (outliers), axis=0)
-        #self.YData = np.delete(self.YData, (outliers), axis=0)
+        # [outliers, self.svmOutliers] = svmOutliers(self.XData, 0.2)        
+        # self.XData = np.delete(self.XData, (outliers), axis=0)
+        # self.YData = np.delete(self.YData, (outliers), axis=0)
         
         # REDUCTION OF VARIABLES
-        #[self.XData, self.PCAReduction] = PCAFeatureReduction(self.XData)
+        # [self.XData, self.PCAReduction] = PCAFeatureReduction(self.XData)
        
     
     def _preprocessTestData(self):  
@@ -457,7 +457,7 @@ class ModelGoCustomer(Model):
         
         # 2. OUTLIERS 
         # The code below should be used to detect and eliminate numericalOutliers
-        #[numericalData, categoricalData] = self._numericalOutlier(numericalData, categoricalData)
+        # [numericalData, categoricalData] = self._numericalOutlier(numericalData, categoricalData)
        
         # 3. NORMALIZATION    
         numericalData = maxminScaler(numericalData, scaler=self.scaler);
@@ -467,13 +467,13 @@ class ModelGoCustomer(Model):
         categoricalData = categoricalImputation(categoricalData, imputator=self.imputatorCategorical)
         # 2. OUTLIERS
         # The code below should be used to detect and elimanate categoricalOutliers
-        #[categoricalData, numericalData] = self._categoricalOutlier(categoricalData, numericalData)
+        # [categoricalData, numericalData] = self._categoricalOutlier(categoricalData, numericalData)
         # 3. BINARIZATION    
         binarizerData = []
         for column in range(categoricalData.shape[1]):
             varIndex = self.index['categorical'][column]
             if self.columnMetaData[varIndex]['codification'] == '1HOT':
-                binarizerColumn = binarizer(categoricalData[:, column], self.columnMetaData[varIndex]['codification'], onehotencoder=self.columnMetaData[varIndex]['encoder'], dic_variableList=self.columnMetaData[varIndex]['values'] )
+                binarizerColumn = binarizer(categoricalData[:, column], self.columnMetaData[varIndex]['codification'], onehotencoder=self.columnMetaData[varIndex]['encoder'], dic_variableList=self.columnMetaData[varIndex]['values'])
             else:
                 binarizerColumn = binarizer(categoricalData[:, column], self.columnMetaData[varIndex]['codification'], dic_variableList=self.columnMetaData[varIndex]['values'])
                 
@@ -486,12 +486,12 @@ class ModelGoCustomer(Model):
         self.XData = featureSelection(self.XData, None, self.feature_selector)
         
         # OUTLIERS FOR BOTH KIND OF VARIABLES 
-        #outliers= svmOutliers(self.XData, 0.2, self.svmOutliers)        
-        #self.XData = np.delete(self.XData, (outliers), axis=0)
-        #self.ID = np.delete(self.ID, (outliers), axis=0)
+        # outliers= svmOutliers(self.XData, 0.2, self.svmOutliers)        
+        # self.XData = np.delete(self.XData, (outliers), axis=0)
+        # self.ID = np.delete(self.ID, (outliers), axis=0)
         
         # REDUCTION OF VARIABLES
-        #self.XData = PCAFeatureReduction(self.XData, self.PCAReduction)
+        # self.XData = PCAFeatureReduction(self.XData, self.PCAReduction)
                      
     
     def _readMetaDataFile(self):
@@ -507,28 +507,28 @@ class ModelGoCustomer(Model):
         count = 0;
         while count < len(lines):
             if (lines[count] == '<variable train format>'):
-                self.headerTrainFormat = lines[count+1].split(',');
-                count +=2
+                self.headerTrainFormat = lines[count + 1].split(',');
+                count += 2
             elif (lines[count] == '<variable test format>'):
-                self.headerTestFormat = lines[count+1].split(',');
-                count +=2
+                self.headerTestFormat = lines[count + 1].split(',');
+                count += 2
             elif (lines[count] == '<variable predict format>'):
-                self.headerPredictFormat = lines[count+1].split(',');
-                count +=2
+                self.headerPredictFormat = lines[count + 1].split(',');
+                count += 2
             elif (lines[count] == '<numerical>'):
-                self.numericalVariables = lines[count+1].split(',');
-                count +=2
+                self.numericalVariables = lines[count + 1].split(',');
+                count += 2
             elif (lines[count] == '<categorical>'):
-                self.categoricalVariables = lines[count+1].split(',');
-                count +=2
+                self.categoricalVariables = lines[count + 1].split(',');
+                count += 2
             elif (lines[count] == '<1Hot>'):
-                self.oneHotVariables = lines[count+1].split(',');
-                count +=2
+                self.oneHotVariables = lines[count + 1].split(',');
+                count += 2
             elif (lines[count] == '<NHot>'):
-                self.NHotVariables = lines[count+1].split(',');
-                count +=2
+                self.NHotVariables = lines[count + 1].split(',');
+                count += 2
             else:
-                count = count +1;
+                count = count + 1;
            
     def _generateMetaData(self):
         """Create a data structure that contains the metadata information for each variable in the model.
@@ -541,7 +541,7 @@ class ModelGoCustomer(Model):
         self.index['categorical'] = []
         self.index['oneHot'] = []
         self.index['NHot'] = []
-        for i in range (0, len(self.headerTrainFormat)-1):
+        for i in range (0, len(self.headerTrainFormat) - 1):
             name = self.headerTrainFormat[i]
             dic = {}
             dic['name'] = name;
@@ -594,7 +594,7 @@ class ModelGoCustomer(Model):
             numericalData (numpy array): contains the values for the numerical variables after deleting the categorical outliers tuples
         """
         for column in range(categoricalData.shape[1]):            
-            index = categoricalOutliers(categoricalData[:, column],10)
+            index = categoricalOutliers(categoricalData[:, column], 10)
             categoricalData = np.delete(categoricalData, (index), axis=0)
             numericalData = np.delete(numericalData, (index), axis=0)
             self.YData = np.delete(self.YData, (index), axis=0)
@@ -630,7 +630,7 @@ class ModelGoCustomer(Model):
                 sample.append(tuple_prob_prediction[indexSample][numCls])            
             content.append(sample)
             if int(ID[indexSample]) == final_prediction[indexSample]:
-                hit = hit +1;
+                hit = hit + 1;
                 
         with open(outputFile, "w+") as f:
             total = len(ID)
@@ -638,7 +638,7 @@ class ModelGoCustomer(Model):
             f.write('\n')
             if mc is not None:
                 f.write('MATRIZ DE CONFUSION (Eje x -- Subscripciones Reales ( Bajo valor, Medio valor, Alto valor)--, Eje y -- Subscripciones Predichas (Bajo valor, Medio valor, Alto valor)--)\n')
-                np.savetxt(f, mc,fmt='%10.0f');                
+                np.savetxt(f, mc, fmt='%10.0f');                
                 f.write('\n')
             f.write ("PREDICCION DETALLADA \n")
             writer = csv.writer(f, lineterminator="\n")
@@ -713,14 +713,14 @@ class ModelGoCustomer(Model):
                 sample.append(predictionProb[indexSample][numCls])
             sample.append("----")
             if int(ID[indexSample]) == prediction[indexSample]:
-                hit = hit +1;
+                hit = hit + 1;
                 sample.append("X")
                 sample.append("*")
             else:
                 dic_prob = dict(enumerate(predictionProb[indexSample]))
                 sorted_prob = sorted(dic_prob.items(), key=operator.itemgetter(1), reverse=True)
                 if sorted_prob[1][0] == ID[indexSample]:
-                    hit_relaxed = hit_relaxed +1
+                    hit_relaxed = hit_relaxed + 1
                     sample.append("X")
                     sample.append("X")
                 else:
@@ -735,7 +735,7 @@ class ModelGoCustomer(Model):
             f.write('\n')
             if mc is not None:
                 f.write('MATRIZ DE CONFUSION (Eje x -- Subscripciones Reales ( Bajo valor, Medio valor, Alto valor)--, Eje y -- Subscripciones Predichas (Bajo valor, Medio valor, Alto valor)--)\n')
-                np.savetxt(f, mc,fmt='%10.0f');
+                np.savetxt(f, mc, fmt='%10.0f');
                 f.write('\n')
             f.write ("PREDICCION DETALLADA \n")
             writer = csv.writer(f, lineterminator="\n")
@@ -780,7 +780,7 @@ class ModelGoCustomer(Model):
             f.write('\n')
             if mc is not None:
                 f.write('MATRIZ DE CONFUSION (Eje x -- Subscripciones Reales ( Baja si o baja no)--, Eje y -- Subscripciones Predichas (Baja si baja no)--)\n')
-                np.savetxt(f, mc,fmt='%10.0f');                
+                np.savetxt(f, mc, fmt='%10.0f');                
                 f.write('\n')
             f.write ("PREDICCION DETALLADA \n")
             writer = csv.writer(f, lineterminator="\n")
@@ -819,14 +819,14 @@ class ModelGoCustomer(Model):
                 sample.append(predictionProb[indexSample][numCls])            
             sample.append("----")
             if int(ID[indexSample]) == prediction[indexSample]:
-                hit = hit +1;
+                hit = hit + 1;
                 sample.append("X")
                 sample.append("*")
             else:
                 dic_prob = dict(enumerate(predictionProb[indexSample]))
                 sorted_prob = sorted(dic_prob.items(), key=operator.itemgetter(1), reverse=True)
                 if sorted_prob[1][0] == ID[indexSample]:
-                    hit_relaxed = hit_relaxed +1
+                    hit_relaxed = hit_relaxed + 1
                     sample.append("X")
                     sample.append("X")
                 else:
@@ -841,7 +841,7 @@ class ModelGoCustomer(Model):
             f.write('\n')
             if mc is not None:
                 f.write('MATRIZ DE CONFUSION (Eje x -- Subscripciones Reales ( Bajo valor, Medio valor, Alto valor)--, Eje y -- Subscripciones Predichas (Bajo valor, Medio valor, Alto valor)--)\n')
-                np.savetxt(f, mc,fmt='%10.0f');                
+                np.savetxt(f, mc, fmt='%10.0f');                
                 f.write('\n')
             f.write ("PREDICCION DETALLADA \n")
             writer = csv.writer(f, lineterminator="\n")
@@ -924,19 +924,19 @@ class ModelGoCustomer(Model):
         for index in range(len(tuple_class_prediction)):
             tuple_class = tuple_class_prediction[index]
             class_to_belong = sum([belong_to for belong_to in tuple_class])
-            #Only belong to one class
+            # Only belong to one class
             if class_to_belong == 1:
                 predicted_class = tuple_class.index(1)
                 final_prediction.append(predicted_class)
-            #Belong to no class or the hree class
-            #The class with the maximun probability is asigned      
+            # Belong to no class or the hree class
+            # The class with the maximun probability is asigned      
             elif class_to_belong == 0 or class_to_belong == 3:
                 tuple_prob = tuple_prob_prediction[index]
                 max_prob = max(tuple_prob)
                 predicted_class = tuple_prob.index(max_prob)
                 final_prediction.append(predicted_class)
-            #Belong to 2 classes
-            #By default the medium arpu class is asigned
+            # Belong to 2 classes
+            # By default the medium arpu class is asigned
             else:
                 predicted_class = 1
                 final_prediction.append(predicted_class)
@@ -955,14 +955,14 @@ class ModelGoCustomer(Model):
             if final_prediction[index] == self.YData[index]:
                 hit = hit + 1
                    
-        return float(hit)/len(self.YData)
+        return float(hit) / len(self.YData)
                 
     def accuracyRelaxedProbTunning(self):
         """Calculate the hit percentage when the model is based on the a simple model, having in mind relaxed conditions
             We consider a hit when the one of the two classes with greater probability matches with the real class
         """
     
-        YPredProb= KFoldProb(self.XData, self.YData, 3, self.classiferClass)
+        YPredProb = KFoldProb(self.XData, self.YData, 3, self.classiferClass)
      
         hit = 0
 
@@ -972,35 +972,35 @@ class ModelGoCustomer(Model):
         UndefinedDifferenceProbability = 0.3
 
         for sample_index in range(len(YPredProb)):
-            sample = YPredProb[sample_index,:]
+            sample = YPredProb[sample_index, :]
             dic_prob = dict(enumerate(sample))
             sorted_prob = sorted(dic_prob.items(), key=operator.itemgetter(1), reverse=True)
-            #print sorted_prob
-            if sorted_prob[0][1]>AutomaticSelection:
+            # print sorted_prob
+            if sorted_prob[0][1] > AutomaticSelection:
                 selectedClass = sorted_prob[0][0]
             else:
                 DiferenceHigherSecondHigher = sorted_prob[0][1] - sorted_prob[1][1]
-                if DiferenceHigherSecondHigher>=DifferenceAutomaticSelection:
+                if DiferenceHigherSecondHigher >= DifferenceAutomaticSelection:
                     selectedClass = sorted_prob[0][0]
                 else:
-                    if DiferenceHigherSecondHigher<=DifferenceHigherSelection:
-                        if sorted_prob[0][0]>sorted_prob[1][0]:
+                    if DiferenceHigherSecondHigher <= DifferenceHigherSelection:
+                        if sorted_prob[0][0] > sorted_prob[1][0]:
                             selectedClass = sorted_prob[0][0]
                         else:
                             selectedClass = sorted_prob[1][0]
                     else:
                         RandomValue = generateRandomValue()
-                        if RandomValue>UndefinedDifferenceProbability:
+                        if RandomValue > UndefinedDifferenceProbability:
                             selectedClass = sorted_prob[0][0]
                         else:
                             selectedClass = sorted_prob[1][0]
 
             if selectedClass == self.YData[sample_index]:
-                hit = hit +1
+                hit = hit + 1
 
         print hit
 
-        accuracyValue = (float(hit)/len(YPredProb))
+        accuracyValue = (float(hit) / len(YPredProb))
 
         return accuracyValue
 
@@ -1009,17 +1009,17 @@ class ModelGoCustomer(Model):
             We consider a hit when the one of the two classes with greater probability matches with the real class
         """
 
-        YPredProb= KFoldProb(self.XData, self.YData, 3, self.classiferClass)
+        YPredProb = KFoldProb(self.XData, self.YData, 3, self.classiferClass)
 
         hit = 0
         for sample_index in range(len(YPredProb)):
-            sample = YPredProb[sample_index,:]
+            sample = YPredProb[sample_index, :]
             dic_prob = dict(enumerate(sample))
             sorted_prob = sorted(dic_prob.items(), key=operator.itemgetter(1), reverse=True)
             if sorted_prob[0][0] == self.YData[sample_index] or sorted_prob[1][0] == self.YData[sample_index]:
-                hit = hit +1
+                hit = hit + 1
 
-        return (float(hit)/len(YPredProb))
+        return (float(hit) / len(YPredProb))
                 
     def accuracyProb(self):
         """Calculate the hit percentage when the model is based on the a simple model, having in mind relaxed conditions

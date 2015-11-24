@@ -8,7 +8,7 @@ from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
 import os
 
-#list_dir = ['pos_dir', 'pos_ind', 'pre_auto_dir', 'pre_auto_ind', 'pre_clas_dir', 'pre_clas_ind']
+# list_dir = ['pos_dir', 'pos_ind', 'pre_auto_dir', 'pre_auto_ind', 'pre_clas_dir', 'pre_clas_ind']
 
 list_dir = ['DataConversionNumeros']
 
@@ -16,7 +16,7 @@ path = '/home/izubizarreta/Documentos/Documentos/Comercial/MasMovil/Entregable6/
 
 months = [11]
 
-typeCanal = ['Rest','Ext']
+typeCanal = ['Rest', 'Ext']
 
 terminacionCode = ['Terminacion']
 
@@ -54,7 +54,7 @@ for dir in list_dir:
             
                     characters = 'WithoutChange'
 
-                    finalPath = path + dir + '/' + 'test' + str(terminacioncode)  + str(typecanal) + str(charactersTrain) + '.csv'
+                    finalPath = path + dir + '/' + 'test' + str(terminacioncode) + str(typecanal) + str(charactersTrain) + '.csv'
             
                     outputFile = path + dir + '/' + 'result' + str(terminacioncode) + str(typecanal) + str(charactersTrain) + str(method) + 'evaluation_binary.csv'
             

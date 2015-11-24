@@ -17,15 +17,15 @@ class TweetProcessor(object):
         self.output_queu = JoinableQueue(maxsize=0)
         
     def run(self):
-        process_dataWriter = Process(target = self.__runDataWriter)       
+        process_dataWriter = Process(target=self.__runDataWriter)       
         process_dataWriter.start();
         while True:
             tweet = self.tweet_queue.get()
             if tweet == C.TOKEN_LAST_TWEET:
                 self.tweet_queue.task_done()
-                #self.tweet_collection.ensure_index({'key_query':'text'})
+                # self.tweet_collection.ensure_index({'key_query':'text'})
                 self.tweet_collection.create_index([("key_track", 'text')])
-                dic = {"END": -1};
+                dic = {"END":-1};
                 self.output_queu.put(dic);
                 break
             self.__processingTweet(tweet)
@@ -43,8 +43,8 @@ class TweetProcessor(object):
         # We consider the fact that in a tweet can appear several query terms
         for key in query_split:
             if key.lower() in tweet_split:  
-            #if key.lower() in tweet_split:      
-                data ={}
+            # if key.lower() in tweet_split:      
+                data = {}
                 data['text'] = clean_tweet
                 data['key_track'] = key
                 data['SA_score'] = sentiment_score;
@@ -54,5 +54,5 @@ class TweetProcessor(object):
                 self.output_queu.put(dic);
         
     def __runDataWriter(self):
-        writer = PartialDataWriter(self.output_queu, self.file_partialResult,2)
+        writer = PartialDataWriter(self.output_queu, self.file_partialResult, 2)
         writer.run()

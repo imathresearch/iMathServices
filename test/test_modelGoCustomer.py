@@ -8,7 +8,7 @@ from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
 import os
 
-#list_dir = ['pos_dir', 'pos_ind', 'pre_auto_dir', 'pre_auto_ind', 'pre_clas_dir', 'pre_clas_ind']
+# list_dir = ['pos_dir', 'pos_ind', 'pre_auto_dir', 'pre_auto_ind', 'pre_clas_dir', 'pre_clas_ind']
 
 list_dir = ['DataConversionNumeros']
 
@@ -56,13 +56,13 @@ for dir in list_dir:
             
                     characters = 'WithoutChange'
 
-                    finalPath = path + dir + '/' + 'test' + str(terminacioncode)  + str(typecanal) + str(charactersTrain) + '.csv'
+                    finalPath = path + dir + '/' + 'test' + str(terminacioncode) + str(typecanal) + str(charactersTrain) + '.csv'
             
                     outputFile = path + dir + '/' + 'result' + str(terminacioncode) + str(typecanal) + str(charactersTrain) + str(method) + 'evaluation_binary.csv'
             
                     m.testModel(finalPath, outputFile)
                     
-                    finalPath = path + dir + '/' + 'predict' + str(terminacioncode)  + str(typecanal) + str(charactersTrain) + '.csv'
+                    finalPath = path + dir + '/' + 'predict' + str(terminacioncode) + str(typecanal) + str(charactersTrain) + '.csv'
                     
                     outputFile = path + dir + '/' + 'result' + str(terminacioncode) + str(typecanal) + str(charactersTrain) + str(method) + 'predict_evaluation_binary.csv'
                     

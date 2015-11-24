@@ -8,7 +8,7 @@ from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
 import os
 
-#list_dir = ['pos_dir', 'pos_ind', 'pre_auto_dir', 'pre_auto_ind', 'pre_clas_dir', 'pre_clas_ind']
+# list_dir = ['pos_dir', 'pos_ind', 'pre_auto_dir', 'pre_auto_ind', 'pre_clas_dir', 'pre_clas_ind']
 
 list_dir = ['DataConversionNumeros']
 

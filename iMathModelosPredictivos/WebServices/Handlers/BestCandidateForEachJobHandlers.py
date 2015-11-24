@@ -32,7 +32,6 @@ class BestCandidateForEachJobHandler(tornado.web.RequestHandler):
         pathWork = self.getParameterValue("pathWork")
         pathCriteria = self.getParameterValue("pathCriteria")
         SelectedCandidates = self.getBestCandidates(pathUser, pathWork, pathCriteria)
-        print SelectedCandidates
         
         '''It is necessary to store somewhere (CSV or BBDD)'''
         
@@ -42,7 +41,6 @@ class BestCandidateForEachJobHandler(tornado.web.RequestHandler):
         pathWork = self.getParameterValue("pathWork")
         pathCriteria = self.getParameterValue("pathCriteria")
         SelectedCandidates = self.getBestCandidates(pathUser, pathWork, pathCriteria)
-        print SelectedCandidates
         
         '''It is necessary to store somewhere (CSV or BBDD)'''
         

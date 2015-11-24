@@ -83,7 +83,7 @@ class ConnectionBBDD(object):
 
             add_employee = ("INSERT INTO " + table + " (id,model_id,salon,dormitorio,cocina,bano,predicted_tag,execution_type,datetime) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)")
 
-            data_employee = [max,model_id]
+            data_employee = [max, model_id]
         
             for probability in probabilities:
                 data_employee.append(probability)

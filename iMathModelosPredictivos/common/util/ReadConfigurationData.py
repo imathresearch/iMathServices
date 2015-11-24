@@ -9,7 +9,7 @@ class ConfigurationData(object):
     classdocs
     '''
      
-    def getData(self,data):
+    def getData(self, data):
         
         file = open(data, 'r')
         

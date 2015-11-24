@@ -30,8 +30,8 @@ class PartialDataWriter(object):
             
             if more is False or (datetime.datetime.now() - last_write).total_seconds() > self.write_frecuency:
                 now = datetime.datetime.now()
-                f1=open(self.file, 'w')
-                print >>f1, json.dumps(dic)
+                f1 = open(self.file, 'w')
+                print >> f1, json.dumps(dic)
                 f1.close();
                 last_write = now
 

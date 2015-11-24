@@ -13,7 +13,7 @@ from sklearn.ensemble import RandomForestClassifier
 import csv
 import numpy as np
 from sklearn.metrics import confusion_matrix
-#import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import pickle
 
 from iMathModelosPredictivos.common.util.ioOperations import IOOperations
@@ -29,7 +29,7 @@ from iMathModelosPredictivos.common.util.miningUtil import featureSelection
 from iMathModelosPredictivos.common.util.iMathServicesError import iMathServicesError
 from iMathModelosPredictivos.common.constants import CONS
 
-CONS=CONS()
+CONS = CONS()
 
 
 
@@ -40,7 +40,7 @@ class ModelNonPayment(Model):
     '''
      
     def __init__(self, dataFile, classifierType=None):
-        super(ModelNonPayment,self).__init__(dataFile, classifierType)
+        super(ModelNonPayment, self).__init__(dataFile, classifierType)
 
     def loadModel(self, dataFile):
         """Abstract method to be implemented in one of the subclasses
@@ -60,8 +60,8 @@ class ModelNonPayment(Model):
         self.scaler = self.toSave['scaler'];
         self.binaryEncoder = self.toSave['binaryEncoder'];
         self.feature_selector = self.toSave['featureSelector'] 
-        #self.svmOutliers = self.toSave['svmOutliers']; 
-        #self.PCAReduction = self.toSave['PCAReduction'];
+        # self.svmOutliers = self.toSave['svmOutliers']; 
+        # self.PCAReduction = self.toSave['PCAReduction'];
         self.columnMetaData = self.toSave['columnMetaData'];
         io.closeFile(fileDesc);
         print "[iMathResearch] Modelo basado en " + self.name + " cargado"
@@ -75,7 +75,7 @@ class ModelNonPayment(Model):
               We will probably offer several classifier to create the same model
         """ 
         self._generateMetaData();
-        #Open and read data
+        # Open and read data
         io = IOOperations(); 
         fileDesc = io.openFile(dataFile, 'r+');
         [self.headerTrain, self.XData, self.YData] = io.readTrainDataModelFile(fileDesc);
@@ -86,14 +86,14 @@ class ModelNonPayment(Model):
             print "Data Error: " , e.value
             return;
         else:        
-            #Preprocess data: clean and structure data and transform categorical data
+            # Preprocess data: clean and structure data and transform categorical data
             self.__preprocessTrainData();
             
-            #Create the model
+            # Create the model
             self.classiferClass = classifierType
             if self.classiferClass == DecisionTreeClassifier:
                 print "[iMathResearch] Creando modelo basado en Decision Trees"
-                self._fit(); #for DT
+                self._fit();  # for DT
                 self.name = "DecisionTree"
             elif self.classiferClass == SVC:
                 print "[iMathResearch] Creando modelo basado en SVC"
@@ -101,7 +101,7 @@ class ModelNonPayment(Model):
                 self.name = "SVC"
             elif self.classiferClass == RandomForestClassifier:
                 print "[iMathResearch] Creando modelo basado en Random Forest"
-                self._fit(n_estimators=10) # for random forest
+                self._fit(n_estimators=10)  # for random forest
                 self.name = "RandomForest"
             else:
                 raise iMathServicesError("Clasificador no valido");
@@ -124,8 +124,8 @@ class ModelNonPayment(Model):
         self.toSave['imputatorCategorical'] = self.imputatorCategorical
         self.toSave['scaler'] = self.scaler;
         self.toSave['binaryEncoder'] = self.binaryEncoder;
-        #self.toSave['svmOutliers'] = self.svmOutliers;
-        #self.toSave['PCAReduction'] = self.PCAReduction;
+        # self.toSave['svmOutliers'] = self.svmOutliers;
+        # self.toSave['PCAReduction'] = self.PCAReduction;
         self.toSave['featureSelector'] = self.feature_selector
         self.toSave['columnMetaData'] = self.columnMetaData
         io = IOOperations(); 
@@ -140,7 +140,7 @@ class ModelNonPayment(Model):
           dataFile (string): The file where the data to be classified resides.
           outputFile (string): String that indicates the complete path of the file where the prediction is going to be saved. 
         """
-        #Open and read data
+        # Open and read data
         io = IOOperations(); 
         fileDesc = io.openFile(dataFile, 'r+');
         [self.headerPredict, self.XData] = io.readTestDataModelFile(fileDesc);
@@ -150,12 +150,12 @@ class ModelNonPayment(Model):
             print "Data Error: " , e.value
             return;
         else:
-            ID = self.XData[:,0]
+            ID = self.XData[:, 0]
             self.XData = np.delete(self.XData, 0, axis=1)
-            #self.loadModel(CONS.MODEL_FILE_LOCATION);
+            # self.loadModel(CONS.MODEL_FILE_LOCATION);
             self._preprocessTestData();
             prediction = self._predict()
-            #prediction[prediction < 1 ] = 0
+            # prediction[prediction < 1 ] = 0
            
             predictionProb = self._predictProb()
             # Compute confusion matrix
@@ -168,7 +168,7 @@ class ModelNonPayment(Model):
           dataFile (string): The file where the data to be classified resides.
           outputFile (string): String that indicates the complete path of the file where the prediction is going to be saved. 
         """
-        #Open and read data
+        # Open and read data
         io = IOOperations(); 
         fileDesc = io.openFile(dataFile, 'r+');
         [self.headerTest, self.XData] = io.readTestDataModelFile(fileDesc);
@@ -178,21 +178,21 @@ class ModelNonPayment(Model):
             print "Data Error: " , e.value
             return;
         else:
-            self.YData = self.XData[:,-1]
+            self.YData = self.XData[:, -1]
             self.XData = np.delete(self.XData, -1, axis=1)
-            #self.loadModel(CONS.MODEL_FILE_LOCATION);
+            # self.loadModel(CONS.MODEL_FILE_LOCATION);
             self._preprocessTestData();
             prediction = self._predict()
-            #prediction[prediction < 1 ] = 0
+            # prediction[prediction < 1 ] = 0
            
-            self.YData = map(int,self.YData)
+            self.YData = map(int, self.YData)
             predictionProb = self._predictProb()
             # Compute confusion matrix
             cm = confusion_matrix(self.YData, prediction)
             self.__generateTestFile(outputFile, self.YData, prediction, predictionProb, cm)
             print "[iMathResearch] Resultado del testing del modelo guardado en " + outputFile
 
-            #Plot confusion matrix
+            # Plot confusion matrix
             '''            
             plt.matshow(cm)
             plt.title('Confusion matrix')
@@ -212,7 +212,7 @@ class ModelNonPayment(Model):
         """
         numerical = self.XData[:, self.index['numerical']]
         categorical = self.XData[:, self.index['categorical']]
-        return [numerical,categorical]
+        return [numerical, categorical]
         
     def __joinDataVariables(self, numerical, categorical):        
         """Join two set of variables (numerical and categorical) in one complete set
@@ -228,13 +228,13 @@ class ModelNonPayment(Model):
         for variable in self.columnMetaData:
             if variable['type'] == 'NUM':               
                 completeData = completeData + [numerical[:, columnNumerical]]
-                columnNumerical = columnNumerical +1;                
+                columnNumerical = columnNumerical + 1;                
             else:                            
                 varIndex = self.index['categorical'][categoricalIndex]
                 binarySize = len(self.columnMetaData[varIndex]['values'])               
-                completeData = completeData + [categorical[:,range(columnCategorical, columnCategorical + binarySize)]]
+                completeData = completeData + [categorical[:, range(columnCategorical, columnCategorical + binarySize)]]
                 columnCategorical = columnCategorical + binarySize;
-                categoricalIndex = categoricalIndex +1;
+                categoricalIndex = categoricalIndex + 1;
 
         self.XData = np.column_stack((list for list in completeData))       
     
@@ -293,7 +293,7 @@ class ModelNonPayment(Model):
         [numericalData, self.imputatorNumerical] = numericalImputation(numericalData, strategy='mean')
         # 2. OUTLIERS 
         # The code below should be used to detect and eliminate numericalOutliers
-        #[numericalData, categoricalData] = self._numericalOutlier(numericalData, categoricalData)
+        # [numericalData, categoricalData] = self._numericalOutlier(numericalData, categoricalData)
         # 3. NORMALIZATION    
         [numericalData, self.scaler] = maxminScaler(numericalData);
                
@@ -302,7 +302,7 @@ class ModelNonPayment(Model):
         [categoricalData, self.imputatorCategorical] = categoricalImputation(categoricalData)
         # 2. OUTLIERS
         # The code below should be used to detect and elimanate categoricalOutliers
-        #[categoricalData, numericalData] = self._categoricalOutlier(categoricalData, numericalData)
+        # [categoricalData, numericalData] = self._categoricalOutlier(categoricalData, numericalData)
         # 3. BINARIZATION    
         binarizerData = []
         for column in range(categoricalData.shape[1]):
@@ -321,12 +321,12 @@ class ModelNonPayment(Model):
         [self.XData, self.feature_selector] = featureSelection(self.XData, self.YData)
            
         # OUTLIERS FOR BOTH KIND OF VARIABLES 
-        #[outliers, self.svmOutliers] = svmOutliers(self.XData, 0.2)        
-        #self.XData = np.delete(self.XData, (outliers), axis=0)
-        #self.YData = np.delete(self.YData, (outliers), axis=0)
+        # [outliers, self.svmOutliers] = svmOutliers(self.XData, 0.2)        
+        # self.XData = np.delete(self.XData, (outliers), axis=0)
+        # self.YData = np.delete(self.YData, (outliers), axis=0)
         
         # REDUCTION OF VARIABLES
-        #[self.XData, self.PCAReduction] = PCAFeatureReduction(self.XData)
+        # [self.XData, self.PCAReduction] = PCAFeatureReduction(self.XData)
        
     
     def _preprocessTestData(self):  
@@ -339,7 +339,7 @@ class ModelNonPayment(Model):
         numericalData = numericalImputation(numericalData, strategy='mean', imputator=self.imputatorNumerical)
         # 2. OUTLIERS 
         # The code below should be used to detect and eliminate numericalOutliers
-        #[numericalData, categoricalData] = self._numericalOutlier(numericalData, categoricalData)
+        # [numericalData, categoricalData] = self._numericalOutlier(numericalData, categoricalData)
         # 3. NORMALIZATION    
         numericalData = maxminScaler(numericalData, scaler=self.scaler);
                
@@ -348,13 +348,13 @@ class ModelNonPayment(Model):
         categoricalData = categoricalImputation(categoricalData, imputator=self.imputatorCategorical)
         # 2. OUTLIERS
         # The code below should be used to detect and elimanate categoricalOutliers
-        #[categoricalData, numericalData] = self._categoricalOutlier(categoricalData, numericalData)
+        # [categoricalData, numericalData] = self._categoricalOutlier(categoricalData, numericalData)
         # 3. BINARIZATION    
         binarizerData = []
         for column in range(categoricalData.shape[1]):
             varIndex = self.index['categorical'][column]
             if self.columnMetaData[varIndex]['codification'] == '1HOT':
-                binarizerColumn = binarizer(categoricalData[:, column], self.columnMetaData[varIndex]['codification'], onehotencoder=self.binaryEncoder, dic_variableList=self.columnMetaData[varIndex]['values'] )
+                binarizerColumn = binarizer(categoricalData[:, column], self.columnMetaData[varIndex]['codification'], onehotencoder=self.binaryEncoder, dic_variableList=self.columnMetaData[varIndex]['values'])
             else:
                 binarizerColumn = binarizer(categoricalData[:, column], self.columnMetaData[varIndex]['codification'], dic_variableList=self.columnMetaData[varIndex]['values'])
                 
@@ -367,12 +367,12 @@ class ModelNonPayment(Model):
         self.XData = featureSelection(self.XData, None, self.feature_selector)
         
         # OUTLIERS FOR BOTH KIND OF VARIABLES 
-        #outliers= svmOutliers(self.XData, 0.2, self.svmOutliers)        
-        #self.XData = np.delete(self.XData, (outliers), axis=0)
-        #self.ID = np.delete(self.ID, (outliers), axis=0)
+        # outliers= svmOutliers(self.XData, 0.2, self.svmOutliers)        
+        # self.XData = np.delete(self.XData, (outliers), axis=0)
+        # self.ID = np.delete(self.ID, (outliers), axis=0)
         
         # REDUCTION OF VARIABLES
-        #self.XData = PCAFeatureReduction(self.XData, self.PCAReduction)
+        # self.XData = PCAFeatureReduction(self.XData, self.PCAReduction)
                      
     
     def _readMetaDataFile(self):
@@ -388,28 +388,28 @@ class ModelNonPayment(Model):
         count = 0;
         while count < len(lines):
             if (lines[count] == '<variable train format>'):
-                self.headerTrainFormat = lines[count+1].split(',');
-                count +=2
+                self.headerTrainFormat = lines[count + 1].split(',');
+                count += 2
             elif (lines[count] == '<variable test format>'):
-                self.headerTestFormat = lines[count+1].split(',');
-                count +=2
+                self.headerTestFormat = lines[count + 1].split(',');
+                count += 2
             elif (lines[count] == '<variable predict format>'):
-                self.headerPredictFormat = lines[count+1].split(',');
-                count +=2
+                self.headerPredictFormat = lines[count + 1].split(',');
+                count += 2
             elif (lines[count] == '<numerical>'):
-                self.numericalVariables = lines[count+1].split(',');
-                count +=2
+                self.numericalVariables = lines[count + 1].split(',');
+                count += 2
             elif (lines[count] == '<categorical>'):
-                self.categoricalVariables = lines[count+1].split(',');
-                count +=2
+                self.categoricalVariables = lines[count + 1].split(',');
+                count += 2
             elif (lines[count] == '<1Hot>'):
-                self.oneHotVariables = lines[count+1].split(',');
-                count +=2
+                self.oneHotVariables = lines[count + 1].split(',');
+                count += 2
             elif (lines[count] == '<NHot>'):
-                self.NHotVariables = lines[count+1].split(',');
-                count +=2
+                self.NHotVariables = lines[count + 1].split(',');
+                count += 2
             else:
-                count = count +1;
+                count = count + 1;
            
     def _generateMetaData(self):
         """Create a data structure that contains the metadata information for each variable in the model.
@@ -422,7 +422,7 @@ class ModelNonPayment(Model):
         self.index['categorical'] = []
         self.index['oneHot'] = []
         self.index['NHot'] = []
-        for i in range (0, len(self.headerTrainFormat)-1):
+        for i in range (0, len(self.headerTrainFormat) - 1):
             name = self.headerTrainFormat[i]
             dic = {}
             dic['name'] = name;
@@ -475,7 +475,7 @@ class ModelNonPayment(Model):
             numericalData (numpy array): contains the values for the numerical variables after deleting the categorical outliers tuples
         """
         for column in range(categoricalData.shape[1]):            
-            index = categoricalOutliers(categoricalData[:, column],10)
+            index = categoricalOutliers(categoricalData[:, column], 10)
             categoricalData = np.delete(categoricalData, (index), axis=0)
             numericalData = np.delete(numericalData, (index), axis=0)
             self.YData = np.delete(self.YData, (index), axis=0)
@@ -499,7 +499,7 @@ class ModelNonPayment(Model):
                 sample.append(predictionProb[indexSample][numCls])            
             content.append(sample)
             if int(ID[indexSample]) == prediction[indexSample]:
-                hit = hit +1;
+                hit = hit + 1;
         
         with open(outputFile, "w+") as f:
             total = len(ID)
@@ -507,7 +507,7 @@ class ModelNonPayment(Model):
             f.write('\n')
             if mc is not None:
                 f.write('MATRIZ DE CONFUSION (Eje x -- Reales ( Pagos, impagos)--, Eje y -- Predichos (Pagos, impagos)--)\n')
-                np.savetxt(f, mc,fmt='%10.0f');                
+                np.savetxt(f, mc, fmt='%10.0f');                
                 f.write('\n')
             f.write ("PREDICCION DETALLADA \n")
             writer = csv.writer(f, lineterminator="\n")
@@ -530,7 +530,7 @@ class ModelNonPayment(Model):
                 sample.append(predictionProb[indexSample][numCls])            
             content.append(sample)
             if int(ID[indexSample]) == prediction[indexSample]:
-                hit = hit +1;
+                hit = hit + 1;
         
         with open(outputFile, "w+") as f:
             f.write ("PREDICCION DETALLADA \n")

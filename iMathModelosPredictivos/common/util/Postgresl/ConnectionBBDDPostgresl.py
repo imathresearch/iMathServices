@@ -15,7 +15,7 @@ class ConnectionBBDD(object):
     '''
 
 
-    def __init__(self,path):
+    def __init__(self, path):
         '''
         Constructor
         '''
@@ -30,7 +30,7 @@ class ConnectionBBDD(object):
         
     def DoConnection(self):
         
-        connectstring = "host=" + self.host + " " +  "user=" + self.user + " " +  "password=" + self.password + "dbname=" + self.database        
+        connectstring = "host=" + self.host + " " + "user=" + self.user + " " + "password=" + self.password + "dbname=" + self.database        
         self.db = psycopg2.connect(connectstring)
         
     def getFetch(self, query):
@@ -98,6 +98,6 @@ class ConnectionBBDD(object):
         return 0
 
 
-    def getMaxValueTable(self,table):
+    def getMaxValueTable(self, table):
         
         return "select max(id) from " + table

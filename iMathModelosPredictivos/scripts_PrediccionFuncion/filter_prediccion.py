@@ -21,24 +21,24 @@ try:
     
     operation = 1
 
-    #Initial Data
+    # Initial Data
 
     dataFile = '/home/izubizarreta/Documentos/Documentos/Comercial/Sensovida/DatosEduardo/DatosEduardo.csv'
     
-    #Filtered data
+    # Filtered data
     
     DataFiltered = FilterData()
     
     pathResult = '/home/izubizarreta/Documentos/Documentos/Comercial/Sensovida/DatosEduardo/DatosEduardoFiltered.csv'
 
-    #Store filtered data
+    # Store filtered data
     
     calibracionvalue = 15
     gruposegundos = 5
     senalmaximo = -95
     porcentajeTraining = 0.8
         
-    UserMatrixModels = DataFiltered.FilterExecution(calibracionvalue,gruposegundos,senalmaximo,dataFile, pathResult,operation)
+    UserMatrixModels = DataFiltered.FilterExecution(calibracionvalue, gruposegundos, senalmaximo, dataFile, pathResult, operation)
     
     if operation == 1:
     

@@ -20,7 +20,7 @@ class TwitterTracker(object):
     def __init__(self, l_query, timeout, fileName_partialData):
         self.timeout = timeout
         self.l_query = l_query
-        self.collection_name = os.environ["COLLECTION_NAME"] #str(uuid.uuid4())  
+        self.collection_name = os.environ["COLLECTION_NAME"]  # str(uuid.uuid4())  
         self.file_data = fileName_partialData;
         
         self.status = STOPPED
@@ -36,8 +36,8 @@ class TwitterTracker(object):
         
     def __startTracker(self):
         
-        process_tweetProcessor = Process(target = self.__runTweetProcessor)
-        process_listener = Process(target = self.__runListener)
+        process_tweetProcessor = Process(target=self.__runTweetProcessor)
+        process_listener = Process(target=self.__runListener)
         
         process_listener.start()
         process_tweetProcessor.start()
@@ -61,13 +61,13 @@ class TwitterTracker(object):
         self.status = INITIATED
         start_time = time.time()
         try:
-            stream.filter(languages = ['en'], track=self.l_query, async=True)
+            stream.filter(languages=['en'], track=self.l_query, async=True)
 
             pass_time = time.time() - start_time
             while(pass_time < self.timeout):
                 time.sleep(self.timeout - pass_time)
                 pass_time = time.time() - start_time
-                #print "SLEEPING" + str(pass_time)
+                # print "SLEEPING" + str(pass_time)
             
             self.q_tweet.put(C.TOKEN_LAST_TWEET)
             stream.disconnect()

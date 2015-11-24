@@ -30,28 +30,28 @@ class FilterData(object):
 
     def RecoverData(self, path):
         
-        #self.userConnection.userConnection.DoConnection()
-        #RecoverData = self.userConnection.userConnection.getResults(query, ['id', 'user_id', 'wp', 'rssi', 'datetime', 'real_location'])
+        # self.userConnection.userConnection.DoConnection()
+        # RecoverData = self.userConnection.userConnection.getResults(query, ['id', 'user_id', 'wp', 'rssi', 'datetime', 'real_location'])
         csvData = CSVClass(path)
         return csvData
     
-    def FilterExecution(self, calibracion, grupotiempo, maximosenal, path, pathResult,operation):
+    def FilterExecution(self, calibracion, grupotiempo, maximosenal, path, pathResult, operation):
 
         minutesForEachRoom = [calibracion]
 
         for minuteForEachRoom in minutesForEachRoom:
 
-            #startDate = '2015-09-30 17:30:00'
-            #endDate = '2015-10-01 11:00:00'
+            # startDate = '2015-09-30 17:30:00'
+            # endDate = '2015-10-01 11:00:00'
 
             MacCodes = ['0CF3EE000A19']
 
-            #query = 'SELECT * FROM sensovida_panel_validacion.beacon_test' 
-            #query = query + ' where datetime > "' + startDate + '" and datetime < "' + endDate + '"'
-            #query = query + ' and user_id="' + MacCodes[0] + ')'
-            #query = query + ' order by datetime desc'
+            # query = 'SELECT * FROM sensovida_panel_validacion.beacon_test' 
+            # query = query + ' where datetime > "' + startDate + '" and datetime < "' + endDate + '"'
+            # query = query + ' and user_id="' + MacCodes[0] + ')'
+            # query = query + ' order by datetime desc'
             
-            #self.getConnection()
+            # self.getConnection()
             
             csvData = self.RecoverData(path)
 
@@ -162,9 +162,9 @@ class FilterData(object):
             
             self.setChangeMaximum(UserMatrixModels, nullValue, MaximumValues)
             
-            if operation==2:
+            if operation == 2:
                 
-                UserMatrixModels = UserMatrixModels[:,:-1]
+                UserMatrixModels = UserMatrixModels[:, :-1]
                 
             else:
                 
@@ -183,7 +183,7 @@ class FilterData(object):
 
     def setStoreTrainingTest(self, UserMatrixModels, Training, pathTraining, pathTest):
 
-        #shuffledData = self.getDataShuttfled(UserMatrixModelTraining, UserMatrixModelTest)
+        # shuffledData = self.getDataShuttfled(UserMatrixModelTraining, UserMatrixModelTest)
         TrainingLength = round(len(UserMatrixModels) * Training)
         
         DataSeparated = self.getTrainingTestData(UserMatrixModels, TrainingLength)
@@ -196,7 +196,7 @@ class FilterData(object):
         UserMatrixModelTraining = UserMatrixModels[0:TrainingLength, :]
         UserMatrixModelTestHeader = UserMatrixModels[0, :]        
         UserMatrixModelTestData = UserMatrixModels[TrainingLength:, :]
-        #UserMatrixModelTest = np.vstack(UserMatrixModelTestHeader,UserMatrixModelTestData)
+        # UserMatrixModelTest = np.vstack(UserMatrixModelTestHeader,UserMatrixModelTestData)
         DataTest = []
         DataTestRow = []
         for value in UserMatrixModelTestHeader:
@@ -208,7 +208,7 @@ class FilterData(object):
                 DataTestRow.append(column)
             DataTest.append(DataTestRow)
         UserMatrixModelTest = np.asarray(DataTest, dtype="|S50")
-        return [UserMatrixModelTraining,UserMatrixModelTest]
+        return [UserMatrixModelTraining, UserMatrixModelTest]
     
     def setChangeMaximum(self, UserMatrixModels, nullValue, MaximumValues):
         
@@ -240,21 +240,21 @@ class FilterData(object):
         
         rowNumberRoomKey = np.where(UserMatrixModels[1:, -1:] == 'salon')
         for position in rowNumberRoomKey:
-            UserMatrixModels[position+1, -1:] = 0
+            UserMatrixModels[position + 1, -1:] = 0
 
         rowNumberRoomKey = np.where(UserMatrixModels[1:, -1:] == 'dormitorio')
         for position in rowNumberRoomKey:
-            UserMatrixModels[position+1, -1:] = 1
+            UserMatrixModels[position + 1, -1:] = 1
 
         rowNumberRoomKey = np.where(UserMatrixModels[1:, -1:] == 'bano')
         for position in rowNumberRoomKey:
-            UserMatrixModels[position+1, -1:] = 2
+            UserMatrixModels[position + 1, -1:] = 2
 
         rowNumberRoomKey = np.where(UserMatrixModels[1:, -1:] == 'cocina')
         for position in rowNumberRoomKey:
-            UserMatrixModels[position+1, -1:] = 3
+            UserMatrixModels[position + 1, -1:] = 3
 
-        UserMatrixModels[0,-1:] = 'etiqueta'
+        UserMatrixModels[0, -1:] = 'etiqueta'
 
         return UserMatrixModels
 

@@ -49,12 +49,12 @@ def categoricalImputation(data, imputator=None):
         imp (DataFrameImputer object): returned in the case that the imputator parameter is missing
     """
     if imputator != None:
-        data = [[elem if elem!='nan' else None for elem in row ]for row in data.tolist()]
+        data = [[elem if elem != 'nan' else None for elem in row ]for row in data.tolist()]
         frame = pd.DataFrame(data)
         completeFrame = imputator.transform(frame);
         return completeFrame.values
     else:
-        data = [[elem if elem!='nan' else None for elem in row ]for row in data.tolist()]
+        data = [[elem if elem != 'nan' else None for elem in row ]for row in data.tolist()]
         frame = pd.DataFrame(data)
         imp = DataFrameImputer();
         completeFrame = imp.fit_transform(frame)
@@ -112,7 +112,7 @@ def KFold(X, Y, classiferClass, **kwargs):
         Y_pred (numpy array): contains the predictions (belong or not belong)
     """        
     # Construct a kfolds object
-    kf = sklearn.cross_validation.KFold(len(Y),n_folds=3,shuffle=True)
+    kf = sklearn.cross_validation.KFold(len(Y), n_folds=3, shuffle=True)
     Y_pred = Y.copy().ravel()
     # Iterate through folds
     for train_index, test_index in kf:            
@@ -120,12 +120,12 @@ def KFold(X, Y, classiferClass, **kwargs):
         Y_train = Y[train_index]
         # Initialize a classifier with key word arguments
         clf = classiferClass(**kwargs)
-        clf.fit(X_train,Y_train.ravel())
+        clf.fit(X_train, Y_train.ravel())
         Y_pred[test_index] = clf.predict(X_test)
    
     return Y_pred
     
-def KFoldProb(X, Y, num_classes,classiferClass, **kwargs):
+def KFoldProb(X, Y, num_classes, classiferClass, **kwargs):
     """Evaluate the quality of the model
     Args:
         X (numpy array): contains the data set of input variables
@@ -136,12 +136,12 @@ def KFoldProb(X, Y, num_classes,classiferClass, **kwargs):
         Y_pred (numpy array): contains the predictions in form of probabilities
     """        
     kf = sklearn.cross_validation.KFold(len(Y), n_folds=5, shuffle=True)
-    Y_prob = np.zeros((len(Y),num_classes))
+    Y_prob = np.zeros((len(Y), num_classes))
     for train_index, test_index in kf:
         X_train, X_test = X[train_index], X[test_index]
         Y_train = Y[train_index]
         clf = classiferClass(**kwargs)
-        clf.fit(X_train,Y_train.ravel())
+        clf.fit(X_train, Y_train.ravel())
         # Predict probabilities, not classes
         Y_prob[test_index] = clf.predict_proba(X_test)
         
@@ -182,7 +182,7 @@ def binarizerOneHotEnconding(XColumn, encoder=None, dic=None):
         dic = {}
         [dic, maxNumValues] = buildDictionary(XColumn);
         X = mapCategoricalDictionary(XColumn, dic);
-        enc = OneHotEncoder(n_values = [maxNumValues])
+        enc = OneHotEncoder(n_values=[maxNumValues])
         binarizerXColumn = enc.fit_transform(np.vstack(X)).toarray()
         return [dic, binarizerXColumn.tolist(), enc];
     
@@ -201,13 +201,13 @@ def binarizerNHotEnconding(XColumn, variableList=None):
         binarizerXColumn = []
         for indexRow in range(len(XColumn)):
             row = XColumn[indexRow]
-            binarizerXColumn = binarizerXColumn + binarizerNHotEncondingRow(row,variableList)
+            binarizerXColumn = binarizerXColumn + binarizerNHotEncondingRow(row, variableList)
         return [variableList, binarizerXColumn]
     else:
         binarizerXColumn = []
         for indexRow in range(len(XColumn)):
             row = XColumn[indexRow]
-            binarizerXColumn = binarizerXColumn + binarizerNHotEncondingRow(row,variableList)
+            binarizerXColumn = binarizerXColumn + binarizerNHotEncondingRow(row, variableList)
         return binarizerXColumn
     
 def binarizerNHotEncondingRow(XRow, variableList):
@@ -217,7 +217,7 @@ def binarizerNHotEncondingRow(XRow, variableList):
     Returns:
         binarizerRow (list): XRow binarised
     """ 
-    binarizerRow = [0.0]*len(variableList)
+    binarizerRow = [0.0] * len(variableList)
     for elem in XRow.split(';'):
         if elem in variableList:
             binarizerRow[variableList.index(elem)] = 1.0;
@@ -254,10 +254,10 @@ def buildDictionary(XColumn):
     for c in XColumn:
         if c not in dic:
             dic[c] = counter;
-            counter = counter +1;
+            counter = counter + 1;
 
     dic['unknown'] = counter;
-    return [dic, counter +1]
+    return [dic, counter + 1]
 
 def svmOutliers (XData, thresh, classifier=None):
     """Calculate the outliers of XData set
@@ -269,16 +269,16 @@ def svmOutliers (XData, thresh, classifier=None):
         index[0] (numpy array): contains the row index of the outliers in XData
         clf (OneClassSVM object): object trained to find outliers following the pattern of XData
     """
-    nu = 0.95*thresh +0.5
-    if classifier==None:
+    nu = 0.95 * thresh + 0.5
+    if classifier == None:
         clf = svm.OneClassSVM(kernel="rbf", nu=nu);
         clf.fit(XData)
         prediction = clf.predict(XData)
-        index = np.where(prediction<0)
+        index = np.where(prediction < 0)
         return [index[0], clf]
     else:
         prediction = classifier.predict(XData)
-        index = np.where(prediction<0)
+        index = np.where(prediction < 0)
         return index[0]
  
 def numericalOutliers(XColumn, thresh=3.5):
@@ -290,9 +290,9 @@ def numericalOutliers(XColumn, thresh=3.5):
         index (numpy array):  contains the row index of the outliers in XColumn
     """
     if len(XColumn.shape) == 1:
-        XColumn = XColumn[:,None]
+        XColumn = XColumn[:, None]
     median = np.median(XColumn, axis=0)
-    diff = np.sum((XColumn - median)**2, axis=-1)
+    diff = np.sum((XColumn - median) ** 2, axis=-1)
     diff = np.sqrt(diff)
     med_abs_deviation = np.median(diff)
     modified_z_score = 0.6745 * diff / med_abs_deviation
@@ -312,19 +312,19 @@ def categoricalOutliers(XColumn, percent):
     """
       
     dic = {}
-    dic['unique'], dic['counts'] =  np.unique(XColumn, return_counts=True)
+    dic['unique'], dic['counts'] = np.unique(XColumn, return_counts=True)
     
-    AVF = [0]* XColumn.shape[0]
+    AVF = [0] * XColumn.shape[0]
     for i in range(XColumn.shape[0]):        
         value = XColumn[i]    
         index = dic['unique'].tolist().index(value);
         AVF[i] = AVF[i] + dic['counts'][index];        
     
-    #Get the index of the element in ascendent order
-    #Here we must introduce another condition because if the AVF value is the same for all the points
+    # Get the index of the element in ascendent order
+    # Here we must introduce another condition because if the AVF value is the same for all the points
     # ... we are returning anyway the corresponding percent
     orderAVF = np.argsort(AVF)
-    numOutliers = int((percent/100.0) * len(AVF))
+    numOutliers = int((percent / 100.0) * len(AVF))
     return orderAVF[0:numOutliers];
 
 def PCAFeatureReduction(XData, pca=None):
@@ -336,22 +336,22 @@ def PCAFeatureReduction(XData, pca=None):
         XData (numpy array): new array that contains the transformed data
         pca (PCA object): object trained to reduce the set of variables following the pattern in XData
     """
-    if pca !=None:
+    if pca != None:
         XData = pca.transform(XData)
         return XData;
     else:
-        pca = PCA(n_components = 'mle')
+        pca = PCA(n_components='mle')
         XData = pca.fit_transform(XData)
         return[XData, pca];
     
 def featureSelection(XData, YData=None, selector=None):
     
-    if selector !=None:
+    if selector != None:
         XData = selector.transform(XData)
         return XData;
     else:     
         selector = SelectKBest(chi2, k=40)
-        XData= selector.fit_transform(XData, YData)
+        XData = selector.fit_transform(XData, YData)
         return[XData, selector];
     
        

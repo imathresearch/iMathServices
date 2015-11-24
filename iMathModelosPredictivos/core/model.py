@@ -30,7 +30,7 @@ class Model(object):
               We will probably offer several classifier to create the same model
               If classifierType is equal to None it means the dataFile contains a model previously created.    
         """
-        if classifierType !=  None:            
+        if classifierType != None:            
             self.createModel(dataFile, classifierType);
         else:
             self.loadModel(dataFile);
@@ -75,15 +75,15 @@ class Model(object):
         """
 
     def accuracyPercentage(self):
-        YPred= KFold(self.XData, self.YData, self.classiferClass)
-        t_f =  self.YData[:,0] == YPred
-        return np.mean(self.YData[:,0] == YPred)
+        YPred = KFold(self.XData, self.YData, self.classiferClass)
+        t_f = self.YData[:, 0] == YPred
+        return np.mean(self.YData[:, 0] == YPred)
 
     def _fit(self, **kwargs):
         self.model = self.classiferClass(**kwargs)
-        self.model.fit(self.XData,self.YData.ravel())        
+        self.model.fit(self.XData, self.YData.ravel())        
         # FOR SVM ONE CLASS
-        #self.model.fit(self.XData)
+        # self.model.fit(self.XData)
                 
     def _predict(self):
         prediction = self.model.predict(self.XData);
