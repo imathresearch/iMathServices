@@ -30,7 +30,7 @@ class ConnectionBBDD(object):
         
     def DoConnection(self):
         
-        connectstring = "host=" + self.host + " " + "user=" + self.user + " " + "password=" + self.password + "dbname=" + self.database        
+        connectstring = "host=" + self.host + " " + "user=" + self.user + " " + "password=" + self.password + " dbname=" + self.database        
         self.db = psycopg2.connect(connectstring)
         
     def getFetch(self, query):
@@ -40,11 +40,10 @@ class ConnectionBBDD(object):
         results = cursor.fetchall()
         return results
         
-    def getResultsList(self, query, headers):
-        
+    def getResultsList(self, query):
+                
         results = self.getFetch(query)
         AllData = []
-        AllData.append(headers)
         for result in results:
             Data = []
             for element in result:
@@ -52,11 +51,10 @@ class ConnectionBBDD(object):
             AllData.append(Data)
         return AllData
         
-    def getResults(self, query, headers):
+    def getResults(self, query):
         
         results = self.getFetch(query)
         AllData = []
-        AllData.append(headers)
         for result in results:
             Data = []
             for element in result:
@@ -73,12 +71,31 @@ class ConnectionBBDD(object):
             max = result[0]
         max = max + 1
         return max
+    
+    def getExist(self, table):
+        
+        query = 'select count(*) from imathservices."' + table + '";'
+        results = self.getFetch(query)
+        for result in results:
+            exist = result[0]
+        return exist
 
     def setDataModel(self, table, parameters):
         
         '''This functions stores information about the model'''
         
-        cursor = self.db.cursor()        
+        cursor = self.db.cursor()
+        
+        exist = self.getExist(table)
+        
+        if exist==0:
+        
+            query =  'INSERT INTO imathservices."' + table + '" VALUES (%s, %s, %s, %s, %s, %s);'
+            cursor.execute(query, parameters)
+        
+        else:
+            
+            cursor.execute('UPDATE imathservices."' + table + '" SET serializationValue=%s,trainingPercentage=%s,testPercentage=%s,createdDate=%s WHERE Id=%s', ("", "", "", "", ""))
         
         self.db.commit()
         
@@ -90,6 +107,18 @@ class ConnectionBBDD(object):
         
         for eachdata in data:            
         
+            exist = self.getExist(table)
+            
+            if exist==0:
+            
+                query =  'INSERT INTO imathservices."' + table + '" VALUES (%s, %s, %s, %s, %s, %s);'
+            
+            else:
+                
+                cursor.execute('UPDATE imathservices."' + table + '" SET serializationValue=%s,trainingPercentage=%s,testPercentage=%s,createdDate=%s WHERE Id=%s', ("", "", "", "", ""))
+
+            cursor.execute(query, data)
+
             self.db.commit()        
             
     def closeConnection(self):
@@ -100,4 +129,4 @@ class ConnectionBBDD(object):
 
     def getMaxValueTable(self, table):
         
-        return "select max(id) from " + table
+        return 'select max(id) from imathservices."' + table + '";'

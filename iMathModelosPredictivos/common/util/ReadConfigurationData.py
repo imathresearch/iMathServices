@@ -28,4 +28,5 @@ class ConfigurationData(object):
             
             Codes.append(code)
             
+        Codes[3] = Codes[3] + line[-1:]
         return Codes

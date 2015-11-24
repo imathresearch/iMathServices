@@ -1,0 +1,4 @@
+host=localhost
+user=izubizarreta
+password=943793072
+database=imathservices
