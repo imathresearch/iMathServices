@@ -7,6 +7,7 @@ Created on 1 de oct. de 2015
 from iMathModelosPredictivos.common.util.ReadConfigurationData import ConfigurationData
 import psycopg2
 import numpy as np
+from _mysql import result
 
 class ConnectionBBDD(object):
     '''
@@ -32,11 +33,16 @@ class ConnectionBBDD(object):
         connectstring = "host=" + self.host + " " +  "user=" + self.user + " " +  "password=" + self.password + "dbname=" + self.database        
         self.db = psycopg2.connect(connectstring)
         
-    def getResultsList(self, query, headers):
+    def getFetch(self, query):
         
         cursor = self.db.cursor()
         cursor.execute(query)
         results = cursor.fetchall()
+        return results
+        
+    def getResultsList(self, query, headers):
+        
+        results = self.getFetch(query)
         AllData = []
         AllData.append(headers)
         for result in results:
@@ -48,9 +54,7 @@ class ConnectionBBDD(object):
         
     def getResults(self, query, headers):
         
-        cursor = self.db.cursor()
-        cursor.execute(query)
-        results = cursor.fetchall()
+        results = self.getFetch(query)
         AllData = []
         AllData.append(headers)
         for result in results:
@@ -63,9 +67,8 @@ class ConnectionBBDD(object):
 
     def getNextPrimaryKey(self, table):
         
-        cursor = self.db.cursor()
-        cursor.execute("select max(id) from " + table)
-        results = cursor.fetchall()
+        query = self.getMaxValueTable(table)
+        results = self.getFetch(query)
         for result in results:
             max = result[0]
         max = max + 1
@@ -73,11 +76,15 @@ class ConnectionBBDD(object):
 
     def setDataModel(self, table, parameters):
         
+        '''This functions stores information about the model'''
+        
         cursor = self.db.cursor()        
         
         self.db.commit()
         
     def setDataModelResults(self, table, data):
+        
+        '''This functions stores information about the models results'''
         
         cursor = self.db.cursor()
         
@@ -89,3 +96,8 @@ class ConnectionBBDD(object):
         
         self.db.close()
         return 0
+
+
+    def getMaxValueTable(self,table):
+        
+        return "select max(id) from " + table

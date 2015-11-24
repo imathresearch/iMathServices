@@ -25,7 +25,7 @@ def showExtendedHelp(command):
         print "        <fichero entrada>  : path completo del fichero que contiene los datos para crear el modelo"
         print "        <clasificador>     : determina la tecnica a emplear para crear el modelo. Los valores posible de este"
         print "                             parametro son: DecisionTreeClassifier, SVC, RandomForestClassifier"
-        print "        <nombre modelo>    : nombre que será asociado al modelo creado. Este nombre será usado mas tarde en el"
+        print "        <nombre modelo>    : nombre que sera asociado al modelo creado. Este nombre sera usado mas tarde en el"
         print "                             testeo del modelo o prediccion de nuevas muestras "
         print "    Ejemplo: crearModelo_Baja train_data.csv SVC SVCmodel"
     elif command == 'testModel':

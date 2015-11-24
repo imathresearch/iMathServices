@@ -23,7 +23,7 @@ def showExtendedHelp(command):
         print "    Uso: crearModelo_UpCrossSelling <fichero entrada> <nombre modelo>"
         print "    Parametros:"
         print "        <fichero entrada>  : path completo del fichero que contiene los datos para crear el modelo"
-        print "        <nombre modelo>    : nombre que será asociado al modelo creado. Este nombre será usado mas tarde en el"
+        print "        <nombre modelo>    : nombre que sera asociado al modelo creado. Este nombre seraaaaaaa usado mas tarde en el"
         print "                             testeo del modelo o prediccion de nuevas muestras "
         print "    Ejemplo: crearModelo_UpCrossSelling train_data.csv UCmodel"
     elif command == 'testModel':

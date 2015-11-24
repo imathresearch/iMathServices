@@ -107,7 +107,7 @@ class ModelUpCrossSelling(Model):
         file_data = io.openFile(dataFile, 'r+')
         self.list_sub_bonds = [l.rstrip() for l in file_data.readlines()]
         
-        print "[iMathResearch] Realizando la evaluación del modelo"
+        print "[iMathResearch] Realizando la evaluacion del modelo"
         recommendation = self._predict('test')
                 
         self.__generateResultFile(outputFile, recommendation, 'test')
@@ -125,7 +125,7 @@ class ModelUpCrossSelling(Model):
         file_data = io.openFile(dataFile, 'r+')
         self.list_sub_bonds = [l.rstrip() for l in file_data.readlines()]
         
-        print "[iMathResearch] Realizando la predicción"
+        print "[iMathResearch] Realizando la prediccion"
         recommendation = self._predict('predict')
                 
         self.__generateResultFile(outputFile, recommendation, 'predict')

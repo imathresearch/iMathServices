@@ -7,8 +7,7 @@ import sys
 
 import tornado.ioloop
 import tornado.web
-from iMathModelosPredictivos.WebServices.Handlers.MainHandlers import MainHandler
-from iMathModelosPredictivos.WebServices.ListHandlers import ListHandlers
+from ListHandlers import ListHandlers
 
 if __name__ == '__main__':
     Application = ListHandlers()
