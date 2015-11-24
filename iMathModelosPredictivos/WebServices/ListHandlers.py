@@ -23,6 +23,6 @@ class ListHandlers(object):
                                         (r"/BestCandidateForEachJob", BestCandidateForEachJobHandler),
                                         ])
         
-    def createListApplications(self,ListPath,HandlerList):
+    def createListApplications(self, ListPath, HandlerList):
         
         return 0

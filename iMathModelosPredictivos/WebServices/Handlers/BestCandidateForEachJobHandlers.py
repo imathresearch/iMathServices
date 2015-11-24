@@ -16,12 +16,12 @@ import iMathModelosPredictivos.core.HumanSelection.util.RecoverCorrectUserWorkDa
 
 class BestCandidateForEachJobHandler(tornado.web.RequestHandler):
     
-    def getParameterValue(self,param):
+    def getParameterValue(self, param):
         
         value = self.get_argument(param)
         return value
     
-    def getParameterValues(self,param):
+    def getParameterValues(self, param):
         
         values = self.get_arguments(param)
         return values
@@ -46,7 +46,7 @@ class BestCandidateForEachJobHandler(tornado.web.RequestHandler):
         
         '''It is necessary to store somewhere (CSV or BBDD)'''
         
-    def getBestCandidates(self,pathUser,pathWork,pathCriteria):
+    def getBestCandidates(self, pathUser, pathWork, pathCriteria):
 
         Users = np.genfromtxt(pathUser, dtype="|S50", delimiter=',', invalid_raise=False)
         WorkList = np.genfromtxt(pathWork, dtype="|S50", delimiter=',', invalid_raise=False)

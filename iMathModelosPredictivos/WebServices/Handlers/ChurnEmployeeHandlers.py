@@ -21,12 +21,12 @@ from sklearn.ensemble import RandomForestClassifier
 
 class ChurnEmployeeHandler(tornado.web.RequestHandler):
     
-    def getParameterValue(self,param):
+    def getParameterValue(self, param):
         
         value = self.get_argument(param)
         return value
     
-    def getParameterValues(self,param):
+    def getParameterValues(self, param):
         
         values = self.get_arguments(param)
         return values
@@ -41,7 +41,7 @@ class ChurnEmployeeHandler(tornado.web.RequestHandler):
         typeOperation = self.getParameterValue("operation")
         self.executeFunction(typeOperation)
                 
-    def executeFunction(self,typeOperation):
+    def executeFunction(self, typeOperation):
         
         if typeOperation == 0:
             pathCSV = self.getParameterValue("pathCSV")
@@ -60,7 +60,7 @@ class ChurnEmployeeHandler(tornado.web.RequestHandler):
                 pathOutputFile = self.getParameterValue("pathOutputFile")
                 self.executePrediction(pathCSV, nameModel, pathOutputFile)
         
-    def executeCreateModel(self,pathCSV,typeModel,nameModel):
+    def executeCreateModel(self, pathCSV, typeModel, nameModel):
         
         if os.path.isfile(pathCSV) is False:
             raise iMathServicesError("El fichero " + pathCSV + " no existe");
@@ -78,30 +78,30 @@ class ChurnEmployeeHandler(tornado.web.RequestHandler):
         model = ModelDownEmployee(pathCSV, classifier);
         model.saveModel(CONS.MODEL_FILE_LOCATION + nameModel + '.txt');
         
-    def executeTest(self,pathCSVInput,NameModel,OutputFile):
+    def executeTest(self, pathCSVInput, NameModel, OutputFile):
         
         # Check if the data file exists
         if os.path.isfile(pathCSVInput) is False:
             raise iMathServicesError("El fichero " + pathCSVInput + " no existe");
     
         # Check if the file that contains the model exists
-        model_path = os.path.join(CONS.MODEL_FILE_LOCATION +  NameModel + ".txt")
+        model_path = os.path.join(CONS.MODEL_FILE_LOCATION + NameModel + ".txt")
         if os.path.isfile(model_path) is False:
-            raise iMathServicesError("EL modelo " +   NameModel  + " no ha sido previamente creado");
+            raise iMathServicesError("EL modelo " + NameModel + " no ha sido previamente creado");
     
         model = ModelDownEmployee(model_path);
         model.testModel(pathCSVInput, OutputFile);
         
-    def executePrediction(self,pathCSVInput,NameModel,OutputFile):
+    def executePrediction(self, pathCSVInput, NameModel, OutputFile):
         
         # Check if the data file exists
         if os.path.isfile(pathCSVInput) is False:
             raise iMathServicesError("El fichero " + pathCSVInput + " no existe");
     
         # Check if the file that contains the model exists
-        model_path = os.path.join(CONS.MODEL_FILE_LOCATION +  NameModel + ".txt")
+        model_path = os.path.join(CONS.MODEL_FILE_LOCATION + NameModel + ".txt")
         if os.path.isfile(model_path) is False:
-            raise iMathServicesError("EL modelo " +   NameModel  + " no ha sido previamente creado");
+            raise iMathServicesError("EL modelo " + NameModel + " no ha sido previamente creado");
     
         model = ModelDownEmployee(model_path);
         model.predictModel(pathCSVInput, OutputFile);
