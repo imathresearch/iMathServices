@@ -67,16 +67,16 @@ class ModelGoCustomer(Model):
         Class Model from iMathMasMovil.core.model   
     '''
      
-    def __init__(self, classifierType=None):
-        super(ModelGoCustomer, self).__init__(classifierType)
+    def __init__(self, configurationPath, tableModel, tableData, columnName, service, classifierType=None):
+        super(ModelGoCustomer, self).__init__(configurationPath, tableModel, tableData, columnName, service, classifierType)
 
-    def loadModel(self, table, service):
+    def loadModel(self, tableModel, service):
         """Abstract method to be implemented in one of the subclasses
         Args:
           dataFile (string): The file where the model, previously created and saved, resides.        
         """
         
-        query = 'select * from imathservices."' + table + '" where "nameModel" = ' + "'" + service + "';"
+        query = 'select * from imathservices."' + tableModel + '" where "nameModel" = ' + "'" + service + "';"
         MatrixData = self.connection.getQueryMatrixFormat(query)
         
         self.toSave = self.serialization.getLoads(MatrixData[1])
@@ -114,9 +114,9 @@ class ModelGoCustomer(Model):
         [self.headerTrain, self.XData, self.YData] = io.readTrainDataModelFileFloat(fileDesc);
         io.closeFile(fileDesc);'''
         
-        query = 'SELECT * FROM imathservices."' + tableData + '" where "' + columnName + '" = "0";'        
+        query = 'SELECT * FROM imathservices."' + tableData + '" where "' + columnName + '" = ' + "'" + "0" + "';"    
         AllData = self.connection.getQueryMatrixFormat(query)
-        [self.headerTrain,self.XData,self.YData] = [self.connection.getColumnNames(tableModel),AllData[:,1:-2],AllData[:,:-1]]
+        [self.headerTrain,self.XData,self.YData] = [self.connection.getColumnNames(tableModel),AllData[:,1:-2],AllData[:,-1:]]
         
         try:        
             self.__checkTrainDataFormat();
@@ -189,7 +189,7 @@ class ModelGoCustomer(Model):
         fileDesc = io.openFile(dataFile, 'r+');
         [self.headerPredict, self.XData] = io.readPredictDataModelFileFloat(fileDesc);'''
         
-        query = 'SELECT * FROM imathservices."' + tableData + '" where "' + columnName + '" = "2";'        
+        query = 'SELECT * FROM imathservices."' + tableData + '" where "' + columnName +  + '" = ' + "'" + "2" + "';"       
         AllData = self.connection.getQueryMatrixFormat(query)
         [self.headerTrain,self.XData] = [self.connection.getColumnNames(tableModel),AllData[:,1:-2]]
         
@@ -222,9 +222,9 @@ class ModelGoCustomer(Model):
         fileDesc = io.openFile(dataFile, 'r+');
         [self.headerTest, self.XData, self.YData] = io.readTestDataModelFileFloat(fileDesc);'''
         
-        query = 'SELECT * FROM imathservices."' + tableData + '" where "' + columnName + '" = "1";'        
+        query = 'SELECT * FROM imathservices."' + tableData + '" where "' + columnName + '" = ' + "'" + "1" + "';"        
         AllData = self.connection.getQueryMatrixFormat(query)
-        [self.headerTrain,self.XData,self.YData] = [self.connection.getColumnNames(tableModel),AllData[:,1:-2],AllData[:,:-1]]
+        [self.headerTrain,self.XData,self.YData] = [self.connection.getColumnNames(tableModel),AllData[:,1:-2],AllData[:,-1:]]
         
         try:        
             self.__checkTestDataFormat();

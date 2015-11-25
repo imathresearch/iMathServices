@@ -23,7 +23,7 @@ from iMathModelosPredictivos.common.util.serialization.Serialization import Seri
     
 class Model(object):
         
-    def __init__(self, classifierType=None):
+    def __init__(self, configurationPath, tableModel, tableData, columnName, service, classifierType=None):
         """
         Args:
           dataFile (string): The file where the data to create the model resides.
@@ -31,16 +31,16 @@ class Model(object):
               We will probably offer several classifier to create the same model
               If classifierType is equal to None it means the dataFile contains a model previously created.    
         """
-        self.connection = PostgreslManage("/home/izubizarreta/git/iMathServices/iMathModelosPredictivos/data/ConfigurationValues/ConfigurationValuesPostgresql.txt")
+        self.connection = PostgreslManage(configurationPath)
         self.serialization = Serialization()
         
         if classifierType != None:            
-            self.createModel(classifierType);
+            self.createModel(tableModel, tableData, columnName, classifierType);
         else:
-            self.loadModel();
+            self.loadModel(tableModel, service);
     
     @abc.abstractmethod 
-    def loadModel(self, table, service):
+    def loadModel(self, tableModel, service):
         """Abstract method to be implemented in one of the subclasses
         Args:
           dataFile (string): The file where the model, previously created and saved, resides.        

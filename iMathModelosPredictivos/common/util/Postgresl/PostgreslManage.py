@@ -35,7 +35,7 @@ class PostgreslManage(object):
     
     def getColumnNames(self,table):
         
-        return self.getColumnNames(table)
+        return self.ConnectionBBDD.getColumnNames(table)
     
     def setStoreModel(self,table,parameters):
         
