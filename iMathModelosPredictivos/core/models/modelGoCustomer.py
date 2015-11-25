@@ -97,7 +97,9 @@ class ModelGoCustomer(Model):
         self.imputatorCategorical = self.toSave['imputatorCategorical'];
         self.scaler = self.toSave['scaler'];
         # self.binaryEncoder = self.toSave['binaryEncoder'];
-        self.feature_selector = self.toSave['featureSelector'] 
+        self.feature_selector = self.toSave['featureSelector']
+        
+        self.key = self.toSave['key']
         # self.svmOutliers = self.toSave['svmOutliers']; 
         # self.PCAReduction = self.toSave['PCAReduction'];
         self.columnMetaData = self.toSave['columnMetaData'];
@@ -176,13 +178,15 @@ class ModelGoCustomer(Model):
         self.toSave['featureSelector'] = self.feature_selector
         self.toSave['columnMetaData'] = self.columnMetaData
         
-        ModelSerialization = self.serialization.getDumps(self.toSave)
+        self.key = self.connection.getPrimaryKey(tableModel)
         
-        key = self.connection.getPrimaryKey(tableModel)
+        self.toSave['key'] = self.key
+        
+        ModelSerialization = self.serialization.getDumps(self.toSave)
         
         dates = DateOperations()
         
-        parameters = [key,service,ModelSerialization,self.quality,0,dates.getActualDate()]
+        parameters = [self.key,service,ModelSerialization,self.quality,0,dates.getActualDate()]
         
         self.connection.setStoreModel(tableModel, parameters, service)
         '''io = IOOperations(); 
@@ -191,7 +195,7 @@ class ModelGoCustomer(Model):
         pickle.dump(self.toSave, fileDesc);
         io.closeFile(fileDesc);'''
 
-    def predictModel(self, tableModel, tableData, columnName):
+    def predictModel(self, tableResults, tableData, columnName):
         """Abstract method to be implemented in one of the subclasses
         Args:
           dataFile (string): The file where the data to be classified resides.
@@ -204,7 +208,7 @@ class ModelGoCustomer(Model):
         
         query = 'SELECT * FROM imathservices."' + tableData + '" where "' + columnName +  + '" = ' + "'" + "2" + "';"       
         AllData = self.connection.getQueryMatrixFormat(query)
-        [self.headerTrain,self.XData] = [self.connection.getPredictionHeadersHeaders(tableData),AllData[:,1:-2]]
+        [self.headerPredict,self.XData] = [self.connection.getPredictionHeadersHeaders(tableData),AllData[:,1:-2]]
         
         try:        
             self.__checkPredictDataFormat();
@@ -224,7 +228,7 @@ class ModelGoCustomer(Model):
             #self.__generatePredictionFile(outputFile, ID, prediction, predictionProb)
             #print "[iMathResearch] Prediccion generada por el modelo guardada en el fichero " + outputFile
     
-    def testModel(self, tableModel, tableData, columnName):
+    def testModel(self, tableResults, tableData, columnName):
         """Abstract method to be implemented in one of the subclasses
         Args:
           dataFile (string): The file where the data to be classified resides.
@@ -237,7 +241,7 @@ class ModelGoCustomer(Model):
         
         query = 'SELECT * FROM imathservices."' + tableData + '" where "' + columnName + '" = ' + "'" + "1" + "';"        
         AllData = self.connection.getQueryMatrixFormat(query)
-        [self.headerTrain,self.XData,self.YData] = [self.connection.getTestHeaders(tableData),AllData[:,1:-2],AllData[:,-2:-1]]
+        [self.headerTest,self.XData,self.YData] = [self.connection.getTestHeaders(tableData),AllData[:,1:-2],AllData[:,-2:-1]]
         
         try:        
             self.__checkTestDataFormat();
@@ -252,22 +256,21 @@ class ModelGoCustomer(Model):
             prediction = self._predict()
             # prediction[prediction < 1 ] = 0
            
-            self.YData = self.YData.astype(int)
+            #self.YData = self.YData.astype(int)
             predictionProb = self._predictProb()
             # Compute confusion matrix
-            cm = confusion_matrix(self.YData, prediction.astype(int))
+            cm = confusion_matrix(self.YData, prediction)
+            
+            key = self.connection.getPrimaryKey(tableResults)
+        
+            dates = DateOperations()
+            
+            code = [key,self.key, dates.getActualDate(),cm]
+        
+            self.connection.setStoreModelsResults(tableResults, prediction, predictionProb, code)
             #self.__generateTestFileGoDownCustomer(outputFile, self.YData, prediction, predictionProb, cm)
             #print "[iMathResearch] Resultado del testing del modelo guardado en " + outputFile
-
-            # Plot confusion matrix
-            '''            
-            plt.matshow(cm)
-            plt.title('Confusion matrix')
-            plt.colorbar()
-            plt.ylabel('True label')
-            plt.xlabel('Predicted label')
-            plt.show()
-            '''    
+            
     def __splitDataVariableType(self):
         """Divide the variable in two set depending on its type (numerical or categorical)
            The information about how to split the complete set is determined by self.index,
@@ -441,7 +444,7 @@ class ModelGoCustomer(Model):
         # self.ID = np.delete(self.ID, (outliers), axis=0)
         
         #REDUCTION OF VARIABLES
-        self.XData = PCAFeatureReduction(self.XData, self.PCAReduction)
+        #self.XData = PCAFeatureReduction(self.XData, self.PCAReduction)
                      
     
     def _readMetaDataFile(self):

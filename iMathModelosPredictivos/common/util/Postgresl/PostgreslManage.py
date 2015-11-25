@@ -57,9 +57,9 @@ class PostgreslManage(object):
         
         return self.ConnectionBBDD.getObjectData(query)
         
-    def setStoreModelsResults(self,table,data):
+    def setStoreModelsResults(self,table,data, probabilities, codes):
         
-        self.ConnectionBBDD.setDataModelResults(table, data)
+        self.ConnectionBBDD.setDataModelResults(table, data, probabilities, codes)
        
     def closeConnection(self):
     

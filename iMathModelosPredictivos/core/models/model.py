@@ -63,7 +63,7 @@ class Model(object):
         """                
     
     @abc.abstractmethod    
-    def testModel(self, tableModel, tableData, columnName):
+    def testModel(self, tableResults, tableData, columnName):
         """Abstract method to be implemented in one of the subclasses
         Args:
           dataFile (string): The file where the data to be classified resides.
@@ -71,7 +71,7 @@ class Model(object):
         """
    
     @abc.abstractmethod    
-    def predictModel(self, tableModel, tableData, columnName):
+    def predictModel(self, tableResults, tableData, columnName):
         """Abstract method to be implemented in one of the subclasses
         Args:
           dataFile (string): The file where the data to be classified resides.

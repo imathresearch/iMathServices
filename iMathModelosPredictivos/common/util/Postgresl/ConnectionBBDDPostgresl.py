@@ -84,7 +84,7 @@ class ConnectionBBDD(object):
         for result in results:
             exist = result[0]
         return exist
-    
+        
     def getColumnNames(self,table):
         
         query = "SELECT column_name FROM information_schema.columns where table_name = '" + table + "';"
@@ -126,7 +126,7 @@ class ConnectionBBDD(object):
         
         self.db.commit()
         
-    def setDataModelResults(self, table, data):
+    def setDataModelResults(self, table, data, probabilities, codes):
         
         '''This functions stores information about the models results'''
         
@@ -134,16 +134,18 @@ class ConnectionBBDD(object):
         
         for eachdata in data:            
         
-            exist = self.getExist(table)
+            exist = self.getExist(table, "")
             
             if exist==0:
             
-                query =  'INSERT INTO imathservices."' + table + '" VALUES (%s, %s, %s, %s, %s, %s);'
-                cursor.execute(query, data)
+                return 0
+                #query =  'INSERT INTO imathservices."' + table + '" VALUES (%s, %s, %s, %s, %s, %s);'
+                #cursor.execute(query, data)
             
             else:
                 
-                cursor.execute('UPDATE imathservices."' + table + '" SET serializationValue=%s,trainingPercentage=%s,testPercentage=%s,createdDate=%s WHERE id=%s', ("", "", "", "", ""))            
+                return 1
+                #cursor.execute('UPDATE imathservices."' + table + '" SET serializationValue=%s,trainingPercentage=%s,testPercentage=%s,createdDate=%s WHERE id=%s', ("", "", "", "", ""))            
 
             self.db.commit()        
             

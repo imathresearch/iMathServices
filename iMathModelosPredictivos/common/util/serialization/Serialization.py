@@ -12,7 +12,7 @@ class Serialization(object):
         
     def getLoads(self,text):
         
-        return pickle.loads(str.decode("base64"))
+        return pickle.loads(text.decode("base64"))
     
     def getDumps(self,object):
         
