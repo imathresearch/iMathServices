@@ -13,7 +13,7 @@
 import sys
 import os
 
-from iMathModelosPredictivos.core.modelNonPayment import ModelNonPayment
+from iMathModelosPredictivos.core.modelsCSV.modelNonPayment import ModelNonPayment
 from iMathModelosPredictivos.common.constants import CONS
 from iMathModelosPredictivos.common.util.iMathServicesError import iMathServicesError
 from iMathModelosPredictivos.scripts_Impagos.help import showExtendedHelp

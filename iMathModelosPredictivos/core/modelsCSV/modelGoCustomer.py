@@ -29,7 +29,7 @@ Authors:
 
 @author iMath
 """
-from model import Model
+from iMathModelosPredictivos.core.modelsCSV.model import Model
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
@@ -60,14 +60,14 @@ CONS = CONS()
 
 
 
-class ModelDownCustomer(Model):
+class ModelGoCustomer(Model):
     '''
     Extends:
         Class Model from iMathMasMovil.core.model   
     '''
      
     def __init__(self, dataFile, classifierType=None):
-        super(ModelDownCustomer, self).__init__(dataFile, classifierType)
+        super(ModelGoCustomer, self).__init__(dataFile, classifierType)
 
     def loadModel(self, dataFile):
         """Abstract method to be implemented in one of the subclasses
@@ -97,7 +97,7 @@ class ModelDownCustomer(Model):
         self.columnMetaData = self.toSave['columnMetaData'];
         io.closeFile(fileDesc);
         print "[iMathResearch] Modelo basado en " + self.name + " cargado"
-        
+
     def createModel(self, dataFile, classifierType):
         """Abstract method to be implemented in one of the subclasses
         Args:
@@ -138,8 +138,7 @@ class ModelDownCustomer(Model):
                 raise iMathServicesError("Clasificador no valido");
               
             quality = self.accuracyPercentage();
-            print "[iMathResearch] Modelo basado en " + self.name + " creado. Calidad igual a %.3f" % quality
-
+            print "[iMathResearch] Modelo basado en " + self.name + " creado. Calidad igual a %.3f" % quality        
     
     def createModelWithoutChange(self, dataFile, classifierType):
         """Abstract method to be implemented in one of the subclasses
@@ -150,6 +149,7 @@ class ModelDownCustomer(Model):
         """ 
         self._generateMetaData();
         # Open and read data
+        
         io = IOOperations(); 
         fileDesc = io.openFile(dataFile, 'r+');
         [self.headerTrain, self.XData, self.YData] = io.readTrainDataModelFileAbandonoTerminacion(fileDesc);
@@ -158,15 +158,15 @@ class ModelDownCustomer(Model):
         # CODE FOR SIMPLE MODELS
         # Create the model
         self.classiferClass = classifierType
-        if classifierType == DecisionTreeClassifier:
+        if self.classiferClass == DecisionTreeClassifier:
             print "[iMathResearch] Creando modelo basado en Decision Trees"
             self._fit();  # for DT
             self.name = "DecisionTree"
-        elif classifierType == SVC:
+        elif self.classiferClass == SVC:
             print "[iMathResearch] Creando modelo basado en SVC"
             self._fit(probability=True);
             self.name = "SVC"
-        elif classifierType == RandomForestClassifier:
+        elif self.classiferClass == RandomForestClassifier:
             print "[iMathResearch] Creando modelo basado en Random Forest"
             self._fit(n_estimators=10)  # for random forest
             self.name = "RandomForest"
@@ -272,6 +272,7 @@ class ModelDownCustomer(Model):
             plt.xlabel('Predicted label')
             plt.show()
             '''
+
     
     def predictModelWithoutChange(self, dataFile, outputFile):
         """Abstract method to be implemented in one of the subclasses
@@ -279,23 +280,22 @@ class ModelDownCustomer(Model):
           dataFile (string): The file where the data to be classified resides.
           outputFile (string): String that indicates the complete path of the file where the prediction is going to be saved. 
         """
-        # Open and read data
+                # Open and read data
         io = IOOperations(); 
         fileDesc = io.openFile(dataFile, 'r+');
         [self.headerTrain, self.XData, self.YData] = io.readTrainDataModelFileAbandonoTerminacion(fileDesc);
         io.closeFile(fileDesc)
 
-        ID = self.XData[:, 0]      
+        ID = self.XData[:, 0]            
             
         # CODE FOR SIMPLE MODEL
         prediction = self._predict()
         prediction[prediction < 1 ] = 0
-        '''self.YData = self.YData.astype(np.int)'''
         predictionProb = self._predictProb()
-          
-        self.__generateTestFileGoDownCustomer(outputFile, ID, prediction, predictionProb)
+ 
+        self.__generatePredictionFileGoDownCustomer(outputFile, ID, prediction, predictionProb)
         print "[iMathResearch] Prediccion generada por el modelo guardada en el fichero " + outputFile
-                
+    
     def testModelWithoutChange(self, dataFile, outputFile):
         """Abstract method to be implemented in one of the subclasses
         Args:
@@ -309,15 +309,15 @@ class ModelDownCustomer(Model):
         io.closeFile(fileDesc)
             
         # CODE FOR SIMPLE MODEL
-            
+           
         prediction = self._predict()
         prediction[prediction < 1 ] = 0 
-        # self.YData = self.YData.astype(np.int)
+        # self.YData = map(int,self.YData)
         predictionProb = self._predictProb()
         # Compute confusion matrix
         cm = confusion_matrix(self.YData, prediction)
         self.__generateTestFileGoDownCustomer(outputFile, self.YData, prediction, predictionProb, cm)
-        print "[iMathResearch] Resultado del testing del modelo guardado en " + outputFile
+        print "[iMathResearch] Resultado del testing del modelo guardado en " + outputFile           
     
     def __splitDataVariableType(self):
         """Divide the variable in two set depending on its type (numerical or categorical)
@@ -327,7 +327,7 @@ class ModelDownCustomer(Model):
             numerical (numpy array): contains the values for the numerical variables
             categorical (numpy array): contains the values for the categorical variables  
         """
-        numerical = self.XData[:, self.index['numerical']]
+        numerical = self.XData[:, self.index['numerical']]         
         categorical = self.XData[:, self.index['categorical']]
         return [numerical, categorical]
         
@@ -503,7 +503,7 @@ class ModelDownCustomer(Model):
             - which categorical variables must be binarised using 1HOT method
             - which categorical variables must be binarised using NHOT method
         """
-        lines = [line.strip() for line in open(CONS.MODEL_FILE_METADATA_DOWNCUSTOMER)]
+        lines = [line.strip() for line in open(CONS.MODEL_FILE_METADATA_GOCUSTOMER)]
         count = 0;
         while count < len(lines):
             if (lines[count] == '<variable train format>'):
@@ -751,7 +751,7 @@ class ModelDownCustomer(Model):
             prediction (numpy array): for each sample, the predicted class
             predictionProb (numpy array): for each sample the array contains the probability of beloging to each class
             mc : confusion matrix
-        """
+        """        
         content = []
         header = ['Clase real', 'Clase predicha', "----"]    
         header.append("Prob")
@@ -779,7 +779,68 @@ class ModelDownCustomer(Model):
             f.write("TOTAL DE MUESTRAS A PREDECIR " + str(total) + ". ACIERTOS " + str(hit) + '\n')
             f.write('\n')
             if mc is not None:
-                f.write('MATRIZ DE CONFUSION (Eje x -- Subscripciones Reales ( si o no)--, Eje y -- Subscripciones Predichas ( si o no)--)\n')
+                f.write('MATRIZ DE CONFUSION (Eje x -- Subscripciones Reales ( Baja si o baja no)--, Eje y -- Subscripciones Predichas (Baja si baja no)--)\n')
+                np.savetxt(f, mc, fmt='%10.0f');                
+                f.write('\n')
+            f.write ("PREDICCION DETALLADA \n")
+            writer = csv.writer(f, lineterminator="\n")
+            writer.writerows(content)
+
+    
+    def __generateTestFilePrevious(self, outputFile, ID, prediction, predictionProb, mc=None):
+        """Generate the test file when the model is based on a simple model.
+        We have implemented a relaxed quality measure. For this reason, in the test file
+        hits and relaxed hits are diferentiated.
+        Args:
+            outputFile (string): string that contains the complete path of the file where the result is going to be stored
+            ID (numpy array): for each sample the real class 
+            prediction (numpy array): for each sample, the predicted class
+            predictionProb (numpy array): for each sample the array contains the probability of beloging to each class
+            mc : confusion matrix
+        """
+        content = []
+        header = ['Clase real', 'Clase predicha', "----"]    
+        header.append("Prob CL-bajo")
+        header.append("Prob CL-medio")
+        header.append("Prob CL-alto")  
+        header.append("----")
+        header.append("Acierto")
+        header.append("Acierto relajado")
+        content.append(header)
+        
+        hit = 0
+        hit_relaxed = 0
+        for indexSample in range(len(ID)):
+            sample = []
+            sample.append(ID[indexSample])
+            sample.append(prediction[indexSample])
+            sample.append("----")
+            for numCls in range(3):
+                sample.append(predictionProb[indexSample][numCls])            
+            sample.append("----")
+            if int(ID[indexSample]) == prediction[indexSample]:
+                hit = hit + 1;
+                sample.append("X")
+                sample.append("*")
+            else:
+                dic_prob = dict(enumerate(predictionProb[indexSample]))
+                sorted_prob = sorted(dic_prob.items(), key=operator.itemgetter(1), reverse=True)
+                if sorted_prob[1][0] == ID[indexSample]:
+                    hit_relaxed = hit_relaxed + 1
+                    sample.append("X")
+                    sample.append("X")
+                else:
+                    sample.append("*")
+                    sample.append("*")
+                    
+            content.append(sample)
+               
+        with open(outputFile, "w+") as f:
+            total = len(ID)
+            f.write("TOTAL DE MUESTRAS A PREDECIR " + str(total) + ". ACIERTOS " + str(hit) + ". ACIERTOS RELAJADOS " + str(hit_relaxed) + '\n')
+            f.write('\n')
+            if mc is not None:
+                f.write('MATRIZ DE CONFUSION (Eje x -- Subscripciones Reales ( Bajo valor, Medio valor, Alto valor)--, Eje y -- Subscripciones Predichas (Bajo valor, Medio valor, Alto valor)--)\n')
                 np.savetxt(f, mc, fmt='%10.0f');                
                 f.write('\n')
             f.write ("PREDICCION DETALLADA \n")
@@ -848,7 +909,8 @@ class ModelDownCustomer(Model):
             f.write ("PREDICCION DETALLADA \n")
             writer = csv.writer(f, lineterminator="\n")
             writer.writerows(content)
-    
+
+
     def getFinalPrediction(self, tuple_class_prediction, tuple_prob_prediction):
         """Calculate the final prediction when the model is based on the combination of 3 binary models
         Args:
@@ -958,7 +1020,7 @@ class ModelDownCustomer(Model):
                 hit = hit + 1
 
         return (float(hit) / len(YPredProb))
-    
+                
     def accuracyProb(self):
         """Calculate the hit percentage when the model is based on the a simple model, having in mind relaxed conditions
             We consider a hit when the one of the two classes with greater probability matches with the real class

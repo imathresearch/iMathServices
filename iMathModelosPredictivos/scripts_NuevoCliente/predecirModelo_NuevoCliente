@@ -13,7 +13,7 @@
 import sys
 import os
 
-from iMathModelosPredictivos.core.modelNewCustomer import ModelNewCustomer
+from iMathModelosPredictivos.core.modelsCSV.modelNewCustomer import ModelNewCustomer
 from iMathModelosPredictivos.common.constants import CONS
 from iMathModelosPredictivos.common.util.iMathServicesError import iMathServicesError
 from iMathModelosPredictivos.scripts_NuevoCliente.help import showExtendedHelp

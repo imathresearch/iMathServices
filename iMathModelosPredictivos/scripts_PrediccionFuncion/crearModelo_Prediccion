@@ -3,7 +3,7 @@
 import sys
 import os
 
-from iMathModelosPredictivos.core.modelPredictPosition import ModelPredictUserPosition
+from iMathModelosPredictivos.core.modelsCSV.modelPredictPosition import ModelPredictUserPosition
 from iMathModelosPredictivos.core.SignalPrediction.Data.constants import CONS
 
 from sklearn.tree import DecisionTreeClassifier

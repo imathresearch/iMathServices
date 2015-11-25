@@ -9,7 +9,7 @@ from iMathModelosPredictivos.core.SignalPrediction.util.CSV import CSVClass
 from iMathModelosPredictivos.common.util.ConnectionBBDDMysql import ConnectionBBDD
 from iMathModelosPredictivos.core.SignalPrediction.util.DatesTimes import DatesTimes
 from iMathModelosPredictivos.core.SignalPrediction.Data.StringOperations import StringOperations
-from iMathModelosPredictivos.core.modelPredictPosition import ModelPredictUserPosition
+from iMathModelosPredictivos.core.modelsCSV.modelPredictPosition import ModelPredictUserPosition
 from iMathModelosPredictivos.core.SignalPrediction.Classes.NeuralNetworkCalculation import NeuralNetworkCalculation
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import SVC

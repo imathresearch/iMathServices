@@ -1,4 +1,4 @@
-from iMathModelosPredictivos.core.modelUpCrossSelling import ModelUpCrossSelling
+from iMathModelosPredictivos.core.modelsCSV.modelUpCrossSelling import ModelUpCrossSelling
 
 
 # dataFile = '/home/andrea/MasMovilIbercom/DataAnalysis/entrega3/analisis_bonos/amazon/subscripcionesPrepago_listabonos_TRAIN.csv'

@@ -31,7 +31,7 @@ Authors:
 
 @author iMath
 """
-from model import Model
+from iMathModelosPredictivos.core.modelsCSV.model import Model
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier

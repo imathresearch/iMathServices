@@ -19,7 +19,7 @@ Created on 15/06/2015
 import sys
 import os
 
-from iMathModelosPredictivos.core.modelUpCrossSelling import ModelUpCrossSelling
+from iMathModelosPredictivos.core.modelsCSV.modelUpCrossSelling import ModelUpCrossSelling
 from iMathModelosPredictivos.common.constants import CONS
 from iMathModelosPredictivos.common.util.iMathServicesError import iMathServicesError
 from iMathModelosPredictivos.scripts_UpCrossSelling.help import showExtendedHelp

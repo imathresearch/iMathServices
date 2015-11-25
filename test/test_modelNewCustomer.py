@@ -3,7 +3,7 @@ Created on 18/06/2015
 
 @author: andrea
 '''
-from iMathModelosPredictivos.core.modelNewCustomer import ModelNewCustomer
+from iMathModelosPredictivos.core.modelsCSV.modelNewCustomer import ModelNewCustomer
 from iMathModelosPredictivos.common.constants import CONS
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import SVC

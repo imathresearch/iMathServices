@@ -1,7 +1,7 @@
 '''
 @author: inigo
 '''
-from iMathModelosPredictivos.core.modelGoCustomer import ModelGoCustomer
+from iMathModelosPredictivos.core.modelsCSV.modelGoCustomer import ModelGoCustomer
 from sklearn.tree import DecisionTreeClassifier
 from iMathModelosPredictivos.common.constants import CONS
 from sklearn.svm import SVC

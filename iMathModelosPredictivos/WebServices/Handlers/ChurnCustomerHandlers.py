@@ -9,7 +9,7 @@ import tornado.web
 
 import os
 
-from iMathModelosPredictivos.core.modelGoCustomer import ModelGoCustomer
+from iMathModelosPredictivos.core.modelsCSV.modelGoCustomer import ModelGoCustomer
 from iMathModelosPredictivos.common.constants import CONS
 from iMathModelosPredictivos.common.util.iMathServicesError import iMathServicesError
 from iMathModelosPredictivos.scripts_Baja.help import showExtendedHelp

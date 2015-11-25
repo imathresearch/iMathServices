@@ -13,7 +13,7 @@
 import sys
 import os
 
-from iMathModelosPredictivos.core.modelDownEmployee import ModelDownEmployee
+from iMathModelosPredictivos.core.modelsCSV.modelGoEmployee import ModelGoEmployee
 from iMathModelosPredictivos.common.constants import CONS
 from iMathModelosPredictivos.common.util.iMathServicesError import iMathServicesError
 from iMathModelosPredictivos.scripts_Baja.help import showExtendedHelp
@@ -49,7 +49,7 @@ try:
         raise iMathServicesError("El modelo " +   modelName  + " no ha sido previamente creado");
     
     print ""
-    model = ModelDownEmployee(model_path);
+    model = ModelGoEmployee(model_path);
     model.predictModel(dataFile, predictionOutputFile);
     print ""
     

@@ -1,7 +1,7 @@
 '''
 @author: andrea
 '''
-from iMathModelosPredictivos.core.modelNewCustomer import ModelNewCustomer
+from iMathModelosPredictivos.core.modelsCSV.modelNewCustomer import ModelNewCustomer
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier

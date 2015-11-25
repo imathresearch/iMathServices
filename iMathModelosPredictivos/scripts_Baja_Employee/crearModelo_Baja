@@ -13,7 +13,7 @@
 import sys
 import os
 
-from iMathModelosPredictivos.core.modelDownEmployee import ModelDownEmployee
+from iMathModelosPredictivos.core.modelsCSV.modelGoEmployee import ModelGoEmployee
 from iMathModelosPredictivos.common.constants import CONS
 from iMathModelosPredictivos.common.util.iMathServicesError import iMathServicesError
 from iMathModelosPredictivos.scripts_Baja.help import showExtendedHelp
@@ -57,7 +57,7 @@ try:
         raise iMathServicesError("El clasificador " + classifierType + " no es valido")
         
     print ""
-    model = ModelDownEmployee(dataFile, classifier);
+    model = ModelGoEmployee(dataFile, classifier);
     model.saveModel(CONS.MODEL_FILE_LOCATION + modelName + '.txt');
     print "[iMathResearch] Para testear el modelo, ejecutar:  testearModelo_Impagos " + dataFile + " " +  modelName  + " <fichero salida>"
     print "[iMathResearch] Para usar la prediccion del modelo, ejecutar: predecirModelo_Impagos <fichero entrada> " + modelName + " <fichero salida>"

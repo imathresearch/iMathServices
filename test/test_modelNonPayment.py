@@ -1,4 +1,4 @@
-from iMathModelosPredictivos.core.modelNonPayment import ModelNonPayment
+from iMathModelosPredictivos.core.modelsCSV.modelNonPayment import ModelNonPayment
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
