@@ -37,9 +37,25 @@ class PostgreslManage(object):
         
         return self.ConnectionBBDD.getColumnNames(table)
     
-    def setStoreModel(self,table,parameters):
+    def getTrainingHeaders(self,table):
         
-        self.ConnectionBBDD.setDataModel(table, parameters)
+        return self.ConnectionBBDD.getColumnTrain(table)
+    
+    def getTestHeaders(self,table):
+        
+        return self.ConnectionBBDD.getColumnTest(table)
+
+    def getPredictionHeaders(self,table):
+        
+        return self.ConnectionBBDD.getColumnPredict(table)
+    
+    def setStoreModel(self,table,parameters, serviceValue):
+        
+        self.ConnectionBBDD.setDataModel(table, parameters, serviceValue)
+        
+    def getObjectValue(self, query):
+        
+        return self.ConnectionBBDD.getObjectData(query)
         
     def setStoreModelsResults(self,table,data):
         

@@ -56,7 +56,7 @@ class Model(object):
         """                
     
     @abc.abstractmethod
-    def saveModel(self, tableModel):        
+    def saveModel(self, tableModel, service):        
         """Abstract method to be implemented in one of the subclasses
         Args:
           pathFile (string): String that indicates the complete path of the file where the created model is going to be saved.          

@@ -63,6 +63,11 @@ class ConnectionBBDD(object):
         AllData = np.asarray(AllData, dtype="|S50")
         return AllData
     
+    def getObjectData(self,query):
+        
+        results = self.getFetch(query)
+        return results[0][2]
+    
     def getNextPrimaryKey(self, table):
         
         query = self.getMaxValueTable(table)
@@ -72,9 +77,9 @@ class ConnectionBBDD(object):
         max = max + 1
         return max
     
-    def getExist(self, table):
+    def getExist(self, table, serviceValue):
         
-        query = 'select count(*) from imathservices."' + table + '";'
+        query = 'select count(*) from imathservices."' + table + '" where "nameModel" = ' + "'" + serviceValue + "';"
         results = self.getFetch(query)
         for result in results:
             exist = result[0]
@@ -85,14 +90,29 @@ class ConnectionBBDD(object):
         query = "SELECT column_name FROM information_schema.columns where table_name = '" + table + "';"
         MatrixData = self.getResults(query)
         return MatrixData
+    
+    def getColumnTrain(self,table):
+        
+        MatrixData = self.getColumnNames(table)
+        return MatrixData[1:-1]
+    
+    def getColumnTest(self,table):
+        
+        MatrixData = self.getColumnNames(table)
+        return MatrixData[1:-1]
 
-    def setDataModel(self, table, parameters):
+    def getColumnPredict(self,table):
+        
+        MatrixData = self.getColumnNames(table)
+        return MatrixData[0:-2]    
+
+    def setDataModel(self, table, parameters, serviceValue):
         
         '''This functions stores information about the model'''
         
         cursor = self.db.cursor()
         
-        exist = self.getExist(table)
+        exist = self.getExist(table, serviceValue)
         
         if exist==0:
         
@@ -101,7 +121,8 @@ class ConnectionBBDD(object):
         
         else:
             
-            cursor.execute('UPDATE imathservices."' + table + '" SET serializationValue=%s,trainingPercentage=%s,testPercentage=%s,createdDate=%s WHERE Id=%s', ("", "", "", "", ""))
+            parametersStore = [parameters[2],parameters[3],parameters[4],parameters[5],parameters[1]]
+            cursor.execute('UPDATE imathservices."' + table + '" SET "serializationValue"=%s,"trainingPercentage"=%s,"testPercentage"=%s,"createdDate"=%s WHERE "nameModel"=%s', parametersStore)
         
         self.db.commit()
         
@@ -118,12 +139,11 @@ class ConnectionBBDD(object):
             if exist==0:
             
                 query =  'INSERT INTO imathservices."' + table + '" VALUES (%s, %s, %s, %s, %s, %s);'
+                cursor.execute(query, data)
             
             else:
                 
-                cursor.execute('UPDATE imathservices."' + table + '" SET serializationValue=%s,trainingPercentage=%s,testPercentage=%s,createdDate=%s WHERE Id=%s', ("", "", "", "", ""))
-
-            cursor.execute(query, data)
+                cursor.execute('UPDATE imathservices."' + table + '" SET serializationValue=%s,trainingPercentage=%s,testPercentage=%s,createdDate=%s WHERE id=%s', ("", "", "", "", ""))            
 
             self.db.commit()        
             

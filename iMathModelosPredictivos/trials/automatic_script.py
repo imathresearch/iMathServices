@@ -11,4 +11,10 @@ import os
 
 model = ModelGoCustomer("/home/izubizarreta/git/iMathServices/iMathModelosPredictivos/data/ConfigurationValues/ConfigurationValuesPostgresql.txt","Model","Data","operationData","ChurnCustomer",RandomForestClassifier)
 
+model.saveModel("Model", "ChurnCustomer")
+
+model2 = ModelGoCustomer("/home/izubizarreta/git/iMathServices/iMathModelosPredictivos/data/ConfigurationValues/ConfigurationValuesPostgresql.txt","Model","Data","operationData","ChurnCustomer")
+
+model2.testModel("Model", "Data", "operationData")
+
 print "Finished"

@@ -39,6 +39,8 @@ from sklearn.metrics import confusion_matrix
 # import matplotlib.pyplot as plt
 import pickle
 import operator
+import os
+import iMathModelosPredictivos as module
 
 from iMathModelosPredictivos.common.util.miningUtil import KFold
 from iMathModelosPredictivos.common.util.miningUtil import KFoldProb
@@ -56,6 +58,7 @@ from iMathModelosPredictivos.common.util.iMathServicesError import iMathServices
 from iMathModelosPredictivos.common.util.miningUtil import generateRandomValue
 from iMathModelosPredictivos.common.constants import CONS
 from iMathModelosPredictivos.common.util.Postgresl.PostgreslManage import PostgreslManage
+from iMathModelosPredictivos.common.util.datesOperations import DateOperations
 
 CONS = CONS()
 
@@ -77,9 +80,9 @@ class ModelGoCustomer(Model):
         """
         
         query = 'select * from imathservices."' + tableModel + '" where "nameModel" = ' + "'" + service + "';"
-        MatrixData = self.connection.getQueryMatrixFormat(query)
+        objectData = self.connection.getObjectValue(query)
         
-        self.toSave = self.serialization.getLoads(MatrixData[1])
+        self.toSave = self.serialization.getLoads(objectData)
         
         # MODELS 
         self.model = self.toSave['model']
@@ -116,7 +119,7 @@ class ModelGoCustomer(Model):
         
         query = 'SELECT * FROM imathservices."' + tableData + '" where "' + columnName + '" = ' + "'" + "0" + "';"    
         AllData = self.connection.getQueryMatrixFormat(query)
-        [self.headerTrain,self.XData,self.YData] = [self.connection.getColumnNames(tableModel),AllData[:,1:-2],AllData[:,-1:]]
+        [self.headerTrain,self.XData,self.YData] = [self.connection.getTrainingHeaders(tableData),AllData[:,1:-2],AllData[:,-2:-1]]
         
         try:        
             self.__checkTrainDataFormat();
@@ -145,9 +148,11 @@ class ModelGoCustomer(Model):
                 raise iMathServicesError("Clasificador no valido");
               
             quality = self.accuracyPercentage();
+            self.quality = quality
+            
             print "[iMathResearch] Modelo basado en " + self.name + " creado. Calidad igual a %.3f" % quality        
     
-    def saveModel(self, tableModel):        
+    def saveModel(self, tableModel, service):        
         """Abstract method to be implemented in one of the subclasses
         Args:
           pathFile (string): String that indicates the complete path of the file where the created model is going to be saved.          
@@ -172,6 +177,14 @@ class ModelGoCustomer(Model):
         self.toSave['columnMetaData'] = self.columnMetaData
         
         ModelSerialization = self.serialization.getDumps(self.toSave)
+        
+        key = self.connection.getPrimaryKey(tableModel)
+        
+        dates = DateOperations()
+        
+        parameters = [key,service,ModelSerialization,self.quality,0,dates.getActualDate()]
+        
+        self.connection.setStoreModel(tableModel, parameters, service)
         '''io = IOOperations(); 
         print "[iMathResearch] Guardando modelo basado en " + self.name + " en el fichero " + pathFile
         fileDesc = io.openFile(pathFile, 'w+');
@@ -191,7 +204,7 @@ class ModelGoCustomer(Model):
         
         query = 'SELECT * FROM imathservices."' + tableData + '" where "' + columnName +  + '" = ' + "'" + "2" + "';"       
         AllData = self.connection.getQueryMatrixFormat(query)
-        [self.headerTrain,self.XData] = [self.connection.getColumnNames(tableModel),AllData[:,1:-2]]
+        [self.headerTrain,self.XData] = [self.connection.getPredictionHeadersHeaders(tableData),AllData[:,1:-2]]
         
         try:        
             self.__checkPredictDataFormat();
@@ -224,7 +237,7 @@ class ModelGoCustomer(Model):
         
         query = 'SELECT * FROM imathservices."' + tableData + '" where "' + columnName + '" = ' + "'" + "1" + "';"        
         AllData = self.connection.getQueryMatrixFormat(query)
-        [self.headerTrain,self.XData,self.YData] = [self.connection.getColumnNames(tableModel),AllData[:,1:-2],AllData[:,-1:]]
+        [self.headerTrain,self.XData,self.YData] = [self.connection.getTestHeaders(tableData),AllData[:,1:-2],AllData[:,-2:-1]]
         
         try:        
             self.__checkTestDataFormat();
@@ -254,54 +267,7 @@ class ModelGoCustomer(Model):
             plt.ylabel('True label')
             plt.xlabel('Predicted label')
             plt.show()
-            '''
-
-    
-    def predictModelWithoutChange(self, dataFile, outputFile):
-        """Abstract method to be implemented in one of the subclasses
-        Args:
-          dataFile (string): The file where the data to be classified resides.
-          outputFile (string): String that indicates the complete path of the file where the prediction is going to be saved. 
-        """
-                # Open and read data
-        io = IOOperations(); 
-        fileDesc = io.openFile(dataFile, 'r+');
-        [self.headerTrain, self.XData, self.YData] = io.readTrainDataModelFileAbandonoTerminacion(fileDesc);
-        io.closeFile(fileDesc)
-
-        ID = self.XData[:, 0]            
-            
-        # CODE FOR SIMPLE MODEL
-        prediction = self._predict()
-        prediction[prediction < 1 ] = 0
-        predictionProb = self._predictProb()
- 
-        self.__generatePredictionFileGoDownCustomer(outputFile, ID, prediction, predictionProb)
-        print "[iMathResearch] Prediccion generada por el modelo guardada en el fichero " + outputFile
-    
-    def testModelWithoutChange(self, dataFile, outputFile):
-        """Abstract method to be implemented in one of the subclasses
-        Args:
-          dataFile (string): The file where the data to be classified resides.
-          outputFile (string): String that indicates the complete path of the file where the prediction is going to be saved. 
-        """
-        # Open and read data
-        io = IOOperations(); 
-        fileDesc = io.openFile(dataFile, 'r+');
-        [self.headerTrain, self.XData, self.YData] = io.readTrainDataModelFileAbandonoTerminacion(fileDesc);
-        io.closeFile(fileDesc)
-            
-        # CODE FOR SIMPLE MODEL
-           
-        prediction = self._predict()
-        prediction[prediction < 1 ] = 0 
-        # self.YData = map(int,self.YData)
-        predictionProb = self._predictProb()
-        # Compute confusion matrix
-        cm = confusion_matrix(self.YData, prediction)
-        self.__generateTestFileGoDownCustomer(outputFile, self.YData, prediction, predictionProb, cm)
-        print "[iMathResearch] Resultado del testing del modelo guardado en " + outputFile           
-    
+            '''    
     def __splitDataVariableType(self):
         """Divide the variable in two set depending on its type (numerical or categorical)
            The information about how to split the complete set is determined by self.index,
@@ -389,11 +355,11 @@ class ModelGoCustomer(Model):
         [numericalData, categoricalData] = self.__splitDataVariableType();                
         
         # NUMERICAL PREPROCESSING        
-        # 1. IMPUTATION
+        # 1. IMPUTATION                
         [numericalData, self.imputatorNumerical] = numericalImputation(numericalData, strategy='mean')
         # 2. OUTLIERS 
         # The code below should be used to detect and eliminate numericalOutliers
-        # [numericalData, categoricalData] = self._numericalOutlier(numericalData, categoricalData)
+        #[numericalData, categoricalData] = self._numericalOutlier(numericalData, categoricalData)
         # 3. NORMALIZATION    
         [numericalData, self.scaler] = maxminScaler(numericalData);
                
@@ -402,7 +368,7 @@ class ModelGoCustomer(Model):
         [categoricalData, self.imputatorCategorical] = categoricalImputation(categoricalData)
         # 2. OUTLIERS
         # The code below should be used to detect and elimanate categoricalOutliers
-        # [categoricalData, numericalData] = self._categoricalOutlier(categoricalData, numericalData)
+        #[categoricalData, numericalData] = self._categoricalOutlier(categoricalData, numericalData)
         # 3. BINARIZATION    
         binarizerData = []
         for column in range(categoricalData.shape[1]):
@@ -411,8 +377,9 @@ class ModelGoCustomer(Model):
                 [self.columnMetaData[varIndex]['values'], binarizerColumn, self.columnMetaData[varIndex]['encoder']] = binarizer(categoricalData[:, column], self.columnMetaData[varIndex]['codification'])
             else:
                 [self.columnMetaData[varIndex]['values'], binarizerColumn] = binarizer(categoricalData[:, column], self.columnMetaData[varIndex]['codification'])
-                
+
             binarizerData = binarizerData + [binarizerColumn]
+            
         categoricalData = np.column_stack((list for list in binarizerData))
 
         # JOIN VARIABLES
@@ -421,12 +388,12 @@ class ModelGoCustomer(Model):
         [self.XData, self.feature_selector] = featureSelection(self.XData, self.YData)
    
         # OUTLIERS FOR BOTH KIND OF VARIABLES 
-        # [outliers, self.svmOutliers] = svmOutliers(self.XData, 0.2)        
-        # self.XData = np.delete(self.XData, (outliers), axis=0)
-        # self.YData = np.delete(self.YData, (outliers), axis=0)
+        #[outliers, self.svmOutliers] = svmOutliers(self.XData, 0.2)        
+        #self.XData = np.delete(self.XData, (outliers), axis=0)
+        #self.YData = np.delete(self.YData, (outliers), axis=0)
         
         # REDUCTION OF VARIABLES
-        # [self.XData, self.PCAReduction] = PCAFeatureReduction(self.XData)
+        #[self.XData, self.PCAReduction] = PCAFeatureReduction(self.XData)
        
     
     def _preprocessTestData(self):  
@@ -450,7 +417,7 @@ class ModelGoCustomer(Model):
         categoricalData = categoricalImputation(categoricalData, imputator=self.imputatorCategorical)
         # 2. OUTLIERS
         # The code below should be used to detect and elimanate categoricalOutliers
-        # [categoricalData, numericalData] = self._categoricalOutlier(categoricalData, numericalData)
+        #[categoricalData, numericalData] = self._categoricalOutlier(categoricalData, numericalData)
         # 3. BINARIZATION    
         binarizerData = []
         for column in range(categoricalData.shape[1]):
@@ -473,8 +440,8 @@ class ModelGoCustomer(Model):
         # self.XData = np.delete(self.XData, (outliers), axis=0)
         # self.ID = np.delete(self.ID, (outliers), axis=0)
         
-        # REDUCTION OF VARIABLES
-        # self.XData = PCAFeatureReduction(self.XData, self.PCAReduction)
+        #REDUCTION OF VARIABLES
+        self.XData = PCAFeatureReduction(self.XData, self.PCAReduction)
                      
     
     def _readMetaDataFile(self):
@@ -486,7 +453,13 @@ class ModelGoCustomer(Model):
             - which categorical variables must be binarised using 1HOT method
             - which categorical variables must be binarised using NHOT method
         """
-        lines = [line.strip() for line in open(CONS.MODEL_FILE_METADATA_GOCUSTOMER)]
+        path = os.path.dirname(module.__file__)
+        path = path + '/data/BBDDHeaders/metadataGoCustomer.txt'
+        path = str(path)
+        
+        fileOpen = open(path)
+        
+        lines = [line.strip() for line in fileOpen]
         count = 0;
         while count < len(lines):
             if (lines[count] == '<variable train format>'):
