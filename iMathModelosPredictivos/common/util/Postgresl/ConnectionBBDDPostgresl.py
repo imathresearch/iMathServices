@@ -62,7 +62,7 @@ class ConnectionBBDD(object):
             AllData.append(Data)
         AllData = np.asarray(AllData, dtype="|S50")
         return AllData
-
+    
     def getNextPrimaryKey(self, table):
         
         query = self.getMaxValueTable(table)
@@ -79,6 +79,12 @@ class ConnectionBBDD(object):
         for result in results:
             exist = result[0]
         return exist
+    
+    def getColumnNames(self,table):
+        
+        query = "SELECT column_name FROM information_schema.columns where table_name = '" + table + "';"
+        MatrixData = self.getResults(query)
+        return MatrixData
 
     def setDataModel(self, table, parameters):
         

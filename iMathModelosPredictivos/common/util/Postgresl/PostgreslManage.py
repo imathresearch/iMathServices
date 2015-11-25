@@ -33,6 +33,10 @@ class PostgreslManage(object):
         maxValue = self.ConnectionBBDD.getNextPrimaryKey(table)
         return maxValue
     
+    def getColumnNames(self,table):
+        
+        return self.getColumnNames(table)
+    
     def setStoreModel(self,table,parameters):
         
         self.ConnectionBBDD.setDataModel(table, parameters)

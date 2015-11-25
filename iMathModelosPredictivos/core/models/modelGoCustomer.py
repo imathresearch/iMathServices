@@ -55,6 +55,7 @@ from iMathModelosPredictivos.common.util.miningUtil import featureSelection
 from iMathModelosPredictivos.common.util.iMathServicesError import iMathServicesError
 from iMathModelosPredictivos.common.util.miningUtil import generateRandomValue
 from iMathModelosPredictivos.common.constants import CONS
+from iMathModelosPredictivos.common.util.Postgresl.PostgreslManage import PostgreslManage
 
 CONS = CONS()
 
@@ -66,17 +67,19 @@ class ModelGoCustomer(Model):
         Class Model from iMathMasMovil.core.model   
     '''
      
-    def __init__(self, dataFile, classifierType=None):
-        super(ModelGoCustomer, self).__init__(dataFile, classifierType)
+    def __init__(self, classifierType=None):
+        super(ModelGoCustomer, self).__init__(classifierType)
 
-    def loadModel(self, dataFile):
+    def loadModel(self, table, service):
         """Abstract method to be implemented in one of the subclasses
         Args:
           dataFile (string): The file where the model, previously created and saved, resides.        
         """
-        io = IOOperations(); 
-        fileDesc = io.openFile(dataFile, 'r+');
-        self.toSave = pickle.load(fileDesc);
+        
+        query = 'select * from imathservices."' + table + '" where "nameModel" = ' + "'" + service + "';"
+        MatrixData = self.connection.getQueryMatrixFormat(query)
+        
+        self.toSave = self.serialization.getLoads(MatrixData[1])
         
         # MODELS 
         self.model = self.toSave['model']
@@ -95,10 +98,9 @@ class ModelGoCustomer(Model):
         # self.svmOutliers = self.toSave['svmOutliers']; 
         # self.PCAReduction = self.toSave['PCAReduction'];
         self.columnMetaData = self.toSave['columnMetaData'];
-        io.closeFile(fileDesc);
         print "[iMathResearch] Modelo basado en " + self.name + " cargado"
 
-    def createModel(self, dataFile, classifierType):
+    def createModel(self, tableModel, tableData, columnName, classifierType):
         """Abstract method to be implemented in one of the subclasses
         Args:
           dataFile (string): The file where the data to create the model resides.
@@ -107,10 +109,15 @@ class ModelGoCustomer(Model):
         """ 
         self._generateMetaData();
         # Open and read data
-        io = IOOperations(); 
+        '''io = IOOperations(); 
         fileDesc = io.openFile(dataFile, 'r+');
         [self.headerTrain, self.XData, self.YData] = io.readTrainDataModelFileFloat(fileDesc);
-        io.closeFile(fileDesc);
+        io.closeFile(fileDesc);'''
+        
+        query = 'SELECT * FROM imathservices."' + tableData + '" where "' + columnName + '" = "0";'        
+        AllData = self.connection.getQueryMatrixFormat(query)
+        [self.headerTrain,self.XData,self.YData] = [self.connection.getColumnNames(tableModel),AllData[:,1:-2],AllData[:,:-1]]
+        
         try:        
             self.__checkTrainDataFormat();
         except iMathServicesError as e:
@@ -140,43 +147,7 @@ class ModelGoCustomer(Model):
             quality = self.accuracyPercentage();
             print "[iMathResearch] Modelo basado en " + self.name + " creado. Calidad igual a %.3f" % quality        
     
-    def createModelWithoutChange(self, dataFile, classifierType):
-        """Abstract method to be implemented in one of the subclasses
-        Args:
-          dataFile (string): The file where the data to create the model resides.
-          classifierType (string): String that indicates the type of classifierType to be used to create the model 
-              We will probably offer several classifier to create the same model
-        """ 
-        self._generateMetaData();
-        # Open and read data
-        
-        io = IOOperations(); 
-        fileDesc = io.openFile(dataFile, 'r+');
-        [self.headerTrain, self.XData, self.YData] = io.readTrainDataModelFileAbandonoTerminacion(fileDesc);
-        io.closeFile(fileDesc);
-        
-        # CODE FOR SIMPLE MODELS
-        # Create the model
-        self.classiferClass = classifierType
-        if self.classiferClass == DecisionTreeClassifier:
-            print "[iMathResearch] Creando modelo basado en Decision Trees"
-            self._fit();  # for DT
-            self.name = "DecisionTree"
-        elif self.classiferClass == SVC:
-            print "[iMathResearch] Creando modelo basado en SVC"
-            self._fit(probability=True);
-            self.name = "SVC"
-        elif self.classiferClass == RandomForestClassifier:
-            print "[iMathResearch] Creando modelo basado en Random Forest"
-            self._fit(n_estimators=10)  # for random forest
-            self.name = "RandomForest"
-        else:
-            raise iMathServicesError("Clasificador no valido");
-              
-        # quality = self.accuracyPercentage();
-        # print "[iMathResearch] Modelo basado en " + self.name + " creado. Calidad igual a %.3f" % quality            
-            
-    def saveModel(self, pathFile):        
+    def saveModel(self, tableModel):        
         """Abstract method to be implemented in one of the subclasses
         Args:
           pathFile (string): String that indicates the complete path of the file where the created model is going to be saved.          
@@ -199,22 +170,29 @@ class ModelGoCustomer(Model):
         # self.toSave['PCAReduction'] = self.PCAReduction;
         self.toSave['featureSelector'] = self.feature_selector
         self.toSave['columnMetaData'] = self.columnMetaData
-        io = IOOperations(); 
+        
+        ModelSerialization = self.serialization.getDumps(self.toSave)
+        '''io = IOOperations(); 
         print "[iMathResearch] Guardando modelo basado en " + self.name + " en el fichero " + pathFile
         fileDesc = io.openFile(pathFile, 'w+');
         pickle.dump(self.toSave, fileDesc);
-        io.closeFile(fileDesc);
+        io.closeFile(fileDesc);'''
 
-    def predictModel(self, dataFile, outputFile):
+    def predictModel(self, tableModel, tableData, columnName):
         """Abstract method to be implemented in one of the subclasses
         Args:
           dataFile (string): The file where the data to be classified resides.
           outputFile (string): String that indicates the complete path of the file where the prediction is going to be saved. 
         """
         # Open and read data
-        io = IOOperations(); 
+        '''io = IOOperations(); 
         fileDesc = io.openFile(dataFile, 'r+');
-        [self.headerPredict, self.XData] = io.readPredictDataModelFileFloat(fileDesc);
+        [self.headerPredict, self.XData] = io.readPredictDataModelFileFloat(fileDesc);'''
+        
+        query = 'SELECT * FROM imathservices."' + tableData + '" where "' + columnName + '" = "2";'        
+        AllData = self.connection.getQueryMatrixFormat(query)
+        [self.headerTrain,self.XData] = [self.connection.getColumnNames(tableModel),AllData[:,1:-2]]
+        
         try:        
             self.__checkPredictDataFormat();
         except iMathServicesError as e:
@@ -230,19 +208,24 @@ class ModelGoCustomer(Model):
            
             predictionProb = self._predictProb()
             # Compute confusion matrix
-            self.__generatePredictionFile(outputFile, ID, prediction, predictionProb)
-            print "[iMathResearch] Prediccion generada por el modelo guardada en el fichero " + outputFile
+            #self.__generatePredictionFile(outputFile, ID, prediction, predictionProb)
+            #print "[iMathResearch] Prediccion generada por el modelo guardada en el fichero " + outputFile
     
-    def testModel(self, dataFile, outputFile):
+    def testModel(self, tableModel, tableData, columnName):
         """Abstract method to be implemented in one of the subclasses
         Args:
           dataFile (string): The file where the data to be classified resides.
           outputFile (string): String that indicates the complete path of the file where the prediction is going to be saved. 
         """
         # Open and read data
-        io = IOOperations(); 
+        '''io = IOOperations(); 
         fileDesc = io.openFile(dataFile, 'r+');
-        [self.headerTest, self.XData, self.YData] = io.readTestDataModelFileFloat(fileDesc);
+        [self.headerTest, self.XData, self.YData] = io.readTestDataModelFileFloat(fileDesc);'''
+        
+        query = 'SELECT * FROM imathservices."' + tableData + '" where "' + columnName + '" = "1";'        
+        AllData = self.connection.getQueryMatrixFormat(query)
+        [self.headerTrain,self.XData,self.YData] = [self.connection.getColumnNames(tableModel),AllData[:,1:-2],AllData[:,:-1]]
+        
         try:        
             self.__checkTestDataFormat();
         except iMathServicesError as e:
@@ -260,8 +243,8 @@ class ModelGoCustomer(Model):
             predictionProb = self._predictProb()
             # Compute confusion matrix
             cm = confusion_matrix(self.YData, prediction.astype(int))
-            self.__generateTestFileGoDownCustomer(outputFile, self.YData, prediction, predictionProb, cm)
-            print "[iMathResearch] Resultado del testing del modelo guardado en " + outputFile
+            #self.__generateTestFileGoDownCustomer(outputFile, self.YData, prediction, predictionProb, cm)
+            #print "[iMathResearch] Resultado del testing del modelo guardado en " + outputFile
 
             # Plot confusion matrix
             '''            

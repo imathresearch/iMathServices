@@ -18,11 +18,12 @@ from sklearn.svm import OneClassSVM
 from sklearn.svm import SVR
 from sklearn.ensemble import RandomForestClassifier
 import operator
-
+from iMathModelosPredictivos.common.util.Postgresl.PostgreslManage import PostgreslManage
+from iMathModelosPredictivos.common.util.serialization.Serialization import Serialization
     
-class Model(object): 
+class Model(object):
         
-    def __init__(self, dataFile, classifierType=None):
+    def __init__(self, classifierType=None):
         """
         Args:
           dataFile (string): The file where the data to create the model resides.
@@ -30,20 +31,23 @@ class Model(object):
               We will probably offer several classifier to create the same model
               If classifierType is equal to None it means the dataFile contains a model previously created.    
         """
+        self.connection = PostgreslManage("/home/izubizarreta/git/iMathServices/iMathModelosPredictivos/data/ConfigurationValues/ConfigurationValuesPostgresql.txt")
+        self.serialization = Serialization()
+        
         if classifierType != None:            
-            self.createModel(dataFile, classifierType);
+            self.createModel(classifierType);
         else:
-            self.loadModel(dataFile);
+            self.loadModel();
     
     @abc.abstractmethod 
-    def loadModel(self, dataFile):
+    def loadModel(self, table, service):
         """Abstract method to be implemented in one of the subclasses
         Args:
           dataFile (string): The file where the model, previously created and saved, resides.        
         """  
         
     @abc.abstractmethod 
-    def createModel(self, dataFile, classifierType):
+    def createModel(self, tableModel, tableData, columnName, classifierType):
         """Abstract method to be implemented in one of the subclasses
         Args:
           dataFile (string): The file where the data to create the model resides.
@@ -52,14 +56,14 @@ class Model(object):
         """                
     
     @abc.abstractmethod
-    def saveModel(self, pathFile):        
+    def saveModel(self, tableModel):        
         """Abstract method to be implemented in one of the subclasses
         Args:
           pathFile (string): String that indicates the complete path of the file where the created model is going to be saved.          
         """                
     
     @abc.abstractmethod    
-    def testModel(self, dataFile, outputFile):
+    def testModel(self, tableModel, tableData, columnName):
         """Abstract method to be implemented in one of the subclasses
         Args:
           dataFile (string): The file where the data to be classified resides.
@@ -67,7 +71,7 @@ class Model(object):
         """
    
     @abc.abstractmethod    
-    def predictModel(self, dataFile, outputFile):
+    def predictModel(self, tableModel, tableData, columnName):
         """Abstract method to be implemented in one of the subclasses
         Args:
           dataFile (string): The file where the data to be classified resides.
