@@ -15,6 +15,8 @@ model.saveModel("Model", "ChurnCustomer")
 
 model2 = ModelGoCustomer("/home/izubizarreta/git/iMathServices/iMathModelosPredictivos/data/ConfigurationValues/ConfigurationValuesPostgresql.txt","Model","Data","operationData","ChurnCustomer")
 
-model2.testModel("Model", "Data", "operationData")
+model2.testModel("resultsModel", "Data", "operationData")
+
+model2.predictModel("resultsModel", "Data", "operationData")
 
 print "Finished"

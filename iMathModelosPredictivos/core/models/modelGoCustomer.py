@@ -178,7 +178,10 @@ class ModelGoCustomer(Model):
         self.toSave['featureSelector'] = self.feature_selector
         self.toSave['columnMetaData'] = self.columnMetaData
         
-        self.key = self.connection.getPrimaryKey(tableModel)
+        query = 'select * from imathservices."' + tableModel + '" where "nameModel" = ' + "'" + service + "';"
+        codeValue = self.connection.getCode(query)
+        
+        self.key = codeValue
         
         self.toSave['key'] = self.key
         
@@ -206,9 +209,9 @@ class ModelGoCustomer(Model):
         fileDesc = io.openFile(dataFile, 'r+');
         [self.headerPredict, self.XData] = io.readPredictDataModelFileFloat(fileDesc);'''
         
-        query = 'SELECT * FROM imathservices."' + tableData + '" where "' + columnName +  + '" = ' + "'" + "2" + "';"       
+        query = 'SELECT * FROM imathservices."' + tableData + '" where "' + columnName + '" = ' + "'" + "2" + "';"       
         AllData = self.connection.getQueryMatrixFormat(query)
-        [self.headerPredict,self.XData] = [self.connection.getPredictionHeadersHeaders(tableData),AllData[:,1:-2]]
+        [self.headerPredict,self.XData] = [self.connection.getPredictionHeaders(tableData),AllData[:,1:-2]]
         
         try:        
             self.__checkPredictDataFormat();
@@ -217,16 +220,24 @@ class ModelGoCustomer(Model):
             return;
         else:
             ID = self.XData[:, 0]
-            self.XData = np.delete(self.XData, 0, axis=1)
+            #self.XData = np.delete(self.XData, 0, axis=1)
             # self.loadModel(CONS.MODEL_FILE_LOCATION);
             self._preprocessTestData();
             prediction = self._predict()
             # prediction[prediction < 1 ] = 0
            
             predictionProb = self._predictProb()
+            
+            key = self.connection.getPrimaryKey(tableResults)
+        
+            dates = DateOperations()
+            
+            code = [key,self.key, AllData[:,0], dates.getActualDate(),""]
+        
+            self.connection.setStoreModelsResults(1, tableResults, prediction, predictionProb, code)
             # Compute confusion matrix
             #self.__generatePredictionFile(outputFile, ID, prediction, predictionProb)
-            #print "[iMathResearch] Prediccion generada por el modelo guardada en el fichero " + outputFile
+            print "[iMathResearch] Prediccion generada por el modelo guardada"
     
     def testModel(self, tableResults, tableData, columnName):
         """Abstract method to be implemented in one of the subclasses
@@ -265,11 +276,11 @@ class ModelGoCustomer(Model):
         
             dates = DateOperations()
             
-            code = [key,self.key, dates.getActualDate(),cm]
+            code = [key,self.key, AllData[:,0], dates.getActualDate(),cm]
         
-            self.connection.setStoreModelsResults(tableResults, prediction, predictionProb, code)
+            self.connection.setStoreModelsResults(0, tableResults, prediction, predictionProb, code)
             #self.__generateTestFileGoDownCustomer(outputFile, self.YData, prediction, predictionProb, cm)
-            #print "[iMathResearch] Resultado del testing del modelo guardado en " + outputFile
+            print "[iMathResearch] Resultado del testing del modelo guardado"
             
     def __splitDataVariableType(self):
         """Divide the variable in two set depending on its type (numerical or categorical)

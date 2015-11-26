@@ -68,12 +68,19 @@ class ConnectionBBDD(object):
         results = self.getFetch(query)
         return results[0][2]
     
+    def getCode(self,query):
+        
+        results = self.getFetch(query)
+        return results[0][0]
+    
     def getNextPrimaryKey(self, table):
         
         query = self.getMaxValueTable(table)
         results = self.getFetch(query)
-        for result in results:
-            max = result[0]
+        max = 0
+        if str(results[0][0])!='None':
+            for result in results:
+                max = result[0]
         max = max + 1
         return max
     
@@ -126,28 +133,37 @@ class ConnectionBBDD(object):
         
         self.db.commit()
         
-    def setDataModelResults(self, table, data, probabilities, codes):
+    def setDataModelResults(self, operation, table, data, probabilities, codes):
         
         '''This functions stores information about the models results'''
         
         cursor = self.db.cursor()
+        position = 0
         
-        for eachdata in data:            
-        
-            exist = self.getExist(table, "")
+        for eachdata in data:         
+
+            probabilityValues = ''
+            for probability in probabilities[position]:
+                probabilityValues = probabilityValues + str(probability) + ","
+                    
+            probabilityValues = probabilityValues[:-1]
             
-            if exist==0:
-            
-                return 0
-                #query =  'INSERT INTO imathservices."' + table + '" VALUES (%s, %s, %s, %s, %s, %s);'
-                #cursor.execute(query, data)
-            
+            if operation==0:
+                
+                typeOperation = 'test'
+                
             else:
                 
-                return 1
-                #cursor.execute('UPDATE imathservices."' + table + '" SET serializationValue=%s,trainingPercentage=%s,testPercentage=%s,createdDate=%s WHERE id=%s', ("", "", "", "", ""))            
-
-            self.db.commit()        
+                typeOperation = 'prediction'
+            
+            dataInsert = [codes[0]+position,codes[1],operation,eachdata,probabilityValues,str(codes[3]),str(codes[4]),str(codes[2][position])]
+                                   
+            query =  'INSERT INTO imathservices."' + table + '" VALUES (%s, %s, %s, %s, %s, %s, %s, %s);'
+            cursor.execute(query, dataInsert)
+            
+            self.db.commit()
+            
+            position = position + 1       
             
     def closeConnection(self):
         
