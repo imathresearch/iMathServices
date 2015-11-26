@@ -9,7 +9,7 @@ import tornado.web
 
 import os
 
-from iMathModelosPredictivos.core.modelsCSV.modelGoCustomer import ModelGoCustomer
+from iMathModelosPredictivos.core.models.modelGoCustomer import ModelGoCustomer
 from iMathModelosPredictivos.common.constants import CONS
 from iMathModelosPredictivos.common.util.iMathServicesError import iMathServicesError
 from iMathModelosPredictivos.scripts_Baja.help import showExtendedHelp
@@ -33,76 +33,55 @@ class ChurnCustomerHandler(tornado.web.RequestHandler):
     
     def get(self):
         
-        self.write("llega")
-        typeOperation = self.getParameterValue("operation")
+        typeOperation = int(self.getParameterValue("operation"))
         self.executeFunction(typeOperation)
     
     def post(self):
         
-        typeOperation = self.getParameterValue("operation")
+        typeOperation = int(self.getParameterValue("operation"))
         self.executeFunction(typeOperation)
                 
     def executeFunction(self, typeOperation):
-               
+
+        pathPostgresql = "/home/izubizarreta/git/iMathServices/iMathModelosPredictivos/data/ConfigurationValues/ConfigurationValuesPostgresql.txt"
+        pathElasticSearch = "/home/izubizarreta/git/iMathServices/iMathModelosPredictivos/data/ConfigurationValues/ConfigurationValuesElasticsearch.txt"
+        tableModel = "Model"
+        tableData = "Data"
+        service = "ChurnCustomer"
+        tableResults = "resultsModel"
+        columnFilterData = "operationData"
+        dictionaryName = "telcoresults"        
         if typeOperation == 0:
-            pathCSV = self.getParameterValue("pathCSV")
-            typeModel = self.getParameterValue("typeModel")
-            nameModel = self.getParameterValue("nameModel")
-            self.executeCreateModel(pathCSV, typeModel, nameModel)
+            self.executeCreateModel(pathPostgresql,pathElasticSearch,tableModel,tableData,columnFilterData,service,RandomForestClassifier)
         else:
             if typeOperation == 1:
-                pathCSV = self.getParameterValue("pathCSV")
-                nameModel = self.getParameterValue("nameModel")
-                pathOutputFile = self.getParameterValue("pathOutputFile")
-                self.executeTest(pathCSV, nameModel, pathOutputFile)
+                self.executeTest(pathPostgresql,pathElasticSearch,tableModel,tableData,columnFilterData,service,tableResults)
             else:
-                pathCSV = self.getParameterValue("pathCSV")
-                nameModel = self.getParameterValue("nameModel")
-                pathOutputFile = self.getParameterValue("pathOutputFile")
-                self.executePrediction(pathCSV, nameModel, pathOutputFile)
+                self.executePrediction(pathPostgresql,pathElasticSearch,tableModel,tableData,columnFilterData,service,tableResults,dictionaryName)
         
-    def executeCreateModel(self, pathCSV, typeModel, nameModel):
+    def executeCreateModel(self, pathPostgresql,pathElasticSearch, tableModel, tableData, columnName, service, classifierType):
         
-        if os.path.isfile(pathCSV) is False:
-            raise iMathServicesError("El fichero " + pathCSV + " no existe");
-    
-        # Check if the classifier exists
-        if typeModel == 'DecisionTreeClassifier':
-            classifier = DecisionTreeClassifier
-        elif typeModel == "SVC":
-            classifier = SVC
-        elif typeModel == "RandomForestClassifier":
-            classifier = RandomForestClassifier
-        else:
-            raise iMathServicesError("El clasificador " + typeModel + " no es valido")
+        model = ModelGoCustomer(pathPostgresql,pathElasticSearch,tableModel,tableData,columnName,service,classifierType)
+        self.write("Model created<br>")
+        model.saveModel(tableModel, service)
+        self.write("Model stored")
         
-        model = ModelGoCustomer(pathCSV, classifier);
-        model.saveModel(CONS.MODEL_FILE_LOCATION + nameModel + '.txt');
+        #It is necessary to send an advise that the model is created and store.
         
-    def executeTest(self, pathCSVInput, NameModel, OutputFile):
+    def executeTest(self, pathPostgresql,pathElasticSearch, tableModel, tableData, columnName, service,tableResults):
         
-        # Check if the data file exists
-        if os.path.isfile(pathCSVInput) is False:
-            raise iMathServicesError("El fichero " + pathCSVInput + " no existe");
-    
-        # Check if the file that contains the model exists
-        model_path = os.path.join(CONS.MODEL_FILE_LOCATION + NameModel + ".txt")
-        if os.path.isfile(model_path) is False:
-            raise iMathServicesError("EL modelo " + NameModel + " no ha sido previamente creado");
-    
-        model = ModelGoCustomer(model_path);
-        model.testModel(pathCSVInput, OutputFile);
+        model = ModelGoCustomer(pathPostgresql,pathElasticSearch,tableModel,tableData,columnName,service)
+        self.write("Model loaded<br>")
+        model.testModel(tableResults, tableData, columnName)
+        self.write("Model tested<br>")
         
-    def executePrediction(self, pathCSVInput, NameModel, OutputFile):
+        #It is necessary to send an advise that the test process is finished.
+                                
+    def executePrediction(self, pathPostgresql,pathElasticSearch, tableModel, tableData, columnName, service,tableResults,dictionary):
         
-        # Check if the data file exists
-        if os.path.isfile(pathCSVInput) is False:
-            raise iMathServicesError("El fichero " + pathCSVInput + " no existe");
-    
-        # Check if the file that contains the model exists
-        model_path = os.path.join(CONS.MODEL_FILE_LOCATION + NameModel + ".txt")
-        if os.path.isfile(model_path) is False:
-            raise iMathServicesError("EL modelo " + NameModel + " no ha sido previamente creado");
-    
-        model = ModelGoCustomer(model_path);
-        model.predictModel(pathCSVInput, OutputFile);
+        model = ModelGoCustomer(pathPostgresql,pathElasticSearch,tableModel,tableData,columnName,service)
+        self.write("Model loaded<br>")
+        model.predictModel(tableResults, tableData, columnName, dictionary)
+        self.write("Prediction is done<br>")
+        
+        #It is necessary to send an advise that the prediction is done.

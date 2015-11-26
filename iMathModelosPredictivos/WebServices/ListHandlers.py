@@ -6,9 +6,7 @@ Created on Nov 23, 2015
 import tornado.ioloop
 import tornado.web
 
-from iMathModelosPredictivos.WebServices.Handlers.BestCandidateForEachJobHandlers import BestCandidateForEachJobHandler
-from iMathModelosPredictivos.WebServices.Handlers.ChurnCustomerHandlers import ChurnCustomerHandler
-from iMathModelosPredictivos.WebServices.Handlers.ChurnEmployeeHandlers import ChurnEmployeeHandler 
+from iMathModelosPredictivos.WebServices.Handlers.ChurnCustomerHandlers import ChurnCustomerHandler 
 
 class ListHandlers(object):
     '''
@@ -19,8 +17,6 @@ class ListHandlers(object):
         
         return tornado.web.Application([
                                         (r"/ChurnCustomer", ChurnCustomerHandler),
-                                        (r"/ChurnEmployee", ChurnEmployeeHandler),
-                                        (r"/BestCandidateForEachJob", BestCandidateForEachJobHandler),
                                         ])
         
     def createListApplications(self, ListPath, HandlerList):
