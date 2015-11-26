@@ -20,10 +20,11 @@ from sklearn.ensemble import RandomForestClassifier
 import operator
 from iMathModelosPredictivos.common.util.Postgresl.PostgreslManage import PostgreslManage
 from iMathModelosPredictivos.common.util.serialization.Serialization import Serialization
+from iMathModelosPredictivos.common.util.Elasticsearch.ElasticsearchClass import ElasticsearchClass
     
 class Model(object):
         
-    def __init__(self, configurationPath, tableModel, tableData, columnName, service, classifierType=None):
+    def __init__(self, configurationPath, configurationPathElastic, tableModel, tableData, columnName, service, classifierType=None):
         """
         Args:
           dataFile (string): The file where the data to create the model resides.
@@ -33,6 +34,8 @@ class Model(object):
         """
         self.connection = PostgreslManage(configurationPath)
         self.serialization = Serialization()
+        self.connectionElastic = ElasticsearchClass(configurationPathElastic)
+        self.connectionElastic.createConnection()
         
         if classifierType != None:            
             self.createModel(tableModel, tableData, columnName, classifierType);
@@ -71,7 +74,7 @@ class Model(object):
         """
    
     @abc.abstractmethod    
-    def predictModel(self, tableResults, tableData, columnName):
+    def predictModel(self, tableResults, tableData, columnName, dictionary):
         """Abstract method to be implemented in one of the subclasses
         Args:
           dataFile (string): The file where the data to be classified resides.

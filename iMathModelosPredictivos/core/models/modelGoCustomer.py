@@ -59,6 +59,7 @@ from iMathModelosPredictivos.common.util.miningUtil import generateRandomValue
 from iMathModelosPredictivos.common.constants import CONS
 from iMathModelosPredictivos.common.util.Postgresl.PostgreslManage import PostgreslManage
 from iMathModelosPredictivos.common.util.datesOperations import DateOperations
+from iMathModelosPredictivos.common.util.Elasticsearch.ElasticsearchClass import ElasticsearchClass
 
 CONS = CONS()
 
@@ -70,8 +71,8 @@ class ModelGoCustomer(Model):
         Class Model from iMathMasMovil.core.model   
     '''
      
-    def __init__(self, configurationPath, tableModel, tableData, columnName, service, classifierType=None):
-        super(ModelGoCustomer, self).__init__(configurationPath, tableModel, tableData, columnName, service, classifierType)
+    def __init__(self, configurationPath, configurationElastic, tableModel, tableData, columnName, service, classifierType=None):
+        super(ModelGoCustomer, self).__init__(configurationPath, configurationElastic, tableModel, tableData, columnName, service, classifierType)
 
     def loadModel(self, tableModel, service):
         """Abstract method to be implemented in one of the subclasses
@@ -198,7 +199,7 @@ class ModelGoCustomer(Model):
         pickle.dump(self.toSave, fileDesc);
         io.closeFile(fileDesc);'''
 
-    def predictModel(self, tableResults, tableData, columnName):
+    def predictModel(self, tableResults, tableData, columnName, dictionary):
         """Abstract method to be implemented in one of the subclasses
         Args:
           dataFile (string): The file where the data to be classified resides.
@@ -235,6 +236,12 @@ class ModelGoCustomer(Model):
             code = [key,self.key, AllData[:,0], dates.getActualDate(),""]
         
             self.connection.setStoreModelsResults(1, tableResults, prediction, predictionProb, code)
+            
+            self.connectionElastic.deleteAndCreateDictionary(dictionary)
+            
+            body = self.connectionElastic.getJsonStructure(self.key, AllData[:,0], prediction, predictionProb)
+            
+            self.connectionElastic.setElements(dictionary,body)
             # Compute confusion matrix
             #self.__generatePredictionFile(outputFile, ID, prediction, predictionProb)
             print "[iMathResearch] Prediccion generada por el modelo guardada"

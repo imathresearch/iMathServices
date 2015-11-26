@@ -71,7 +71,10 @@ class ConnectionBBDD(object):
     def getCode(self,query):
         
         results = self.getFetch(query)
-        return results[0][0]
+        if len(results)==0:
+            return 1
+        else:
+            return results[0][0]
     
     def getNextPrimaryKey(self, table):
         
@@ -128,8 +131,8 @@ class ConnectionBBDD(object):
         
         else:
             
-            parametersStore = [parameters[2],parameters[3],parameters[4],parameters[5],parameters[1]]
-            cursor.execute('UPDATE imathservices."' + table + '" SET "serializationValue"=%s,"trainingPercentage"=%s,"testPercentage"=%s,"createdDate"=%s WHERE "nameModel"=%s', parametersStore)
+            parametersStore = [parameters[2],parameters[3],parameters[4],str(parameters[5]),parameters[1]]
+            cursor.execute('UPDATE imathservices."' + table + '" SET "serializationValue"=%s,"trainingPercentage"=%s,"testPercentage"=%s,"createDate"=%s WHERE "nameModel"=%s', parametersStore)
         
         self.db.commit()
         
@@ -156,7 +159,13 @@ class ConnectionBBDD(object):
                 
                 typeOperation = 'prediction'
             
-            dataInsert = [codes[0]+position,codes[1],operation,eachdata,probabilityValues,str(codes[3]),str(codes[4]),str(codes[2][position])]
+            confusionMatrixValues = ''
+            for confusionMatrix in codes[4]:
+                confusionMatrixValues = confusionMatrixValues + str(confusionMatrix) + ","
+                
+            confusionMatrixValues = confusionMatrixValues[:-1]
+                        
+            dataInsert = [codes[0]+position,codes[1],operation,eachdata,probabilityValues,str(confusionMatrixValues),str(codes[2][position]),str(codes[3])]
                                    
             query =  'INSERT INTO imathservices."' + table + '" VALUES (%s, %s, %s, %s, %s, %s, %s, %s);'
             cursor.execute(query, dataInsert)

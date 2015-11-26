@@ -14,6 +14,7 @@ class ConfigurationData(object):
         file = open(data, 'r')
         
         Codes = []
+        crossed = 0
         
         for line in file:
             
@@ -27,6 +28,7 @@ class ConfigurationData(object):
                 code = code[:-1]
             
             Codes.append(code)
+            crossed = crossed + 1
             
-        Codes[3] = Codes[3] + line[-1:]
+        Codes[crossed-1] = Codes[crossed-1] + line[-1:]
         return Codes
