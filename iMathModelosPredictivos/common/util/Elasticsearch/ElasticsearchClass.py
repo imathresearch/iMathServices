@@ -69,6 +69,8 @@ class ElasticsearchClass(object):
     def setElement(self,dictionary,position,bodyValue):
         
         self.elasticsearch.index(index=dictionary, doc_type='blog', id=position, body=bodyValue)
+
+
         
     def getElement(self,dictionary, position):
         
@@ -82,7 +84,25 @@ class ElasticsearchClass(object):
             elementPosition = elementPosition + 1
             self.setElement(dictionary, elementPosition, bodyValue)
         return 0
-        
+
+    def setElementsWithBulk(self,dictionary,listElements):
+        bulk_data=[]
+        inc=0
+        for row in listElements:
+            inc+=1
+            op_dict = {
+                "index": {
+                    "_index": dictionary,
+                    "_type": 'blog',
+                    "_id": inc
+                }
+            }
+            bulk_data.append(op_dict)
+            bulk_data.append(row)
+
+        self.elasticsearch.bulk(index = dictionary, body = bulk_data, refresh = True)
+
+
     def setResults(self,dictionary,labels,probabilities):
         
         res = self.elasticsearch.bulk(index = dictionary, body = self.getJsonStructure(labels, probabilities), refresh = True)

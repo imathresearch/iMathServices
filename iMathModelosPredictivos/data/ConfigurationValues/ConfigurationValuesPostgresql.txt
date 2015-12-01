@@ -1,4 +1,4 @@
 host=localhost
-user=izubizarreta
-password=943793072
+user=antonio
+password=1234
 database=imathservices

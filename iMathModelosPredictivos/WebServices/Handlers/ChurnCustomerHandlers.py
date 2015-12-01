@@ -43,8 +43,8 @@ class ChurnCustomerHandler(tornado.web.RequestHandler):
                 
     def executeFunction(self, typeOperation):
 
-        pathPostgresql = "/home/izubizarreta/git/iMathServices/iMathModelosPredictivos/data/ConfigurationValues/ConfigurationValuesPostgresql.txt"
-        pathElasticSearch = "/home/izubizarreta/git/iMathServices/iMathModelosPredictivos/data/ConfigurationValues/ConfigurationValuesElasticsearch.txt"
+        pathPostgresql ="/home/antonio/proyectos/iMathServices/iMathModelosPredictivos/data/ConfigurationValues/ConfigurationValuesPostgresql.txt"
+        pathElasticSearch = "/home/antonio/proyectos/iMathServices/iMathModelosPredictivos/data/ConfigurationValues/ConfigurationValuesElasticsearch.txt"
         tableModel = "Model"
         tableData = "Data"
         service = "ChurnCustomer"
@@ -80,8 +80,9 @@ class ChurnCustomerHandler(tornado.web.RequestHandler):
     def executePrediction(self, pathPostgresql,pathElasticSearch, tableModel, tableData, columnName, service,tableResults,dictionary):
         
         model = ModelGoCustomer(pathPostgresql,pathElasticSearch,tableModel,tableData,columnName,service)
-        self.write("Model loaded<br>")
-        model.predictModel(tableResults, tableData, columnName, dictionary)
-        self.write("Prediction is done<br>")
+        print "Model loaded<br>"
+        prediction = model.predictModel(tableResults, tableData, columnName, dictionary)
+        print "Prediction is done<br>"
+        self.write({"result":prediction})
         
         #It is necessary to send an advise that the prediction is done.

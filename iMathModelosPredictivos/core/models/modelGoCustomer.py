@@ -160,7 +160,7 @@ class ModelGoCustomer(Model):
         Args:
           pathFile (string): String that indicates the complete path of the file where the created model is going to be saved.          
         """
-        self.toSave = {};
+        self.toSave = {}
         # Models
         self.toSave['model'] = self.model
         # self.toSave['model'] = self.binary_models
@@ -235,16 +235,19 @@ class ModelGoCustomer(Model):
             
             code = [key,self.key, AllData[:,0], dates.getActualDate(),""]
         
-            self.connection.setStoreModelsResults(1, tableResults, prediction, predictionProb, code)
+            #self.connection.setStoreModelsResults(1, tableResults, prediction, predictionProb, code)
             
             self.connectionElastic.deleteAndCreateDictionary(dictionary)
             
             body = self.connectionElastic.getJsonStructure(self.key, AllData[:,0], prediction, predictionProb)
             
-            self.connectionElastic.setElements(dictionary,body)
+            #self.connectionElastic.setElements(dictionary,body)
+            self.connectionElastic.setElementsWithBulk(dictionary,body)
             # Compute confusion matrix
             #self.__generatePredictionFile(outputFile, ID, prediction, predictionProb)
             print "[iMathResearch] Prediccion generada por el modelo guardada"
+
+            return body
     
     def testModel(self, tableResults, tableData, columnName):
         """Abstract method to be implemented in one of the subclasses

@@ -97,7 +97,7 @@ class ConnectionBBDD(object):
         
     def getColumnNames(self,table):
         
-        query = "SELECT column_name FROM information_schema.columns where table_name = '" + table + "';"
+        query = "SELECT column_name FROM information_schema.columns where table_name = '" + table + "' order by ordinal_position;"
         MatrixData = self.getResults(query)
         return MatrixData
     

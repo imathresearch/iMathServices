@@ -6,7 +6,7 @@ Created on Nov 23, 2015
 import tornado.ioloop
 import tornado.web
 
-from iMathModelosPredictivos.WebServices.Handlers.ChurnCustomerHandlers import ChurnCustomerHandler 
+from iMathModelosPredictivos.WebServices.Handlers.ChurnCustomerHandlers import ChurnCustomerHandler
 
 class ListHandlers(object):
     '''
@@ -14,11 +14,11 @@ class ListHandlers(object):
     '''
 
     def make_app(self):
-        
+
         return tornado.web.Application([
                                         (r"/ChurnCustomer", ChurnCustomerHandler),
                                         ])
-        
+
     def createListApplications(self, ListPath, HandlerList):
-        
+
         return 0

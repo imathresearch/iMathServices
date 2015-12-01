@@ -32,5 +32,5 @@ class jsonOperations(object):
             
             dictValue = self.getResultDict(model, codes[probabilitiesPosition], label, self.getMatrixToString(probabilities[probabilitiesPosition]))
             dictValues.append(dictValue)
-            
+            probabilitiesPosition+=1
         return dictValues
