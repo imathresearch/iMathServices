@@ -46,7 +46,7 @@ class ChurnCustomerHandler(tornado.web.RequestHandler):
         pathPostgresql ="/home/antonio/proyectos/iMathServices/iMathModelosPredictivos/data/ConfigurationValues/ConfigurationValuesPostgresql.txt"
         pathElasticSearch = "/home/antonio/proyectos/iMathServices/iMathModelosPredictivos/data/ConfigurationValues/ConfigurationValuesElasticsearch.txt"
         tableModel = "Model"
-        tableData = "Data"
+        tableData = "CompleteData"
         service = "ChurnCustomer"
         tableResults = "resultsModel"
         columnFilterData = "operationData"

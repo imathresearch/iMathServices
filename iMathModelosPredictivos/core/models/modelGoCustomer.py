@@ -119,10 +119,11 @@ class ModelGoCustomer(Model):
         fileDesc = io.openFile(dataFile, 'r+');
         [self.headerTrain, self.XData, self.YData] = io.readTrainDataModelFileFloat(fileDesc);
         io.closeFile(fileDesc);'''
-        
+
+
         query = 'SELECT * FROM imathservices."' + tableData + '" where "' + columnName + '" = ' + "'" + "0" + "';"    
         AllData = self.connection.getQueryMatrixFormat(query)
-        [self.headerTrain,self.XData,self.YData] = [self.connection.getTrainingHeaders(tableData),AllData[:,1:-2],AllData[:,-2:-1]]
+        [self.headerTrain,self.XData,self.YData] = [self.connection.getTrainingHeaders(tableData)[6:],AllData[:,7:-2],AllData[:,-2:-1]]
         
         try:        
             self.__checkTrainDataFormat();
@@ -212,7 +213,8 @@ class ModelGoCustomer(Model):
         
         query = 'SELECT * FROM imathservices."' + tableData + '" where "' + columnName + '" = ' + "'" + "2" + "';"       
         AllData = self.connection.getQueryMatrixFormat(query)
-        [self.headerPredict,self.XData] = [self.connection.getPredictionHeaders(tableData),AllData[:,1:-2]]
+        final_headers = np.delete(self.connection.getPredictionHeaders(tableData),[1,2,3,4,5,6],0)
+        [self.headerPredict,self.XData] = [final_headers ,AllData[:,7:-2]]
         
         try:        
             self.__checkPredictDataFormat();
@@ -226,8 +228,8 @@ class ModelGoCustomer(Model):
             self._preprocessTestData();
             prediction = self._predict()
             # prediction[prediction < 1 ] = 0
-           
-            predictionProb = self._predictProb()
+            mask = np.where(prediction=='Yes')
+            predictionProb = self._predictProb()[mask]
             
             key = self.connection.getPrimaryKey(tableResults)
         
@@ -239,7 +241,7 @@ class ModelGoCustomer(Model):
             
             self.connectionElastic.deleteAndCreateDictionary(dictionary)
             
-            body = self.connectionElastic.getJsonStructure(self.key, AllData[:,0], prediction, predictionProb)
+            body = self.connectionElastic.getJsonStructure(self.key, AllData[:][mask], prediction[mask], predictionProb)
             
             #self.connectionElastic.setElements(dictionary,body)
             self.connectionElastic.setElementsWithBulk(dictionary,body)
@@ -262,7 +264,7 @@ class ModelGoCustomer(Model):
         
         query = 'SELECT * FROM imathservices."' + tableData + '" where "' + columnName + '" = ' + "'" + "1" + "';"        
         AllData = self.connection.getQueryMatrixFormat(query)
-        [self.headerTest,self.XData,self.YData] = [self.connection.getTestHeaders(tableData),AllData[:,1:-2],AllData[:,-2:-1]]
+        [self.headerTest,self.XData,self.YData] = [self.connection.getTestHeaders(tableData)[6:],AllData[:,7:-2],AllData[:,-2:-1]]
         
         try:        
             self.__checkTestDataFormat();
