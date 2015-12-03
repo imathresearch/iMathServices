@@ -11,7 +11,16 @@ class jsonOperations(object):
 
     def getResultDict(self,model,code,label,probabiblities):
         
-        dictValue = {"model" : model, "nombre":code[1],"telefono":code[3],"email":code[4],"code" : code[0], "label" : label, "probabilitiesMembership" : probabiblities}
+        dictValue = {"model" : model,
+                     "nombre":code[1],
+                     "telefono":code[3],
+                     "email":code[4],"code" : code[0],
+                     "provincia": code[6],
+                     "edad":code[2],
+                     "codigopostal":code[5],
+                     "probabilitiesMembership" : probabiblities,
+                     "gastoanual":code[24]
+                     }
         return dictValue
     
     def getMatrixToString(self,listProbabilities):
