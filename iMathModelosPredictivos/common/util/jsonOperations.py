@@ -16,10 +16,11 @@ class jsonOperations(object):
                      "telefono":code[3],
                      "email":code[4],"code" : code[0],
                      "provincia": code[6],
-                     "edad":code[2],
+                     "edad":int(code[2]),
                      "codigopostal":code[5],
                      "probabilitiesMembership" : probabiblities,
-                     "gastoanual":code[24]
+                     "gastoanual":float(code[24]),
+                     "sex":code[7]
                      }
         return dictValue
     
