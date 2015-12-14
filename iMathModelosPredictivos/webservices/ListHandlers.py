@@ -6,7 +6,7 @@ Created on Nov 23, 2015
 import tornado.ioloop
 import tornado.web
 
-from iMathModelosPredictivos.WebServices.Handlers.ChurnCustomerHandlers import ChurnCustomerHandler
+from iMathModelosPredictivos.webservices.handlers.ChurnCustomerHandlers import ChurnCustomerHandler
 
 class ListHandlers(object):
     '''

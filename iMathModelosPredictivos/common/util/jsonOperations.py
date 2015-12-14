@@ -3,14 +3,16 @@ Created on Nov 26, 2015
 
 @author: izubizarreta
 '''
+from iMathModelosPredictivos.common.constants import CONS
 
+CONS = CONS()
 class jsonOperations(object):
     '''
     classdocs
     '''
 
     def getResultDict(self,model,code,label,probabiblities):
-        
+
         dictValue = {"model" : model,
                      "nombre":code[1],
                      "telefono":code[3],
@@ -20,7 +22,8 @@ class jsonOperations(object):
                      "codigopostal":code[5],
                      "probabilitiesMembership" : probabiblities,
                      "gastoanual":float(code[24]),
-                     "sex":code[7]
+                     "sex":code[7],
+                     "geoposicion":CONS.PROVINCES[code[6]]
                      }
         return dictValue
     

@@ -11,12 +11,15 @@ class PostgreslManage(object):
     classdocs
     '''
     
-    def __init__(self, params):
+    def __init__(self, host, user, password, database):
         '''
         Constructor
         '''
-        self.ConnectionBBDD = ConnectionBBDD(params)
-        self.ConnectionBBDD.DoConnection()
+        self.ConnectionBBDD = ConnectionBBDD(host,
+                                             user,
+                                             password,
+                                             database)
+
         
     def getQueryListFormat(self, query):
          
@@ -24,7 +27,7 @@ class PostgreslManage(object):
         return ListData
         
     def getQueryMatrixFormat(self,query):
-        
+
         MatrixData = self.ConnectionBBDD.getResults(query)
         return  MatrixData
     
@@ -68,3 +71,8 @@ class PostgreslManage(object):
     def closeConnection(self):
     
         self.ConnectionBBDD.closeConnection()
+
+    def getDataToCreateModel(self,tableData, columName):
+
+         query = 'SELECT * FROM imathservices."' + tableData + '" where "' + columName + '" = ' + "'" + "0" + "';"
+         return self.getQueryMatrixFormat(query)

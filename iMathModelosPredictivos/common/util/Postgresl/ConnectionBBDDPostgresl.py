@@ -7,7 +7,9 @@ Created on 1 de oct. de 2015
 from iMathModelosPredictivos.common.util.ReadConfigurationData import ConfigurationData
 import psycopg2
 import numpy as np
-from _mysql import result
+
+
+
 
 class ConnectionBBDD(object):
     '''
@@ -15,23 +17,18 @@ class ConnectionBBDD(object):
     '''
 
 
-    def __init__(self, path):
+    def __init__(self, host, user, password, database):
         '''
         Constructor
         '''
-        connectBBDD = ConfigurationData()
         
-        ConnectionsValues = connectBBDD.getData(path)
-        
-        self.host = ConnectionsValues[0]
-        self.user = ConnectionsValues[1]
-        self.password = ConnectionsValues[2]
-        self.database = ConnectionsValues[3]
-        
-    def DoConnection(self):
-        
-        connectstring = "host=" + self.host + " " + "user=" + self.user + " " + "password=" + self.password + " dbname=" + self.database        
+        self.host = host
+        self.user = user
+        self.password = password
+        self.database = database
+        connectstring = "host=" + self.host + " " + "user=" + self.user + " " + "password=" + self.password + " dbname=" + self.database
         self.db = psycopg2.connect(connectstring)
+
         
     def getFetch(self, query):
         
