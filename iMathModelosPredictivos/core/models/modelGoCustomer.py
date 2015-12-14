@@ -101,22 +101,29 @@ class ModelGoCustomer(Model):
         Args:
           dataFile (string): The file where the model, previously created and saved, resides.        
         """
-        objectData= self.connectionPostgres.loadModel(self.tableModel,self.service)
-        self.toSave = self.serialization.getLoads(objectData)
-        
-        # MODELS 
-        self.model = self.toSave['model']
-        self.name = self.toSave['name'];
-        self.index = self.toSave['index']
-        self.headerTestFormat = self.toSave['headerTestFormat']
-        self.headerPredictFormat = self.toSave['headerPredictFormat'] 
-        self.imputatorNumerical = self.toSave['imputatorNumerical'];
-        self.imputatorCategorical = self.toSave['imputatorCategorical'];
-        self.scaler = self.toSave['scaler'];
-        self.feature_selector = self.toSave['featureSelector']
-        self.key = self.toSave['key']
-        self.columnMetaData = self.toSave['columnMetaData'];
-        print "[iMathResearch] Modelo basado en " + self.name + " cargado"
+        try:
+            objectData= self.connectionPostgres.loadModel(self.tableModel,self.service)
+
+        except iMathServicesError as e:
+            print "Access Database Error: " , e.value
+            return
+
+        else:
+            self.toSave = self.serialization.getLoads(objectData)
+            # MODELS
+            self.model = self.toSave['model']
+            self.name = self.toSave['name']
+            self.index = self.toSave['index']
+            self.headerTestFormat = self.toSave['headerTestFormat']
+            self.headerPredictFormat = self.toSave['headerPredictFormat']
+            self.imputatorNumerical = self.toSave['imputatorNumerical']
+            self.imputatorCategorical = self.toSave['imputatorCategorical']
+            self.scaler = self.toSave['scaler']
+            self.feature_selector = self.toSave['featureSelector']
+            self.key = self.toSave['key']
+            self.columnMetaData = self.toSave['columnMetaData']
+            print "[iMathResearch] Modelo basado en " + self.name + " cargado"
+
 
     def createModel(self, classifierType):
         """Abstract method to be implemented in one of the subclasses
