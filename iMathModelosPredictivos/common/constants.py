@@ -150,4 +150,122 @@ class CONS(object):
     @constant
     def STOPWORDS_FILE():
         return '../data/stopwords.txt'
-    
+
+    '''
+        It define the global constants to connect to the elasticsearch database
+
+    '''
+    @constant
+    def HOST_ELASTICSEARCH():
+        return 'localhost'
+
+    @constant
+    def PORT_ELASTICSEARCH():
+        return 9200
+
+    @constant
+    def PROVINCES():
+        return  {            "Alava":"42.9099989,-2.6983868",
+                             "Albacete":"38,99765,-1,86007",
+                             "Alicante":"38.3459963,-0.4906855",
+                             "Almeria":"36.834047,-2.4637136",
+                             "Avila":"40.656685,-4.6812086",
+                             "Badajoz":"38.8794495,-6.9706535",
+                             "Baleares":"39.5341789,2.8577105",
+                             "Barcelona":"41.3850639,2.1734035",
+                             "Burgos":"42.3439925,-3.696906",
+                             "Caceres":"39.4752765,-6.3724247",
+                             "Cadiz":"36.5270612,-6.2885962",
+                             "Castellon":"39.9863563,-0.0513246",
+                             "Ciudad Real":"38.9848295,-3.9273778",
+                             "Cordoba":"37.8881751,-4.7793835",
+                             "Coruna":"43.3623436,-8.4115401",
+                             "Cuenca":"40.0703925,-2.1374162",
+                             "Girona":"41.9794005,2.8214264",
+                             "Granada":"37.1773363,-3.5985571",
+                             "Guadalajara":"40.632489,-3.16017",
+                             "Gipuzkoa":"43.0756299,-2.2236667",
+                             "Huelva":"37.261421,-6.9447224",
+                             "Huesca":"42.131845,-0.4078058",
+                             "Jaen":"37.7795941,-3.7849057",
+                             "Leon":"42.5987263,-5.5670959",
+                             "Lleida":"41.6175899,0.6200146",
+                             "La Rioja":"42.2870733,-2.539603",
+                             "Lugo":"43.0097384,-7.5567582",
+                             "Madrid":"40.4167754,-3.7037902",
+                             "Malaga":"36.721261,-4.4212655",
+                             "Murcia":"37.9922399,-1.1306544",
+                             "Navarra":"42.6953909,-1.6760691",
+                             "Ourense":"42.3357893,-7.863881",
+                             "Asturias":"43.3613953,-5.8593267",
+                             "Palencia":"42.0096857,-4.5288016",
+                             "Las Palmas":"28.1235459,-15.4362574",
+                             "Pontevedra":"42.4298846,-8.6446202",
+                             "Salamanca":"40.9701039,-5.6635397",
+                             "Tenerife":"28.2915637,-16.6291304",
+                             "Cantabria":"43.1828396,-3.9878427",
+                             "Segovia":"40.9429032,-4.1088069",
+                             "Sevilla":"37.3890924,-5.9844589",
+                             "Soria":"41.7665972,-2.4790306",
+                             "Tarragona":"41.1188827,1.2444909",
+                             "Teruel":"40.3456879,-1.1064345",
+                             "Toledo":"39.8628316,-4.0273231",
+                             "Valencia":"39.4699075,-0.3762881",
+                             "Valladolid":"41.652251,-4.7245321",
+                             "Bizkaia":"43.2204286,-2.6983868",
+                             "Zamora":"41.5034712,-5.7467879",
+                             "Zaragoza":"41.6488226,-0.8890853",
+                             "Ceuta":"35.8893874,-5.3213455",
+                             "Melilla":"35.2922775,-2.9380973"
+                        }
+
+    @constant
+    def PROPERTIES_INDEX_ELASTIC():
+        return {
+                "settings" : {
+                        "number_of_shards": 1,
+                        "number_of_replicas": 0
+                },
+                "mappings" : {
+                        "blog" : {
+                            "_source" : { "enabled" : False },
+                            "properties" :{
+
+                                    "code":                     { "type" : "string",  "index" : "analyzed", "analyzer" : "keyword"},
+                                    "codigopostal":             { "type" : "string",  "index" : "analyzed", "analyzer" : "keyword"},
+                                    "edad":                     { "type" : "integer",  "index" : "analyzed"},
+                                    "provincia":                { "type" : "string",  "index" : "analyzed","analyzer" : "keyword"},
+                                    "email":                    { "type" : "string",  "index" : "analyzed","analyzer" : "keyword"},
+                                    "gastoanual":               { "type" : "float",  "index" : "analyzed"},
+                                    "model":                    { "type":"string","index" : "analyzed", "analyzer" : "keyword"},
+                                    "nombre":                   { "type":"string","index" : "analyzed", "analyzer" : "keyword"},
+                                    "probabilitiesMembership":  { "type" : "string",  "index" : "analyzed", "analyzer" : "keyword"},
+                                    "sex":                      { "type":"string","index" : "analyzed"},
+                                    "telefono":                 { "type" : "string",  "index" : "analyzed", "analyzer" : "keyword"},
+                                    "geoposicion":              {"type": "geo_point"}
+                                    }
+                        }
+                }
+            }
+
+
+    '''
+        It define the global constants to connect to the postgresql database
+
+    '''
+    @constant
+    def HOST_POSTGRESQL():
+        return 'localhost'
+
+    @constant
+    def USER_POSTGRESQL():
+        return 'antonio'
+    @constant
+    def PASSWORD_POSTGRESQL():
+        return '1234'
+
+    @constant
+    def DATABASE_POSTGRESQL():
+        return 'imathservices'
+
+

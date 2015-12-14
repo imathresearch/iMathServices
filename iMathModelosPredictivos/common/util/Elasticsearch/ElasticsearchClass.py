@@ -1,12 +1,14 @@
-'''
-Created on Nov 26, 2015
-
-@author: izubizarreta
-'''
+"""
+    Implements the class ElasticsearchClass , a class to work with the elasticsearch database
+Authors:
+@author iMath
+"""
 from elasticsearch import Elasticsearch
 from iMathModelosPredictivos.common.util.jsonOperations import jsonOperations
 from iMathModelosPredictivos.common.util.ReadConfigurationData import ConfigurationData
-import numpy as np
+from iMathModelosPredictivos.common.constants import CONS
+
+CONS = CONS()
 
 class ElasticsearchClass(object):
     '''
@@ -14,35 +16,21 @@ class ElasticsearchClass(object):
     '''
 
 
-    def __init__(self, path):
+    def __init__(self, host, port):
         '''
         Constructor
         '''
+        self.elasticsearch = Elasticsearch(self.getConnectionString(host,port))
         
-        connectBBDD = ConfigurationData()
+    def getConnectionString(self,host,port):
         
-        ConnectionsValues = connectBBDD.getData(path)
-        
-        self.host = ConnectionsValues[0]
-        self.port = ConnectionsValues[1]
-        
-    def getConnectionString(self):
-        
-        connection = [{'host': self.host, 'port': self.port}]
-        return connection
-    
-    def createConnection(self):
-        
-        self.elasticsearch = Elasticsearch(self.getConnectionString())
+        return [{'host': host, 'port': port}]
+
+
         
     def getRequestBody(self):
         
-        request_body = {
-                        "settings" : {
-                                      "number_of_shards": 1,
-                                      "number_of_replicas": 0
-                                      }
-                        }
+        request_body = CONS.PROPERTIES_INDEX_ELASTIC
         return request_body
         
     def deleteAndCreateDictionary(self,dictionary):
@@ -106,3 +94,5 @@ class ElasticsearchClass(object):
     def setResults(self,dictionary,labels,probabilities):
         
         res = self.elasticsearch.bulk(index = dictionary, body = self.getJsonStructure(labels, probabilities), refresh = True)
+
+

@@ -42,24 +42,24 @@ import operator
 import os
 import iMathModelosPredictivos as module
 
-from iMathModelosPredictivos.common.util.miningUtil import KFold
+
 from iMathModelosPredictivos.common.util.miningUtil import KFoldProb
-from iMathModelosPredictivos.common.util.ioOperations import IOOperations
 from iMathModelosPredictivos.common.util.miningUtil import numericalImputation
 from iMathModelosPredictivos.common.util.miningUtil import categoricalImputation
 from iMathModelosPredictivos.common.util.miningUtil import maxminScaler
 from iMathModelosPredictivos.common.util.miningUtil import binarizer
 from iMathModelosPredictivos.common.util.miningUtil import numericalOutliers
 from iMathModelosPredictivos.common.util.miningUtil import categoricalOutliers
-from iMathModelosPredictivos.common.util.miningUtil import svmOutliers
-from iMathModelosPredictivos.common.util.miningUtil import PCAFeatureReduction
 from iMathModelosPredictivos.common.util.miningUtil import featureSelection
 from iMathModelosPredictivos.common.util.iMathServicesError import iMathServicesError
 from iMathModelosPredictivos.common.util.miningUtil import generateRandomValue
 from iMathModelosPredictivos.common.constants import CONS
-from iMathModelosPredictivos.common.util.Postgresl.PostgreslManage import PostgreslManage
 from iMathModelosPredictivos.common.util.datesOperations import DateOperations
+from iMathModelosPredictivos.common.util.Postgresl.PostgreslManage import PostgreslManage
+from iMathModelosPredictivos.common.util.serialization.Serialization import Serialization
 from iMathModelosPredictivos.common.util.Elasticsearch.ElasticsearchClass import ElasticsearchClass
+
+
 
 CONS = CONS()
 
@@ -71,17 +71,39 @@ class ModelGoCustomer(Model):
         Class Model from iMathMasMovil.core.model   
     '''
      
-    def __init__(self, configurationPath, configurationElastic, tableModel, tableData, columnName, service, classifierType=None):
-        super(ModelGoCustomer, self).__init__(configurationPath, configurationElastic, tableModel, tableData, columnName, service, classifierType)
+    def __init__(self, classifierType=None):
 
-    def loadModel(self, tableModel, service):
+
+        self.tableModel = "Model"
+        self.tableData = "CompleteData"
+        self.service = "ChurnCustomer"
+        self.tableResults = "resultsModel"
+        self.columnData = "operationData"
+        self.dictionaryName = "telcoresults"
+
+        self.connectionPostgres = PostgreslManage(CONS.HOST_POSTGRESQL,
+                                          CONS.USER_POSTGRESQL,
+                                          CONS.PASSWORD_POSTGRESQL,
+                                          CONS.DATABASE_POSTGRESQL
+                                          )
+        self.serialization = Serialization()
+        self.connectionElastic = ElasticsearchClass(CONS.HOST_ELASTICSEARCH,
+                                                    CONS.PORT_ELASTICSEARCH)
+
+        if classifierType != None:
+            self.createModel(classifierType)
+        else:
+            self.loadModel()
+        #super(ModelGoCustomer, self).__init__(classifierType)
+
+    def loadModel(self):
         """Abstract method to be implemented in one of the subclasses
         Args:
           dataFile (string): The file where the model, previously created and saved, resides.        
         """
         
-        query = 'select * from imathservices."' + tableModel + '" where "nameModel" = ' + "'" + service + "';"
-        objectData = self.connection.getObjectValue(query)
+        query = 'select * from imathservices."' + self.tableModel + '" where "nameModel" = ' + "'" + self.service + "';"
+        objectData = self.connectionPostgres.getObjectValue(query)
         
         self.toSave = self.serialization.getLoads(objectData)
         
@@ -106,33 +128,27 @@ class ModelGoCustomer(Model):
         self.columnMetaData = self.toSave['columnMetaData'];
         print "[iMathResearch] Modelo basado en " + self.name + " cargado"
 
-    def createModel(self, tableModel, tableData, columnName, classifierType):
+    def createModel(self, classifierType):
         """Abstract method to be implemented in one of the subclasses
         Args:
           dataFile (string): The file where the data to create the model resides.
           classifierType (string): String that indicates the type of classifierType to be used to create the model 
               We will probably offer several classifier to create the same model
-        """ 
-        self._generateMetaData();
-        # Open and read data
-        '''io = IOOperations(); 
-        fileDesc = io.openFile(dataFile, 'r+');
-        [self.headerTrain, self.XData, self.YData] = io.readTrainDataModelFileFloat(fileDesc);
-        io.closeFile(fileDesc);'''
+        """
 
+        self._generateMetaData()
 
-        query = 'SELECT * FROM imathservices."' + tableData + '" where "' + columnName + '" = ' + "'" + "0" + "';"    
-        AllData = self.connection.getQueryMatrixFormat(query)
-        [self.headerTrain,self.XData,self.YData] = [self.connection.getTrainingHeaders(tableData)[6:],AllData[:,7:-2],AllData[:,-2:-1]]
+        AllData = self.connectionPostgres.getDataToCreateModel(self.tableData, self.columnData)
+        [self.headerTrain,self.XData,self.YData] = [self.connectionPostgres.getTrainingHeaders(self.tableData)[6:],AllData[:,7:-2],AllData[:,-2:-1]]
         
         try:        
-            self.__checkTrainDataFormat();
+            self.__checkTrainDataFormat()
         except iMathServicesError as e:
             print "Data Error: " , e.value
-            return;
+            return
         else:        
             # Preprocess data: clean and structure data and transform categorical data
-            self.__preprocessTrainData();
+            self.__preprocessTrainData()
             
             # Create the model
             self.classiferClass = classifierType
@@ -151,12 +167,12 @@ class ModelGoCustomer(Model):
             else:
                 raise iMathServicesError("Clasificador no valido");
               
-            quality = self.accuracyPercentage();
+            quality = self.accuracyPercentage()
             self.quality = quality
             
             print "[iMathResearch] Modelo basado en " + self.name + " creado. Calidad igual a %.3f" % quality        
     
-    def saveModel(self, tableModel, service):        
+    def saveModel(self):
         """Abstract method to be implemented in one of the subclasses
         Args:
           pathFile (string): String that indicates the complete path of the file where the created model is going to be saved.          
@@ -180,8 +196,8 @@ class ModelGoCustomer(Model):
         self.toSave['featureSelector'] = self.feature_selector
         self.toSave['columnMetaData'] = self.columnMetaData
         
-        query = 'select * from imathservices."' + tableModel + '" where "nameModel" = ' + "'" + service + "';"
-        codeValue = self.connection.getCode(query)
+        query = 'select * from imathservices."' + self.tableModel + '" where "nameModel" = ' + "'" + self.service + "';"
+        codeValue = self.connectionPostgres.getCode(query)
         
         self.key = codeValue
         
@@ -191,29 +207,27 @@ class ModelGoCustomer(Model):
         
         dates = DateOperations()
         
-        parameters = [self.key,service,ModelSerialization,self.quality,0,dates.getActualDate()]
+        parameters = [self.key,self.service,ModelSerialization,self.quality,0,dates.getActualDate()]
         
-        self.connection.setStoreModel(tableModel, parameters, service)
+        self.connectionPostgres.setStoreModel(self.tableModel, parameters, self.service)
         '''io = IOOperations(); 
         print "[iMathResearch] Guardando modelo basado en " + self.name + " en el fichero " + pathFile
         fileDesc = io.openFile(pathFile, 'w+');
         pickle.dump(self.toSave, fileDesc);
         io.closeFile(fileDesc);'''
 
-    def predictModel(self, tableResults, tableData, columnName, dictionary):
+    def predictModel(self):
         """Abstract method to be implemented in one of the subclasses
         Args:
           dataFile (string): The file where the data to be classified resides.
           outputFile (string): String that indicates the complete path of the file where the prediction is going to be saved. 
         """
-        # Open and read data
-        '''io = IOOperations(); 
-        fileDesc = io.openFile(dataFile, 'r+');
-        [self.headerPredict, self.XData] = io.readPredictDataModelFileFloat(fileDesc);'''
+
+
         
-        query = 'SELECT * FROM imathservices."' + tableData + '" where "' + columnName + '" = ' + "'" + "2" + "';"       
-        AllData = self.connection.getQueryMatrixFormat(query)
-        final_headers = np.delete(self.connection.getPredictionHeaders(tableData),[1,2,3,4,5,6],0)
+        query = 'SELECT * FROM imathservices."' + self.tableData + '" where "' + self.columnData + '" = ' + "'" + "2" + "';"
+        AllData = self.connectionPostgres.getQueryMatrixFormat(query)
+        final_headers = np.delete(self.connectionPostgres.getPredictionHeaders(self.tableData),[1,2,3,4,5,6],0)
         [self.headerPredict,self.XData] = [final_headers ,AllData[:,7:-2]]
         
         try:        
@@ -231,7 +245,7 @@ class ModelGoCustomer(Model):
             mask = np.where(prediction=='Yes')
             predictionProb = self._predictProb()[mask]
             
-            key = self.connection.getPrimaryKey(tableResults)
+            key = self.connectionPostgres.getPrimaryKey(self.tableResults)
         
             dates = DateOperations()
             
@@ -239,19 +253,19 @@ class ModelGoCustomer(Model):
         
             #self.connection.setStoreModelsResults(1, tableResults, prediction, predictionProb, code)
             
-            self.connectionElastic.deleteAndCreateDictionary(dictionary)
+            self.connectionElastic.deleteAndCreateDictionary(self.dictionaryName)
             
             body = self.connectionElastic.getJsonStructure(self.key, AllData[:][mask], prediction[mask], predictionProb)
             
             #self.connectionElastic.setElements(dictionary,body)
-            self.connectionElastic.setElementsWithBulk(dictionary,body)
+            self.connectionElastic.setElementsWithBulk(self.dictionaryName,body)
             # Compute confusion matrix
             #self.__generatePredictionFile(outputFile, ID, prediction, predictionProb)
             print "[iMathResearch] Prediccion generada por el modelo guardada"
 
             return body
     
-    def testModel(self, tableResults, tableData, columnName):
+    def testModel(self):
         """Abstract method to be implemented in one of the subclasses
         Args:
           dataFile (string): The file where the data to be classified resides.
@@ -262,9 +276,9 @@ class ModelGoCustomer(Model):
         fileDesc = io.openFile(dataFile, 'r+');
         [self.headerTest, self.XData, self.YData] = io.readTestDataModelFileFloat(fileDesc);'''
         
-        query = 'SELECT * FROM imathservices."' + tableData + '" where "' + columnName + '" = ' + "'" + "1" + "';"        
-        AllData = self.connection.getQueryMatrixFormat(query)
-        [self.headerTest,self.XData,self.YData] = [self.connection.getTestHeaders(tableData)[6:],AllData[:,7:-2],AllData[:,-2:-1]]
+        query = 'SELECT * FROM imathservices."' + self.tableData + '" where "' + self.columnData + '" = ' + "'" + "1" + "';"
+        AllData = self.connectionPostgres.getQueryMatrixFormat(query)
+        [self.headerTest,self.XData,self.YData] = [self.connectionPostgres.getTestHeaders(self.tableData)[6:],AllData[:,7:-2],AllData[:,-2:-1]]
         
         try:        
             self.__checkTestDataFormat();
@@ -284,13 +298,13 @@ class ModelGoCustomer(Model):
             # Compute confusion matrix
             cm = confusion_matrix(self.YData, prediction)
             
-            key = self.connection.getPrimaryKey(tableResults)
+            key = self.connectionPostgres.getPrimaryKey(self.tableResults)
         
             dates = DateOperations()
             
             code = [key,self.key, AllData[:,0], dates.getActualDate(),cm]
         
-            self.connection.setStoreModelsResults(0, tableResults, prediction, predictionProb, code)
+            self.connectionPostgres.setStoreModelsResults(0, self.tableResults, prediction, predictionProb, code)
             #self.__generateTestFileGoDownCustomer(outputFile, self.YData, prediction, predictionProb, cm)
             print "[iMathResearch] Resultado del testing del modelo guardado"
             
@@ -1008,3 +1022,6 @@ class ModelGoCustomer(Model):
             We consider a hit when the one of the two classes with greater probability matches with the real class
         """
         return 0
+
+
+

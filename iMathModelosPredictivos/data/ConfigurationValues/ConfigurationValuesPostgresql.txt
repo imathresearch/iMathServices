@@ -1,4 +1,0 @@
-host=localhost
-user=antonio
-password=1234
-database=imathservices

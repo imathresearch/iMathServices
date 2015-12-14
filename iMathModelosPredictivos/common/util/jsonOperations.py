@@ -3,23 +3,27 @@ Created on Nov 26, 2015
 
 @author: izubizarreta
 '''
+from iMathModelosPredictivos.common.constants import CONS
 
+CONS = CONS()
 class jsonOperations(object):
     '''
     classdocs
     '''
 
     def getResultDict(self,model,code,label,probabiblities):
-        
+
         dictValue = {"model" : model,
                      "nombre":code[1],
                      "telefono":code[3],
                      "email":code[4],"code" : code[0],
                      "provincia": code[6],
-                     "edad":code[2],
+                     "edad":int(code[2]),
                      "codigopostal":code[5],
                      "probabilitiesMembership" : probabiblities,
-                     "gastoanual":code[24]
+                     "gastoanual":float(code[24]),
+                     "sex":code[7],
+                     "geoposicion":CONS.PROVINCES[code[6]]
                      }
         return dictValue
     
