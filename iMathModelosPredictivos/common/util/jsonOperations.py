@@ -21,9 +21,9 @@ class jsonOperations(object):
                      "edad":int(code[2]),
                      "codigopostal":code[5],
                      "probabilitiesMembership" : probabiblities,
-                     "gastoanual":float(code[24]),
-                     "sex":code[7],
-                     "geoposicion":CONS.PROVINCES[code[6]]
+                     #"gastoanual":float(code[24]),
+                     "sex":code[7]
+                     #"geoposicion":CONS.PROVINCES[code[6]]
                      }
         return dictValue
     

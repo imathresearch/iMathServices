@@ -63,13 +63,13 @@ class ConnectionBBDD(object):
     def getObjectData(self,query):
         
         results = self.getFetch(query)
-        return results[0][2]
+        return results[0][2],results[0][0]
     
     def getCode(self,query):
         
         results = self.getFetch(query)
         if len(results)==0:
-            return 1
+            return None
         else:
             return results[0][0]
     
@@ -123,15 +123,18 @@ class ConnectionBBDD(object):
         
         if exist==0:
         
-            query =  'INSERT INTO imathservices."' + table + '" VALUES (%s, %s, %s, %s, %s, %s);'
+            query =  'INSERT INTO imathservices."' + table + '" ("nameModel","serializationValue","trainingPercentage","testPercentage","createDate") VALUES (%s, %s, %s, %s, %s) returning id;'
             cursor.execute(query, parameters)
+            id_row = cursor.fetchone()[0]
         
         else:
             
-            parametersStore = [parameters[2],parameters[3],parameters[4],str(parameters[5]),parameters[1]]
+            parametersStore = [parameters[1],parameters[2],parameters[3],str(parameters[4]),parameters[0]]
             cursor.execute('UPDATE imathservices."' + table + '" SET "serializationValue"=%s,"trainingPercentage"=%s,"testPercentage"=%s,"createDate"=%s WHERE "nameModel"=%s', parametersStore)
-        
+            id_row=exist
         self.db.commit()
+
+        return id_row
         
     def setDataModelResults(self, operation, table, data, probabilities, codes):
         
