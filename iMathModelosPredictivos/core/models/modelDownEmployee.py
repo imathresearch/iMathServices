@@ -29,39 +29,39 @@ Authors:
 
 @author iMath
 """
-from model import Model
+from iMathModelosPredictivos.core.models.model import Model
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
 import csv
 import numpy as np
 from sklearn.metrics import confusion_matrix
+import pickle
 import operator
-import os
-import iMathModelosPredictivos as module
+from iMathModelosPredictivos.common.util.miningUtil import KFold
 from iMathModelosPredictivos.common.util.miningUtil import KFoldProb
+from iMathModelosPredictivos.common.util.ioOperations import IOOperations
 from iMathModelosPredictivos.common.util.miningUtil import numericalImputation
 from iMathModelosPredictivos.common.util.miningUtil import categoricalImputation
 from iMathModelosPredictivos.common.util.miningUtil import maxminScaler
 from iMathModelosPredictivos.common.util.miningUtil import binarizer
 from iMathModelosPredictivos.common.util.miningUtil import numericalOutliers
 from iMathModelosPredictivos.common.util.miningUtil import categoricalOutliers
+from iMathModelosPredictivos.common.util.miningUtil import svmOutliers
+from iMathModelosPredictivos.common.util.miningUtil import PCAFeatureReduction
 from iMathModelosPredictivos.common.util.miningUtil import featureSelection
 from iMathModelosPredictivos.common.util.iMathServicesError import iMathServicesError
 from iMathModelosPredictivos.common.util.miningUtil import generateRandomValue
 from iMathModelosPredictivos.common.constants import CONS
-from iMathModelosPredictivos.common.util.datesOperations import DateOperations
 from iMathModelosPredictivos.common.util.Postgresl.PostgreslManage import PostgreslManage
 from iMathModelosPredictivos.common.util.serialization.Serialization import Serialization
 from iMathModelosPredictivos.common.util.Elasticsearch.ElasticsearchClass import ElasticsearchClass
-
-
-
+from iMathModelosPredictivos.common.util.datesOperations import DateOperations
 CONS = CONS()
 
 
 
-class ModelGoCustomer(Model):
+class ModelDownEmployee(Model):
     '''
     Extends:
         Class Model from iMathMasMovil.core.model   
@@ -71,11 +71,11 @@ class ModelGoCustomer(Model):
 
 
         self.tableModel = "Model"
-        self.tableData = "CompleteData"
-        self.service = "ChurnCustomer"
+        self.tableData = "CompleteDataDownEmployee"
+        self.service = "DownEmployee"
         self.tableResults = "resultsModel"
         self.columnData = "operationData"
-        self.dictionaryName = "telcoresults"
+        self.dictionaryName = "downemployeeresults"
 
         self.connectionPostgres = PostgreslManage(CONS.HOST_POSTGRESQL,
                                           CONS.USER_POSTGRESQL,
@@ -90,7 +90,6 @@ class ModelGoCustomer(Model):
             self.createModel(classifierType)
         else:
             self.loadModel()
-        #super(ModelGoCustomer, self).__init__(classifierType)
 
     def loadModel(self):
         """Abstract method to be implemented in one of the subclasses
@@ -119,26 +118,24 @@ class ModelGoCustomer(Model):
             self.key = key
             self.columnMetaData = self.toSave['columnMetaData']
             print "[iMathResearch] Modelo basado en " + self.name + " cargado"
-
-
-    def createModel(self, classifierType):
+        
+    def createModel(self,classifierType):
         """Abstract method to be implemented in one of the subclasses
         Args:
           dataFile (string): The file where the data to create the model resides.
           classifierType (string): String that indicates the type of classifierType to be used to create the model 
               We will probably offer several classifier to create the same model
-        """
-
+        """ 
         self._generateMetaData()
 
         allData = self.connectionPostgres.getDataToCreateModel(self.tableData, self.columnData)
         [self.headerTrain,self.XData,self.YData] = [self.connectionPostgres.getTrainingHeaders(self.tableData)[6:],allData[:,7:-2],allData[:,-2:-1]]
-        
+
         try:        
             self.__checkTrainDataFormat()
         except iMathServicesError as e:
             print "Data Error: " , e.value
-            return
+            return;
         else:        
             # Preprocess data: clean and structure data and transform categorical data
             self.__preprocessTrainData()
@@ -162,9 +159,44 @@ class ModelGoCustomer(Model):
               
             quality = self.accuracyPercentage()
             self.quality = quality
-            
-            print "[iMathResearch] Modelo basado en " + self.name + " creado. Calidad igual a %.3f" % quality        
+            print "[iMathResearch] Modelo basado en " + self.name + " creado. Calidad igual a %.3f" % quality
+
     
+    def createModelWithoutChange(self, dataFile, classifierType):
+        """Abstract method to be implemented in one of the subclasses
+        Args:
+          dataFile (string): The file where the data to create the model resides.
+          classifierType (string): String that indicates the type of classifierType to be used to create the model 
+              We will probably offer several classifier to create the same model
+        """ 
+        self._generateMetaData();
+        # Open and read data
+        io = IOOperations(); 
+        fileDesc = io.openFile(dataFile, 'r+');
+        [self.headerTrain, self.XData, self.YData] = io.readTrainDataModelFileAbandonoTerminacion(fileDesc);
+        io.closeFile(fileDesc);
+        
+        # CODE FOR SIMPLE MODELS
+        # Create the model
+        self.classiferClass = classifierType
+        if classifierType == DecisionTreeClassifier:
+            print "[iMathResearch] Creando modelo basado en Decision Trees"
+            self._fit();  # for DT
+            self.name = "DecisionTree"
+        elif classifierType == SVC:
+            print "[iMathResearch] Creando modelo basado en SVC"
+            self._fit(probability=True);
+            self.name = "SVC"
+        elif classifierType == RandomForestClassifier:
+            print "[iMathResearch] Creando modelo basado en Random Forest"
+            self._fit(n_estimators=10)  # for random forest
+            self.name = "RandomForest"
+        else:
+            raise iMathServicesError("Clasificador no valido");
+              
+        # quality = self.accuracyPercentage();
+        # print "[iMathResearch] Modelo basado en " + self.name + " creado. Calidad igual a %.3f" % quality            
+            
     def saveModel(self):
         """Abstract method to be implemented in one of the subclasses
         Args:
@@ -174,15 +206,15 @@ class ModelGoCustomer(Model):
         # Models
         self.toSave['model'] = self.model
         # self.toSave['model'] = self.binary_models
-        
+
         self.toSave['name'] = self.name;
         self.toSave['headerTestFormat'] = self.headerTestFormat
         self.toSave['headerPredictFormat'] = self.headerPredictFormat
-        self.toSave['index'] = self.index 
+        self.toSave['index'] = self.index
         self.toSave['imputatorNumerical'] = self.imputatorNumerical
         self.toSave['imputatorCategorical'] = self.imputatorCategorical
         self.toSave['scaler'] = self.scaler;
-        
+
         # self.toSave['binaryEncoder'] = self.binaryEncoder;
         # self.toSave['svmOutliers'] = self.svmOutliers;
         # self.toSave['PCAReduction'] = self.PCAReduction;
@@ -195,7 +227,6 @@ class ModelGoCustomer(Model):
         parameters = [self.service,ModelSerialization,self.quality,0,dates.getActualDate()]
         self.key=self.connectionPostgres.setStoreModel(self.tableModel, parameters, self.service)
 
-
     def predictModel(self):
         """Abstract method to be implemented in one of the subclasses
         Args:
@@ -203,12 +234,11 @@ class ModelGoCustomer(Model):
           outputFile (string): String that indicates the complete path of the file where the prediction is going to be saved. 
         """
 
-
         allData = self.connectionPostgres.getAllData(self.tableData, self.columnData,'2')
         final_headers = np.delete(self.connectionPostgres.getPredictionHeaders(self.tableData),[1,2,3,4,5,6],0)
         [self.headerPredict,self.XData] = [final_headers ,allData[:,7:-2]]
-        
-        try:        
+
+        try:
             self.__checkPredictDataFormat();
         except iMathServicesError as e:
             print "Data Error: " , e.value
@@ -219,18 +249,18 @@ class ModelGoCustomer(Model):
             prediction = self._predict()
             mask = np.where(prediction=='Yes')
             predictionProb = self._predictProb()[mask]
-            
+
             key = self.connectionPostgres.getPrimaryKey(self.tableResults)
-        
+
             dates = DateOperations()
-            
+
             code = [key,self.key, allData[:,0], dates.getActualDate(),""]
 
-            
+
             self.connectionElastic.deleteAndCreateDictionary(self.dictionaryName)
-            
+
             body = self.connectionElastic.getJsonStructure(self.key, allData[:][mask], prediction[mask], predictionProb)
-            
+
 
             self.connectionElastic.setElementsWithBulk(self.dictionaryName,body)
             print "[iMathResearch] Prediccion generada por el modelo guardada"
@@ -249,8 +279,8 @@ class ModelGoCustomer(Model):
 
         [self.headerTest,self.XData,self.YData] = [self.connectionPostgres.getTestHeaders(self.tableData)[6:],
                                                    allData[:,7:-2],allData[:,-2:-1]]
-        
-        try:        
+
+        try:
             self.__checkTestDataFormat();
         except iMathServicesError as e:
             print "Data Error: " , e.value
@@ -263,16 +293,62 @@ class ModelGoCustomer(Model):
             predictionProb = self._predictProb()
             # Compute confusion matrix
             cm = confusion_matrix(self.YData, prediction)
-            
+
             key = self.connectionPostgres.getPrimaryKey(self.tableResults)
-        
+
             dates = DateOperations()
-            
+
             code = [key,self.key, allData[:,0], dates.getActualDate(),cm]
-        
+
             self.connectionPostgres.setStoreModelsResults(0, self.tableResults, prediction, predictionProb, code)
             print "[iMathResearch] Resultado del testing del modelo guardado"
+    
+    def predictModelWithoutChange(self, dataFile, outputFile):
+        """Abstract method to be implemented in one of the subclasses
+        Args:
+          dataFile (string): The file where the data to be classified resides.
+          outputFile (string): String that indicates the complete path of the file where the prediction is going to be saved. 
+        """
+        # Open and read data
+        io = IOOperations(); 
+        fileDesc = io.openFile(dataFile, 'r+');
+        [self.headerTrain, self.XData, self.YData] = io.readTrainDataModelFileAbandonoTerminacion(fileDesc);
+        io.closeFile(fileDesc)
+
+        ID = self.XData[:, 0]      
             
+        # CODE FOR SIMPLE MODEL
+        prediction = self._predict()
+        prediction[prediction < 1 ] = 0
+        '''self.YData = self.YData.astype(np.int)'''
+        predictionProb = self._predictProb()
+          
+        self.__generateTestFileGoDownCustomer(outputFile, ID, prediction, predictionProb)
+        print "[iMathResearch] Prediccion generada por el modelo guardada en el fichero " + outputFile
+                
+    def testModelWithoutChange(self, dataFile, outputFile):
+        """Abstract method to be implemented in one of the subclasses
+        Args:
+          dataFile (string): The file where the data to be classified resides.
+          outputFile (string): String that indicates the complete path of the file where the prediction is going to be saved. 
+        """
+        # Open and read data
+        io = IOOperations(); 
+        fileDesc = io.openFile(dataFile, 'r+');
+        [self.headerTrain, self.XData, self.YData] = io.readTrainDataModelFileAbandonoTerminacion(fileDesc);
+        io.closeFile(fileDesc)
+            
+        # CODE FOR SIMPLE MODEL
+            
+        prediction = self._predict()
+        prediction[prediction < 1 ] = 0 
+        # self.YData = self.YData.astype(np.int)
+        predictionProb = self._predictProb()
+        # Compute confusion matrix
+        cm = confusion_matrix(self.YData, prediction)
+        self.__generateTestFileGoDownCustomer(outputFile, self.YData, prediction, predictionProb, cm)
+        print "[iMathResearch] Resultado del testing del modelo guardado en " + outputFile
+    
     def __splitDataVariableType(self):
         """Divide the variable in two set depending on its type (numerical or categorical)
            The information about how to split the complete set is determined by self.index,
@@ -281,7 +357,7 @@ class ModelGoCustomer(Model):
             numerical (numpy array): contains the values for the numerical variables
             categorical (numpy array): contains the values for the categorical variables  
         """
-        numerical = self.XData[:, self.index['numerical']]         
+        numerical = self.XData[:, self.index['numerical']]
         categorical = self.XData[:, self.index['categorical']]
         return [numerical, categorical]
         
@@ -360,11 +436,11 @@ class ModelGoCustomer(Model):
         [numericalData, categoricalData] = self.__splitDataVariableType();                
         
         # NUMERICAL PREPROCESSING        
-        # 1. IMPUTATION                
+        # 1. IMPUTATION
         [numericalData, self.imputatorNumerical] = numericalImputation(numericalData, strategy='mean')
         # 2. OUTLIERS 
         # The code below should be used to detect and eliminate numericalOutliers
-        #[numericalData, categoricalData] = self._numericalOutlier(numericalData, categoricalData)
+        # [numericalData, categoricalData] = self._numericalOutlier(numericalData, categoricalData)
         # 3. NORMALIZATION    
         [numericalData, self.scaler] = maxminScaler(numericalData);
                
@@ -373,7 +449,7 @@ class ModelGoCustomer(Model):
         [categoricalData, self.imputatorCategorical] = categoricalImputation(categoricalData)
         # 2. OUTLIERS
         # The code below should be used to detect and elimanate categoricalOutliers
-        #[categoricalData, numericalData] = self._categoricalOutlier(categoricalData, numericalData)
+        # [categoricalData, numericalData] = self._categoricalOutlier(categoricalData, numericalData)
         # 3. BINARIZATION    
         binarizerData = []
         for column in range(categoricalData.shape[1]):
@@ -382,9 +458,8 @@ class ModelGoCustomer(Model):
                 [self.columnMetaData[varIndex]['values'], binarizerColumn, self.columnMetaData[varIndex]['encoder']] = binarizer(categoricalData[:, column], self.columnMetaData[varIndex]['codification'])
             else:
                 [self.columnMetaData[varIndex]['values'], binarizerColumn] = binarizer(categoricalData[:, column], self.columnMetaData[varIndex]['codification'])
-
+                
             binarizerData = binarizerData + [binarizerColumn]
-            
         categoricalData = np.column_stack((list for list in binarizerData))
 
         # JOIN VARIABLES
@@ -393,12 +468,12 @@ class ModelGoCustomer(Model):
         [self.XData, self.feature_selector] = featureSelection(self.XData, self.YData)
    
         # OUTLIERS FOR BOTH KIND OF VARIABLES 
-        #[outliers, self.svmOutliers] = svmOutliers(self.XData, 0.2)        
-        #self.XData = np.delete(self.XData, (outliers), axis=0)
-        #self.YData = np.delete(self.YData, (outliers), axis=0)
+        # [outliers, self.svmOutliers] = svmOutliers(self.XData, 0.2)        
+        # self.XData = np.delete(self.XData, (outliers), axis=0)
+        # self.YData = np.delete(self.YData, (outliers), axis=0)
         
         # REDUCTION OF VARIABLES
-        #[self.XData, self.PCAReduction] = PCAFeatureReduction(self.XData)
+        # [self.XData, self.PCAReduction] = PCAFeatureReduction(self.XData)
        
     
     def _preprocessTestData(self):  
@@ -422,7 +497,7 @@ class ModelGoCustomer(Model):
         categoricalData = categoricalImputation(categoricalData, imputator=self.imputatorCategorical)
         # 2. OUTLIERS
         # The code below should be used to detect and elimanate categoricalOutliers
-        #[categoricalData, numericalData] = self._categoricalOutlier(categoricalData, numericalData)
+        # [categoricalData, numericalData] = self._categoricalOutlier(categoricalData, numericalData)
         # 3. BINARIZATION    
         binarizerData = []
         for column in range(categoricalData.shape[1]):
@@ -445,8 +520,8 @@ class ModelGoCustomer(Model):
         # self.XData = np.delete(self.XData, (outliers), axis=0)
         # self.ID = np.delete(self.ID, (outliers), axis=0)
         
-        #REDUCTION OF VARIABLES
-        #self.XData = PCAFeatureReduction(self.XData, self.PCAReduction)
+        # REDUCTION OF VARIABLES
+        # self.XData = PCAFeatureReduction(self.XData, self.PCAReduction)
                      
     
     def _readMetaDataFile(self):
@@ -458,13 +533,7 @@ class ModelGoCustomer(Model):
             - which categorical variables must be binarised using 1HOT method
             - which categorical variables must be binarised using NHOT method
         """
-        path = os.path.dirname(module.__file__)
-        path = path + '/data/BBDDHeaders/metadataGoCustomer.txt'
-        path = str(path)
-        
-        fileOpen = open(path)
-        
-        lines = [line.strip() for line in fileOpen]
+        lines = [line.strip() for line in open(CONS.MODEL_FILE_METADATA_DOWNEMPLOYEE)]
         count = 0;
         while count < len(lines):
             if (lines[count] == '<variable train format>'):
@@ -712,7 +781,7 @@ class ModelGoCustomer(Model):
             prediction (numpy array): for each sample, the predicted class
             predictionProb (numpy array): for each sample the array contains the probability of beloging to each class
             mc : confusion matrix
-        """        
+        """
         content = []
         header = ['Clase real', 'Clase predicha', "----"]    
         header.append("Prob")
@@ -728,7 +797,7 @@ class ModelGoCustomer(Model):
             sample.append("----")
             sample.append(predictionProb[indexSample])
             sample.append("----")
-            if ID[indexSample] == int(prediction[indexSample]):
+            if ID[indexSample] == prediction[indexSample]:
                 hit = hit + 1
                 sample.append("Si")
             else:
@@ -740,68 +809,7 @@ class ModelGoCustomer(Model):
             f.write("TOTAL DE MUESTRAS A PREDECIR " + str(total) + ". ACIERTOS " + str(hit) + '\n')
             f.write('\n')
             if mc is not None:
-                f.write('MATRIZ DE CONFUSION (Eje x -- Subscripciones Reales ( Baja si o baja no)--, Eje y -- Subscripciones Predichas (Baja si baja no)--)\n')
-                np.savetxt(f, mc, fmt='%10.0f');                
-                f.write('\n')
-            f.write ("PREDICCION DETALLADA \n")
-            writer = csv.writer(f, lineterminator="\n")
-            writer.writerows(content)
-
-    
-    def __generateTestFilePrevious(self, outputFile, ID, prediction, predictionProb, mc=None):
-        """Generate the test file when the model is based on a simple model.
-        We have implemented a relaxed quality measure. For this reason, in the test file
-        hits and relaxed hits are diferentiated.
-        Args:
-            outputFile (string): string that contains the complete path of the file where the result is going to be stored
-            ID (numpy array): for each sample the real class 
-            prediction (numpy array): for each sample, the predicted class
-            predictionProb (numpy array): for each sample the array contains the probability of beloging to each class
-            mc : confusion matrix
-        """
-        content = []
-        header = ['Clase real', 'Clase predicha', "----"]    
-        header.append("Prob CL-bajo")
-        header.append("Prob CL-medio")
-        header.append("Prob CL-alto")  
-        header.append("----")
-        header.append("Acierto")
-        header.append("Acierto relajado")
-        content.append(header)
-        
-        hit = 0
-        hit_relaxed = 0
-        for indexSample in range(len(ID)):
-            sample = []
-            sample.append(ID[indexSample])
-            sample.append(prediction[indexSample])
-            sample.append("----")
-            for numCls in range(3):
-                sample.append(predictionProb[indexSample][numCls])            
-            sample.append("----")
-            if int(ID[indexSample]) == prediction[indexSample]:
-                hit = hit + 1;
-                sample.append("X")
-                sample.append("*")
-            else:
-                dic_prob = dict(enumerate(predictionProb[indexSample]))
-                sorted_prob = sorted(dic_prob.items(), key=operator.itemgetter(1), reverse=True)
-                if sorted_prob[1][0] == ID[indexSample]:
-                    hit_relaxed = hit_relaxed + 1
-                    sample.append("X")
-                    sample.append("X")
-                else:
-                    sample.append("*")
-                    sample.append("*")
-                    
-            content.append(sample)
-               
-        with open(outputFile, "w+") as f:
-            total = len(ID)
-            f.write("TOTAL DE MUESTRAS A PREDECIR " + str(total) + ". ACIERTOS " + str(hit) + ". ACIERTOS RELAJADOS " + str(hit_relaxed) + '\n')
-            f.write('\n')
-            if mc is not None:
-                f.write('MATRIZ DE CONFUSION (Eje x -- Subscripciones Reales ( Bajo valor, Medio valor, Alto valor)--, Eje y -- Subscripciones Predichas (Bajo valor, Medio valor, Alto valor)--)\n')
+                f.write('MATRIZ DE CONFUSION (Eje x -- Subscripciones Reales ( si o no)--, Eje y -- Subscripciones Predichas ( si o no)--)\n')
                 np.savetxt(f, mc, fmt='%10.0f');                
                 f.write('\n')
             f.write ("PREDICCION DETALLADA \n")
@@ -870,8 +878,7 @@ class ModelGoCustomer(Model):
             f.write ("PREDICCION DETALLADA \n")
             writer = csv.writer(f, lineterminator="\n")
             writer.writerows(content)
-
-
+    
     def getFinalPrediction(self, tuple_class_prediction, tuple_prob_prediction):
         """Calculate the final prediction when the model is based on the combination of 3 binary models
         Args:
@@ -981,12 +988,9 @@ class ModelGoCustomer(Model):
                 hit = hit + 1
 
         return (float(hit) / len(YPredProb))
-                
+    
     def accuracyProb(self):
         """Calculate the hit percentage when the model is based on the a simple model, having in mind relaxed conditions
             We consider a hit when the one of the two classes with greater probability matches with the real class
         """
         return 0
-
-
-

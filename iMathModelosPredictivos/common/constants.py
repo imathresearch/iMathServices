@@ -51,7 +51,7 @@ class CONS(object):
     @constant
     def MODEL_FILE_METADATA_DOWNEMPLOYEE():
         path = os.path.dirname(module.__file__)
-        return os.path.join(path, 'data', 'metadataDownEmployee.txt')
+        return os.path.join(path, 'data/BBDDHeaders', 'metadataDownEmployee.txt')
 
     @constant
     def MODEL_FILE_METADATA_GOCUSTOMER():

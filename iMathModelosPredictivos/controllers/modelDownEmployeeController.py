@@ -1,16 +1,16 @@
 from iMathModelosPredictivos.common.constants import CONS
-from iMathModelosPredictivos.core.models.modelGoCustomer import ModelGoCustomer
+from iMathModelosPredictivos.core.models.modelDownEmployee import ModelDownEmployee
 from sklearn.ensemble import RandomForestClassifier
 
-class ModelGoCustomerController(object):
+class ModelDownEmployeeController(object):
 
     def __init__(self):
 
-        self.model = ModelGoCustomer()
+        self.model = ModelDownEmployee()
 
 
     def executeCreateModel(self):
-        #self.model.loadModel()
+
         self.model.createModel(RandomForestClassifier)
         self.model.saveModel()
         return dict(model='model ok')
@@ -27,5 +27,3 @@ class ModelGoCustomerController(object):
 
         prediction = self.model.predictModel()
         return dict(result=prediction)
-
-

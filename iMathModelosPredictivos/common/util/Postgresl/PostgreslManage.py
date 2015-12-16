@@ -54,7 +54,7 @@ class PostgreslManage(object):
     
     def setStoreModel(self,table,parameters, serviceValue):
         
-        self.ConnectionBBDD.setDataModel(table, parameters, serviceValue)
+        return self.ConnectionBBDD.setDataModel(table, parameters, serviceValue)
         
     def getObjectValue(self, query):
         
@@ -90,3 +90,6 @@ class PostgreslManage(object):
     def getAllData(self, tableData, columnData, value):
         query = 'SELECT * FROM imathservices."' + tableData + '" where "' + columnData + '" = ' + "'" + value + "';"
         return self.getQueryMatrixFormat(query)
+
+
+       #codeValue = self.connectionPostgres.getCodeFromModel(self.tableModel, self.service)

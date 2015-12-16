@@ -22,7 +22,7 @@ class jsonOperations(object):
                      "codigopostal":code[5],
                      "probabilitiesMembership" : probabiblities,
                      "gastoanual":float(code[24]),
-                     "sex":code[7],
+                     "sex":code[7]
                      "geoposicion":CONS.PROVINCES[code[6]]
                      }
         return dictValue
