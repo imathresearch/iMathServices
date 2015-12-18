@@ -257,9 +257,13 @@ class ModelDownEmployee(Model):
             code = [key,self.key, allData[:,0], dates.getActualDate(),""]
 
 
-            self.connectionElastic.deleteAndCreateDictionary(self.dictionaryName)
+            self.connectionElastic.deleteAndCreateDictionary(self.dictionaryName,self.service)
 
-            body = self.connectionElastic.getJsonStructure(self.key, allData[:][mask], prediction[mask], predictionProb)
+            body = self.connectionElastic.getJsonStructure(self.key,
+                                                           allData[:][mask],
+                                                           prediction[mask],
+                                                           predictionProb,
+                                                           self.service)
 
 
             self.connectionElastic.setElementsWithBulk(self.dictionaryName,body)

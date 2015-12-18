@@ -220,7 +220,7 @@ class CONS(object):
                         }
 
     @constant
-    def PROPERTIES_INDEX_ELASTIC():
+    def PROPERTIES_INDEX_ELASTIC_CHURNCUSTOMER():
         return {
                 "settings" : {
                         "number_of_shards": 1,
@@ -247,6 +247,46 @@ class CONS(object):
                         }
                 }
             }
+
+    @constant
+    def PROPERTIES_INDEX_ELASTIC_DOWNEMPLOYEE():
+        return {
+                "settings" : {
+                        "number_of_shards": 1,
+                        "number_of_replicas": 0
+                },
+                "mappings" : {
+                        "blog" : {
+                            "_source" : { "enabled" : False },
+                            "properties" :{
+
+                                    "code":                     { "type" : "string",  "index" : "analyzed", "analyzer" : "keyword"},
+                                    "codigopostal":             { "type" : "string",  "index" : "analyzed", "analyzer" : "keyword"},
+                                    "edad":                     { "type" : "integer",  "index" : "analyzed"},
+                                    "provincia":                { "type" : "string",  "index" : "analyzed","analyzer" : "keyword"},
+                                    "email":                    { "type" : "string",  "index" : "analyzed","analyzer" : "keyword"},
+                                    "tiempoempresa":            { "type" : "integer",  "index" : "analyzed"},
+                                    "model":                    { "type":"string","index" : "analyzed", "analyzer" : "keyword"},
+                                    "nombre":                   { "type":"string","index" : "analyzed", "analyzer" : "keyword"},
+                                    "probabilitiesMembership":  { "type" : "string",  "index" : "analyzed", "analyzer" : "keyword"},
+                                    "sex":                      { "type":"string","index" : "analyzed"},
+                                    "telefono":                 { "type" : "string",  "index" : "analyzed", "analyzer" : "keyword"},
+                                    "viajes":                   { "type" : "string",  "index" : "analyzed","analyzer" : "keyword"},
+                                    "dailyrate":                { "type" : "integer",  "index" : "analyzed"},
+                                    "departamento":             { "type" : "string",  "index" : "analyzed","analyzer" : "keyword"},
+                                    "distanciacasa":            { "type" : "integer",  "index" : "analyzed"},
+                                    "educacion":                { "type" : "string",  "index" : "analyzed","analyzer" : "keyword"},
+                                    "satisfaccionentorno":      { "type" : "integer",  "index" : "analyzed"},
+                                    "roltrabajo":               { "type" : "string",  "index" : "analyzed","analyzer" : "keyword"},
+                                    "satisfacciontrabajo":      { "type" : "integer",  "index" : "analyzed"},
+                                    "sueldo":                   { "type" : "integer",  "index" : "analyzed"}
+
+                                    }
+                        }
+                }
+            }
+
+
 
 
     '''

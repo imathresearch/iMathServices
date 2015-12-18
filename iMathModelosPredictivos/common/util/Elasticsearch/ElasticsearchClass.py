@@ -28,17 +28,19 @@ class ElasticsearchClass(object):
 
 
         
-    def getRequestBody(self):
-        
-        request_body = CONS.PROPERTIES_INDEX_ELASTIC
+    def getRequestBody(self,service):
+        if service == 'ChurnCustomer':
+            request_body = CONS.PROPERTIES_INDEX_ELASTIC_CHURNCUSTOMER
+        elif service == 'DownEmployee':
+            request_body = CONS.PROPERTIES_INDEX_ELASTIC_DOWNEMPLOYEE
         return request_body
         
-    def deleteAndCreateDictionary(self,dictionary):
+    def deleteAndCreateDictionary(self,dictionary,service):
         
         if self.elasticsearch.indices.exists(dictionary):
             res = self.elasticsearch.indices.delete(index = dictionary)
             
-        res = self.elasticsearch.indices.create(index = dictionary, body = self.getRequestBody())
+        res = self.elasticsearch.indices.create(index = dictionary, body = self.getRequestBody(service))
 
     def createDictionary(self,dictionary):
         
@@ -48,11 +50,12 @@ class ElasticsearchClass(object):
         
         res = self.elasticsearch.indices.delete(index = dictionary)
         
-    def getJsonStructure(self,model, codes, labels,probabilities):
+    def getJsonStructure(self,model, codes, labels,probabilities,service):
         
         jsonStructure = jsonOperations()
-        dataJSONFormat = jsonStructure.getResultsDict(model, codes, labels, probabilities)
+        dataJSONFormat = jsonStructure.getResultsDict(model, codes, labels, probabilities,service)
         return dataJSONFormat
+
     
     def setElement(self,dictionary,position,bodyValue):
         
