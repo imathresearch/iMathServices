@@ -151,6 +151,9 @@ class CONS(object):
     def STOPWORDS_FILE():
         return '../data/stopwords.txt'
 
+
+
+
     '''
         It define the global constants to connect to the elasticsearch database
 
@@ -220,7 +223,11 @@ class CONS(object):
                         }
 
     @constant
-    def PROPERTIES_INDEX_ELASTIC_CHURNCUSTOMER():
+    def INDEX_NAME_CHURN_CUSTOMER():
+        return "telcoresults"
+
+    @constant
+    def PROPERTIES_INDEX_ELASTIC_CHURN_CUSTOMER():
         return {
                 "settings" : {
                         "number_of_shards": 1,
@@ -248,8 +255,13 @@ class CONS(object):
                 }
             }
 
+
     @constant
-    def PROPERTIES_INDEX_ELASTIC_DOWNEMPLOYEE():
+    def INDEX_NAME_DOWN_EMPLOYEE():
+        return "downemployeeresults"
+
+    @constant
+    def PROPERTIES_INDEX_ELASTIC_DOWN_EMPLOYEE():
         return {
                 "settings" : {
                         "number_of_shards": 1,
@@ -289,6 +301,8 @@ class CONS(object):
 
 
 
+
+
     '''
         It define the global constants to connect to the postgresql database
 
@@ -307,5 +321,65 @@ class CONS(object):
     @constant
     def DATABASE_POSTGRESQL():
         return 'imathservices'
+
+    @constant
+    def TABLE_MODEL_POSTGRESQL():
+        return 'Model'
+
+
+
+    '''
+            Name of each model
+
+    '''
+    @constant
+    def NAME_CHURN_CUSTOMER():
+        return 'ChurnCustomer'
+
+    @constant
+    def NAME_DOWN_EMPLOYEE():
+        return 'DownEmployee'
+
+
+
+
+    '''
+            GoCustomer constants in Postgres
+
+    '''
+    @constant
+    def TABLE_DATA_NAME_CHURN_CUSTOMER():
+        return 'CompleteData'
+
+    @constant
+    def TABLE_RESULT_NAME_CHURN_CUSTOMER():
+        return 'resultsModel'
+
+
+    '''
+            DownEmployee constants in Postgres
+
+    '''
+    @constant
+    def TABLE_DATA_NAME_DOWN_EMPLOYEE():
+        return 'CompleteDataDownEmployee'
+
+    @constant
+    def TABLE_RESULT_NAME_DOWN_EMPLOYEE():
+        return 'resultsModel'
+
+
+
+    '''
+        It define the constants to work with datasheets
+    '''
+
+    @constant
+    def COLUMN_CLASS_DATASHEETS():
+        return 'operationData'
+
+    '''
+
+    '''
 
 

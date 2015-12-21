@@ -30,9 +30,9 @@ class ElasticsearchClass(object):
         
     def getRequestBody(self,service):
         if service == 'ChurnCustomer':
-            request_body = CONS.PROPERTIES_INDEX_ELASTIC_CHURNCUSTOMER
+            request_body = CONS.PROPERTIES_INDEX_ELASTIC_CHURN_CUSTOMER
         elif service == 'DownEmployee':
-            request_body = CONS.PROPERTIES_INDEX_ELASTIC_DOWNEMPLOYEE
+            request_body = CONS.PROPERTIES_INDEX_ELASTIC_DOWN_EMPLOYEE
         return request_body
         
     def deleteAndCreateDictionary(self,dictionary,service):

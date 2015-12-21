@@ -1,12 +1,12 @@
 from iMathModelosPredictivos.common.constants import CONS
-from iMathModelosPredictivos.core.models.modelGoCustomer import ModelGoCustomer
+from iMathModelosPredictivos.core.models.modelChurnCustomer import ModelChurnCustomer
 from sklearn.ensemble import RandomForestClassifier
 
 class ModelGoCustomerController(object):
 
     def __init__(self):
 
-        self.model = ModelGoCustomer()
+        self.model = ModelChurnCustomer()
 
 
     def executeCreateModel(self):

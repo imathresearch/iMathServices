@@ -36,96 +36,51 @@ from sklearn.ensemble import RandomForestClassifier
 import csv
 import numpy as np
 from sklearn.metrics import confusion_matrix
-import pickle
 import operator
-from iMathModelosPredictivos.common.util.miningUtil import KFold
 from iMathModelosPredictivos.common.util.miningUtil import KFoldProb
-from iMathModelosPredictivos.common.util.ioOperations import IOOperations
 from iMathModelosPredictivos.common.util.miningUtil import numericalImputation
 from iMathModelosPredictivos.common.util.miningUtil import categoricalImputation
 from iMathModelosPredictivos.common.util.miningUtil import maxminScaler
 from iMathModelosPredictivos.common.util.miningUtil import binarizer
 from iMathModelosPredictivos.common.util.miningUtil import numericalOutliers
 from iMathModelosPredictivos.common.util.miningUtil import categoricalOutliers
-from iMathModelosPredictivos.common.util.miningUtil import svmOutliers
-from iMathModelosPredictivos.common.util.miningUtil import PCAFeatureReduction
 from iMathModelosPredictivos.common.util.miningUtil import featureSelection
 from iMathModelosPredictivos.common.util.iMathServicesError import iMathServicesError
 from iMathModelosPredictivos.common.util.miningUtil import generateRandomValue
 from iMathModelosPredictivos.common.constants import CONS
-from iMathModelosPredictivos.common.util.Postgresl.PostgreslManage import PostgreslManage
-from iMathModelosPredictivos.common.util.serialization.Serialization import Serialization
-from iMathModelosPredictivos.common.util.Elasticsearch.ElasticsearchClass import ElasticsearchClass
+
 from iMathModelosPredictivos.common.util.datesOperations import DateOperations
 CONS = CONS()
-
 
 
 class ModelDownEmployee(Model):
     '''
     Extends:
-        Class Model from iMathMasMovil.core.model   
+        Class Model
     '''
      
     def __init__(self, classifierType=None):
 
-
-        self.tableModel = "Model"
-        self.tableData = "CompleteDataDownEmployee"
-        self.service = "DownEmployee"
-        self.tableResults = "resultsModel"
-        self.columnData = "operationData"
-        self.dictionaryName = "downemployeeresults"
-
-        self.connectionPostgres = PostgreslManage(CONS.HOST_POSTGRESQL,
-                                          CONS.USER_POSTGRESQL,
-                                          CONS.PASSWORD_POSTGRESQL,
-                                          CONS.DATABASE_POSTGRESQL
-                                          )
-        self.serialization = Serialization()
-        self.connectionElastic = ElasticsearchClass(CONS.HOST_ELASTICSEARCH,
-                                                    CONS.PORT_ELASTICSEARCH)
-
-        if classifierType != None:
-            self.createModel(classifierType)
-        else:
-            self.loadModel()
+        self.tableData = CONS.TABLE_DATA_NAME_DOWN_EMPLOYEE
+        self.service = CONS.NAME_DOWN_EMPLOYEE
+        self.tableResults = CONS.TABLE_RESULT_NAME_DOWN_EMPLOYEE
+        self.dictionaryName = CONS.INDEX_NAME_DOWN_EMPLOYEE
+        super(ModelDownEmployee, self).__init__(classifierType)
 
     def loadModel(self):
-        """Abstract method to be implemented in one of the subclasses
-        Args:
-          dataFile (string): The file where the model, previously created and saved, resides.        
-        """
+
         try:
-            objectData,key= self.connectionPostgres.loadModel(self.tableModel,self.service)
+            objectData,self.key= self.connectionPostgres.loadModel(self.tableModel,self.service)
 
         except iMathServicesError as e:
             print "Access Database Error: " , e.value
             return
 
         else:
-            self.toSave = self.serialization.getLoads(objectData)
-            # MODELS
-            self.model = self.toSave['model']
-            self.name = self.toSave['name']
-            self.index = self.toSave['index']
-            self.headerTestFormat = self.toSave['headerTestFormat']
-            self.headerPredictFormat = self.toSave['headerPredictFormat']
-            self.imputatorNumerical = self.toSave['imputatorNumerical']
-            self.imputatorCategorical = self.toSave['imputatorCategorical']
-            self.scaler = self.toSave['scaler']
-            self.feature_selector = self.toSave['featureSelector']
-            self.key = key
-            self.columnMetaData = self.toSave['columnMetaData']
-            print "[iMathResearch] Modelo basado en " + self.name + " cargado"
+            self._serialToModel(self.serialization.getLoads(objectData))
         
     def createModel(self,classifierType):
-        """Abstract method to be implemented in one of the subclasses
-        Args:
-          dataFile (string): The file where the data to create the model resides.
-          classifierType (string): String that indicates the type of classifierType to be used to create the model 
-              We will probably offer several classifier to create the same model
-        """ 
+
         self._generateMetaData()
 
         allData = self.connectionPostgres.getDataToCreateModel(self.tableData, self.columnData)
@@ -156,83 +111,19 @@ class ModelDownEmployee(Model):
                 self.name = "RandomForest"
             else:
                 raise iMathServicesError("Clasificador no valido");
-              
-            quality = self.accuracyPercentage()
-            self.quality = quality
-            print "[iMathResearch] Modelo basado en " + self.name + " creado. Calidad igual a %.3f" % quality
 
-    
-    def createModelWithoutChange(self, dataFile, classifierType):
-        """Abstract method to be implemented in one of the subclasses
-        Args:
-          dataFile (string): The file where the data to create the model resides.
-          classifierType (string): String that indicates the type of classifierType to be used to create the model 
-              We will probably offer several classifier to create the same model
-        """ 
-        self._generateMetaData();
-        # Open and read data
-        io = IOOperations(); 
-        fileDesc = io.openFile(dataFile, 'r+');
-        [self.headerTrain, self.XData, self.YData] = io.readTrainDataModelFileAbandonoTerminacion(fileDesc);
-        io.closeFile(fileDesc);
-        
-        # CODE FOR SIMPLE MODELS
-        # Create the model
-        self.classiferClass = classifierType
-        if classifierType == DecisionTreeClassifier:
-            print "[iMathResearch] Creando modelo basado en Decision Trees"
-            self._fit();  # for DT
-            self.name = "DecisionTree"
-        elif classifierType == SVC:
-            print "[iMathResearch] Creando modelo basado en SVC"
-            self._fit(probability=True);
-            self.name = "SVC"
-        elif classifierType == RandomForestClassifier:
-            print "[iMathResearch] Creando modelo basado en Random Forest"
-            self._fit(n_estimators=10)  # for random forest
-            self.name = "RandomForest"
-        else:
-            raise iMathServicesError("Clasificador no valido");
-              
-        # quality = self.accuracyPercentage();
-        # print "[iMathResearch] Modelo basado en " + self.name + " creado. Calidad igual a %.3f" % quality            
+            self.quality =  self.accuracyPercentage()
+            print "[iMathResearch] Modelo basado en " + self.name + " creado. Calidad igual a %.3f" % self.quality
+
             
     def saveModel(self):
-        """Abstract method to be implemented in one of the subclasses
-        Args:
-          pathFile (string): String that indicates the complete path of the file where the created model is going to be saved.          
-        """
-        self.toSave = {}
-        # Models
-        self.toSave['model'] = self.model
-        # self.toSave['model'] = self.binary_models
 
-        self.toSave['name'] = self.name;
-        self.toSave['headerTestFormat'] = self.headerTestFormat
-        self.toSave['headerPredictFormat'] = self.headerPredictFormat
-        self.toSave['index'] = self.index
-        self.toSave['imputatorNumerical'] = self.imputatorNumerical
-        self.toSave['imputatorCategorical'] = self.imputatorCategorical
-        self.toSave['scaler'] = self.scaler;
-
-        # self.toSave['binaryEncoder'] = self.binaryEncoder;
-        # self.toSave['svmOutliers'] = self.svmOutliers;
-        # self.toSave['PCAReduction'] = self.PCAReduction;
-        self.toSave['featureSelector'] = self.feature_selector
-        self.toSave['columnMetaData'] = self.columnMetaData
-
-        #self.toSave['key'] = self.key
-        ModelSerialization = self.serialization.getDumps(self.toSave)
+        ModelSerialization = self.serialization.getDumps(self._modelToSerial())
         dates = DateOperations()
         parameters = [self.service,ModelSerialization,self.quality,0,dates.getActualDate()]
         self.key=self.connectionPostgres.setStoreModel(self.tableModel, parameters, self.service)
 
     def predictModel(self):
-        """Abstract method to be implemented in one of the subclasses
-        Args:
-          dataFile (string): The file where the data to be classified resides.
-          outputFile (string): String that indicates the complete path of the file where the prediction is going to be saved. 
-        """
 
         allData = self.connectionPostgres.getAllData(self.tableData, self.columnData,'2')
         final_headers = np.delete(self.connectionPostgres.getPredictionHeaders(self.tableData),[1,2,3,4,5,6],0)
@@ -244,21 +135,12 @@ class ModelDownEmployee(Model):
             print "Data Error: " , e.value
             return;
         else:
-            ID = self.XData[:, 0]
             self._preprocessTestData();
             prediction = self._predict()
             mask = np.where(prediction=='Yes')
             predictionProb = self._predictProb()[mask]
-
-            key = self.connectionPostgres.getPrimaryKey(self.tableResults)
-
-            dates = DateOperations()
-
-            code = [key,self.key, allData[:,0], dates.getActualDate(),""]
-
-
+            self.key = self.connectionPostgres.getPrimaryKey(self.tableResults)
             self.connectionElastic.deleteAndCreateDictionary(self.dictionaryName,self.service)
-
             body = self.connectionElastic.getJsonStructure(self.key,
                                                            allData[:][mask],
                                                            prediction[mask],
@@ -268,19 +150,12 @@ class ModelDownEmployee(Model):
 
             self.connectionElastic.setElementsWithBulk(self.dictionaryName,body)
             print "[iMathResearch] Prediccion generada por el modelo guardada"
-
             return body
     
     def testModel(self):
-        """Abstract method to be implemented in one of the subclasses
-        Args:
-          dataFile (string): The file where the data to be classified resides.
-          outputFile (string): String that indicates the complete path of the file where the prediction is going to be saved. 
-        """
-        # Open and read data
+
 
         allData = self.connectionPostgres.getAllData(self.tableData, self.columnData,'1')
-
         [self.headerTest,self.XData,self.YData] = [self.connectionPostgres.getTestHeaders(self.tableData)[6:],
                                                    allData[:,7:-2],allData[:,-2:-1]]
 
@@ -293,65 +168,16 @@ class ModelDownEmployee(Model):
 
             self._preprocessTestData();
             prediction = self._predict()
-
             predictionProb = self._predictProb()
             # Compute confusion matrix
             cm = confusion_matrix(self.YData, prediction)
-
             key = self.connectionPostgres.getPrimaryKey(self.tableResults)
-
             dates = DateOperations()
 
+             ##FIXME key and self.key
             code = [key,self.key, allData[:,0], dates.getActualDate(),cm]
-
             self.connectionPostgres.setStoreModelsResults(0, self.tableResults, prediction, predictionProb, code)
             print "[iMathResearch] Resultado del testing del modelo guardado"
-    
-    def predictModelWithoutChange(self, dataFile, outputFile):
-        """Abstract method to be implemented in one of the subclasses
-        Args:
-          dataFile (string): The file where the data to be classified resides.
-          outputFile (string): String that indicates the complete path of the file where the prediction is going to be saved. 
-        """
-        # Open and read data
-        io = IOOperations(); 
-        fileDesc = io.openFile(dataFile, 'r+');
-        [self.headerTrain, self.XData, self.YData] = io.readTrainDataModelFileAbandonoTerminacion(fileDesc);
-        io.closeFile(fileDesc)
-
-        ID = self.XData[:, 0]      
-            
-        # CODE FOR SIMPLE MODEL
-        prediction = self._predict()
-        prediction[prediction < 1 ] = 0
-        '''self.YData = self.YData.astype(np.int)'''
-        predictionProb = self._predictProb()
-          
-        self.__generateTestFileGoDownCustomer(outputFile, ID, prediction, predictionProb)
-        print "[iMathResearch] Prediccion generada por el modelo guardada en el fichero " + outputFile
-                
-    def testModelWithoutChange(self, dataFile, outputFile):
-        """Abstract method to be implemented in one of the subclasses
-        Args:
-          dataFile (string): The file where the data to be classified resides.
-          outputFile (string): String that indicates the complete path of the file where the prediction is going to be saved. 
-        """
-        # Open and read data
-        io = IOOperations(); 
-        fileDesc = io.openFile(dataFile, 'r+');
-        [self.headerTrain, self.XData, self.YData] = io.readTrainDataModelFileAbandonoTerminacion(fileDesc);
-        io.closeFile(fileDesc)
-            
-        # CODE FOR SIMPLE MODEL
-            
-        prediction = self._predict()
-        prediction[prediction < 1 ] = 0 
-        # self.YData = self.YData.astype(np.int)
-        predictionProb = self._predictProb()
-        # Compute confusion matrix
-        cm = confusion_matrix(self.YData, prediction)
-        self.__generateTestFileGoDownCustomer(outputFile, self.YData, prediction, predictionProb, cm)
-        print "[iMathResearch] Resultado del testing del modelo guardado en " + outputFile
     
     def __splitDataVariableType(self):
         """Divide the variable in two set depending on its type (numerical or categorical)
