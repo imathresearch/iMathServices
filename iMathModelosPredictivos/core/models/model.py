@@ -10,11 +10,32 @@ Authors:
 import abc
 import numpy as np
 from iMathModelosPredictivos.common.util.miningUtil import KFold
-
+from iMathModelosPredictivos.common.util.Postgresl.PostgreslManage import PostgreslManage
+from iMathModelosPredictivos.common.util.serialization.Serialization import Serialization
+from iMathModelosPredictivos.common.util.Elasticsearch.ElasticsearchClass import ElasticsearchClass
+from iMathModelosPredictivos.common.constants import CONS
+CONS = CONS()
 
 class Model(object):
     __metaclass__ = abc.ABCMeta
 
+    def __init__(self,classifierType):
+
+        self.columnData = CONS.COLUMN_CLASS_DATASHEETS
+        self.tableModel = CONS.TABLE_MODEL_POSTGRESQL
+        self.connectionPostgres = PostgreslManage(CONS.HOST_POSTGRESQL,
+                                          CONS.USER_POSTGRESQL,
+                                          CONS.PASSWORD_POSTGRESQL,
+                                          CONS.DATABASE_POSTGRESQL
+                                          )
+        self.serialization = Serialization()
+        self.connectionElastic = ElasticsearchClass(CONS.HOST_ELASTICSEARCH,
+                                                    CONS.PORT_ELASTICSEARCH)
+
+        if classifierType != None:
+            self.createModel(classifierType)
+        else:
+            self.loadModel()
 
     
     @abc.abstractmethod 
@@ -69,10 +90,41 @@ class Model(object):
                 
     def _predict(self):
         prediction = self.model.predict(self.XData);
-        return prediction;
+        return prediction
         
     def _predictProb(self):
         prediction = self.model.predict_proba(self.XData);
-        return prediction; 
+        return prediction
+
+    def _serialToModel(self,objectSerialized):
+
+        self.model = objectSerialized['model']
+        self.name = objectSerialized['name']
+        self.index = objectSerialized['index']
+        self.headerTestFormat = objectSerialized['headerTestFormat']
+        self.headerPredictFormat = objectSerialized['headerPredictFormat']
+        self.imputatorNumerical = objectSerialized['imputatorNumerical']
+        self.imputatorCategorical = objectSerialized['imputatorCategorical']
+        self.scaler = objectSerialized['scaler']
+        self.feature_selector = objectSerialized['featureSelector']
+        self.columnMetaData = objectSerialized['columnMetaData']
+        print "[iMathResearch] Modelo basado en " + self.name + " cargado"
+
+
+    def _modelToSerial(self):
+
+        objectSerialized = {}
+        # Models
+        objectSerialized['model'] = self.model
+        objectSerialized['name'] = self.name;
+        objectSerialized['headerTestFormat'] = self.headerTestFormat
+        objectSerialized['headerPredictFormat'] = self.headerPredictFormat
+        objectSerialized['index'] = self.index
+        objectSerialized['imputatorNumerical'] = self.imputatorNumerical
+        objectSerialized['imputatorCategorical'] = self.imputatorCategorical
+        objectSerialized['scaler'] = self.scaler;
+        objectSerialized['featureSelector'] = self.feature_selector
+        objectSerialized['columnMetaData'] = self.columnMetaData
+        return objectSerialized
              
         
