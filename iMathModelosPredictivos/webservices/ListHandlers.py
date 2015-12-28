@@ -19,7 +19,7 @@ class ListHandlers(object):
         return tornado.web.Application([
                                         (r"/ChurnCustomer", ChurnCustomerHandler),
                                         (r"/DownEmployee", DownEmployeeHandler),
-                                        (r"/SelectBestCandidates", SelectBestCandidatesHandler),
+                                        (r"/BestCandidates", SelectBestCandidatesHandler),
                                         ])
 
     def createListApplications(self, ListPath, HandlerList):

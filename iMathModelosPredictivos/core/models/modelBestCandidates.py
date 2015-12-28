@@ -2,21 +2,34 @@ from iMathModelosPredictivos.core.src.MainPackage.CandidatesSelectedAlgorithm im
 
 class ModelBestCandidates(object):
 
-    def execute(self, number, priority):
-        pathUser = '../data/RRHH/resultsandidatesCodes.csv'
-        pathWork = '../data/RRHH/resultsWorkCodes.csv'
-        pathUserOriginal = '../data/RRHH/resultsCandidateOriginal.csv'
-        pathWorkOriginal = '../data/RRHH/resultsWorkOriginal.csv'
-        pathCriteria = '../data/RRHH/Criterias.txt'
-        candidateSelectedAlgorithm = CandidatesSelectedAlgorithm(pathUser,pathWork,pathUserOriginal,pathWorkOriginal,pathCriteria,number,priority)
-        candidateSelectedAlgorithm.setStoreCandidatesWork()
-        selectedCandidates = candidateSelectedAlgorithm.getSelectedUsers(number,priority)
-        candidatesOriginalData = candidateSelectedAlgorithm.getCandidatesOriginalValues()
-        return self.writeCandidatesDataOnScreen(candidateSelectedAlgorithm, selectedCandidates, candidatesOriginalData)
+    def __init__(self, job_id, number, priority):
 
-        #return dict(number=number, priority=priority)
+        self.job_id = job_id
+        self.number_workers = number
+        self.priority = priority
 
-    def writeCandidatesDataOnScreen(self,candidateSelectedAlgorithm,selectedCandidates,candidatesOriginalData):
+    def execute(self):
+
+        self._selectCSV_to_build_model()
+
+        self.candidateSelectedAlgorithm = CandidatesSelectedAlgorithm(self.pathUser,
+                                                                 self.pathWork,
+                                                                 self.pathUserOriginal,
+                                                                 self.pathWorkOriginal,
+                                                                 self.pathCriteria,
+                                                                 self.number_workers,
+                                                                 self.priority)
+        self.candidateSelectedAlgorithm.setStoreCandidatesWork()
+        self.selectedCandidates = self.candidateSelectedAlgorithm.getSelectedUsers(self.number_workers,
+                                                                                   self.priority)
+        candidatesOriginalData = self.candidateSelectedAlgorithm.getCandidatesOriginalValues()
+        return self._writeCandidatesDataOnScreen(self.candidateSelectedAlgorithm,
+                                                 self.selectedCandidates,
+                                                 candidatesOriginalData)
+
+
+
+    def _writeCandidatesDataOnScreen(self,candidateSelectedAlgorithm,selectedCandidates,candidatesOriginalData):
 
 
         bestCandidates = []
@@ -34,6 +47,13 @@ class ModelBestCandidates(object):
                                        path_cv=candidatesData[6]))
         return bestCandidates
 
+    def _selectCSV_to_build_model(self):
+
+        self.pathUser = '../data/RRHH/resultsandidatesCodes'+self.job_id+'.csv'
+        self.pathWork = '../data/RRHH/resultsWorkCodes'+self.job_id+'.csv'
+        self.pathUserOriginal = '../data/RRHH/resultsCandidateOriginal'+self.job_id+'.csv'
+        self.pathWorkOriginal = '../data/RRHH/resultsWorkOriginal'+self.job_id+'.csv'
+        self.pathCriteria = '../data/RRHH/Criterias.txt'
 
 
 

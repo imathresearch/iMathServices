@@ -78,6 +78,6 @@ class CandidatesSelectedAlgorithm(object):
         ProvinciaUser = UsersOriginal[positionUserOriginal,4]
         TelephoneUser = UsersOriginal[positionUserOriginal,5]
         EmailUser = UsersOriginal[positionUserOriginal,6]
-        cvsPath = 'Handlers/cvs/CV_' + str(positionUserOriginal[0][0]) + '.pdf'
+        cvsPath = 'media/CV_' + str(positionUserOriginal[0][0]) + '.pdf'
         NecessaryData = [NameUser,DireccionUser,CodigoPostalUser,ProvinciaUser,TelephoneUser,EmailUser,cvsPath]
         return NecessaryData
