@@ -63,6 +63,7 @@ class ModelChurnCustomer(Model):
      
     def __init__(self, classifierType=None):
 
+        self.dataModel = None
         self.tableData = CONS.TABLE_DATA_NAME_CHURN_CUSTOMER
         self.service = CONS.NAME_CHURN_CUSTOMER
         self.tableResults = CONS.TABLE_RESULT_NAME_CHURN_CUSTOMER
