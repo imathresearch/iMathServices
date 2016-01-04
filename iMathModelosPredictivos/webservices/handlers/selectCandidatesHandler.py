@@ -17,3 +17,13 @@ class SelectBestCandidatesHandler(tornado.web.RequestHandler):
         self.write({
             "result":modelController.execute(job_id, selection_number, priority)})
 
+
+    def post(self):
+        job_id = self.get_argument("job_id", None, True)
+        selection_number=self.get_argument("selection_number", None, True)
+        priority=self.get_argument("priority", None, True)
+
+        modelController = ModelBestCandidatesController()
+        self.write({
+            "result":modelController.execute(job_id, selection_number, priority)})
+

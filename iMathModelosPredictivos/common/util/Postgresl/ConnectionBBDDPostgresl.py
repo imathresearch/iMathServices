@@ -183,3 +183,23 @@ class ConnectionBBDD(object):
     def getMaxValueTable(self, table):
         
         return 'select max(id) from imathservices."' + table + '";'
+
+
+    def getDataToCreateModel(self,tableData, columName):
+
+        query = 'SELECT * FROM imathservices."' + tableData + '" where "' + columName + '" = ' + "'" + "0" + "';"
+        return self.getQueryMatrixFormat(query)
+
+
+    def loadModel(self, tableModel, service):
+        query = 'select * from imathservices."' + tableModel + '" where "nameModel" = ' + "'" + service + "';"
+        return self.getObjectValue(query)
+
+
+    def getCodeFromModel(self, tableModel, service):
+        query = 'select * from imathservices."' + tableModel + '" where "nameModel" = ' + "'" + service + "';"
+        return self.getCode(query)
+
+    def getAllData(self, tableData, columnData, value):
+        query = 'SELECT * FROM imathservices."' + tableData + '" where "' + columnData + '" = ' + "'" + value + "';"
+        return self.getQueryMatrixFormat(query)

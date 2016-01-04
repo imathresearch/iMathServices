@@ -92,4 +92,4 @@ class PostgreslManage(object):
         return self.getQueryMatrixFormat(query)
 
 
-       #codeValue = self.connectionPostgres.getCodeFromModel(self.tableModel, self.service)
+
