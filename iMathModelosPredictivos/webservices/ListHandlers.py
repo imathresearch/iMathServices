@@ -9,6 +9,7 @@ import tornado.web
 from iMathModelosPredictivos.webservices.handlers.churnCustomerHandlers import ChurnCustomerHandler
 from iMathModelosPredictivos.webservices.handlers.downEmployeeHandler import DownEmployeeHandler
 from iMathModelosPredictivos.webservices.handlers.selectCandidatesHandler import SelectBestCandidatesHandler
+from iMathModelosPredictivos.webservices.handlers.crossUpSellingHandlers import CrossUpSellingHandler
 class ListHandlers(object):
     '''
     classdocs
@@ -20,6 +21,7 @@ class ListHandlers(object):
                                         (r"/ChurnCustomer", ChurnCustomerHandler),
                                         (r"/DownEmployee", DownEmployeeHandler),
                                         (r"/BestCandidates", SelectBestCandidatesHandler),
+                                        (r"/CrossSelling", CrossUpSellingHandler),
                                         ])
 
     def createListApplications(self, ListPath, HandlerList):

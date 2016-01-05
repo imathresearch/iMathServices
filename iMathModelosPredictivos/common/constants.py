@@ -298,7 +298,9 @@ class CONS(object):
                 }
             }
 
-
+    @constant
+    def INDEX_NAME_CROSSUP_SELLING():
+        return "crossupselling_results"
 
 
 
@@ -340,6 +342,10 @@ class CONS(object):
     def NAME_DOWN_EMPLOYEE():
         return 'DownEmployee'
 
+    @constant
+    def NAME_CROSSUP_SELLING():
+        return 'CrossUpSelling'
+
 
 
 
@@ -367,6 +373,27 @@ class CONS(object):
     @constant
     def TABLE_RESULT_NAME_DOWN_EMPLOYEE():
         return 'resultsModel'
+
+    '''
+            CrossUpSelling constants in Postgres
+
+    '''
+    @constant
+    def TABLE_DATA_NAME_CROSSUP_SELLING():
+        return 'PurchaseData'
+
+    @constant
+    def TABLE_RESULT_NAME_CROSSUP_SELLING():
+        return 'resultsModel'
+
+    @constant
+    def TABLE_DATA_PRODUCT_CROSSUP_SELLING():
+        return 'ProductsCustomer'
+
+    @constant
+    def COLUMN_PRODUCT_NAME_CROSSUP_SELLING():
+        return 'productname'
+
 
 
 

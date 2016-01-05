@@ -108,6 +108,7 @@ class Model(object):
         self.scaler = objectSerialized['scaler']
         self.feature_selector = objectSerialized['featureSelector']
         self.columnMetaData = objectSerialized['columnMetaData']
+
         print "[iMathResearch] Modelo basado en " + self.name + " cargado"
 
 
