@@ -406,7 +406,13 @@ class CONS(object):
         return 'operationData'
 
     '''
-
+        Commons Tables database postgres constants
     '''
 
+    @constant
+    def TABLE_PRODUCTS():
+        return 'Products'
 
+    @constant
+    def TABLE_SERVICES():
+        return 'Services'
