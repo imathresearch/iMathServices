@@ -21,7 +21,7 @@ class RetentionCustomerHandler(tornado.web.RequestHandler):
 
     def get(self):
 
-        customer_id = int(self.getParameterValue("customer_id"))
+        customer_id = self.getParameterValue("user_client_id")
         modelController = ModelRetentionCustomerController()
 
 
