@@ -10,6 +10,7 @@ from iMathModelosPredictivos.webservices.handlers.churnCustomerHandlers import C
 from iMathModelosPredictivos.webservices.handlers.downEmployeeHandler import DownEmployeeHandler
 from iMathModelosPredictivos.webservices.handlers.selectCandidatesHandler import SelectBestCandidatesHandler
 from iMathModelosPredictivos.webservices.handlers.crossUpSellingHandlers import CrossUpSellingHandler
+from iMathModelosPredictivos.webservices.handlers.retentionCustomerHandler import RetentionCustomerHandler
 class ListHandlers(object):
     '''
     classdocs
@@ -22,6 +23,7 @@ class ListHandlers(object):
                                         (r"/DownEmployee", DownEmployeeHandler),
                                         (r"/BestCandidates", SelectBestCandidatesHandler),
                                         (r"/CrossSelling", CrossUpSellingHandler),
+                                        (r"/RetentionCustomer", RetentionCustomerHandler),
                                         ])
 
     def createListApplications(self, ListPath, HandlerList):
